@@ -7,11 +7,13 @@
 		%p
 			%b Available Albums
 		%ul
-			- @albums.each do	|album|
-				%li.album= album
+			- @list.each do	|album|
+				%li.album
+					= album.name
+					%a.add{ :href => "/add/#{album.id}" } Add
 	.selected.album_list
 		%p
 			%b Next Albums
 		%ul
-			/ - @next_albums.each do |album|
-			/ 	%li.album= album
+			- @next.each do |album|
+				%li.album= "#{album.votes} #{album.name}"
