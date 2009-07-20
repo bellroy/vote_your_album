@@ -1,0 +1,17 @@
+.current
+	Currently Playing:
+	%b#current_song= song(@current_song)
+
+.selection
+	.all.album_list
+		%p
+			%b Available Albums
+		%ul
+			- @albums.each do	|album|
+				%li.album= album
+	.selected.album_list
+		%p
+			%b Next Albums
+		%ul
+			/ - @next_albums.each do |album|
+			/ 	%li.album= album

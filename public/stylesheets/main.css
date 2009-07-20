@@ -1,0 +1,37 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #bbb;
+}
+#wrap {
+	width: 1000px;
+	margin: 30px auto;
+}
+.header {
+}
+h1 {
+	font-size: 18pt;
+}
+
+.current {
+	line-height: 40px;
+	text-align: center;
+	margin: 20px 0;
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #000;
+}
+.album_list {
+	float: left;
+	margin: 0 15px;
+}
+.album_list ul {
+	height: 600px;
+	width: 450px;
+	overflow: auto;
+	background-color: #fff;
+	margin: 0;
+	padding: 5px;
+}
+.album {
+	padding: 2px 0;
+}
