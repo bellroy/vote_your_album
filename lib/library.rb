@@ -1,12 +1,26 @@
 class Library
   @list, @next = [], []
+  @song = ""
   
   class << self
+    def setup
+      @mpd = MPD.new("mpd", 6600)
+      @mpd.register_callback self.method("current_song_callback"), MPD::CURRENT_SONG_CALLBACK
+      @mpd.connect true
+      
+      index = 0
+      Library.list = @mpd.albums.inject([]) { |list, a| index += 1; list << Album.new(index, a, 0) }
+      current_song_callback @mpd.current_song
+    end
+    
     def list; @list.sort_by { |a| a.name } end
     def list=(list); @list = list end
     
     def next; @next.sort_by { |a| a.votes }.reverse end
     def <<(album); @next << album end
+    
+    def song; @song end
+    def current_song_callback(new_song); @song = (new_song ? "#{new_song.artist} - #{new_song.title} (#{new_song.album})" : "") end
   end
 end
 

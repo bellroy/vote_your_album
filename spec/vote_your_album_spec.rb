@@ -3,9 +3,7 @@ require File.join(File.dirname(__FILE__) + '/spec_helper')
 describe "vote your album:" do
   
   before do
-    @song = MPD::Song.new
-    { "artist" => "me", "title" => "song", "album" => "hits" }.each { |k, v| @song[k] = v }
-    MPD.stub!(:new).and_return @mpd = mock('mpd', :connect => true, :current_song => @song)
+    Library.stub!(:song).and_return "me - song (hits)"
   end
   
   describe "GET '/'" do
@@ -40,12 +38,6 @@ describe "vote your album:" do
     it "should return the current song as text" do
       get "/current_song"
       last_response.body.should == "me - song (hits)"
-    end
-    
-    it "should return an empty string if we dont play anything right now" do
-      @mpd.stub!(:current_song).and_return nil
-      get "/current_song"
-      last_response.body.should == ""
     end
   end
   

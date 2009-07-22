@@ -9,35 +9,17 @@ require 'lib/library'
 # Setup
 # -----------------------------------------------------------------------------------
 configure do
-  mpd = MPD.new('mpd', 6600)
-  mpd.connect
-  
-  index = 0
-  Library.list = mpd.albums.inject([]) { |list, a| index += 1; list << Album.new(index, a, 0) }
+  Library.setup
 end
 
 
 # -----------------------------------------------------------------------------------
 # Helpers
 # -----------------------------------------------------------------------------------
-helpers do
-  def song(song)
-    song ? "#{song.artist} - #{song.title} (#{song.album})" : ""
-  end
-end
-
 def execute_on_album(album_id, &block)
   album = Library.list.find { |a| a.id == album_id.to_i }
   yield(album) if album
   redirect "/"
-end
-
-# -----------------------------------------------------------------------------------
-# Filters
-# -----------------------------------------------------------------------------------
-before do
-  @mpd = MPD.new('mpd', 6600)
-  @mpd.connect
 end
 
 
@@ -45,12 +27,12 @@ end
 # Actions
 # -----------------------------------------------------------------------------------
 get "/" do
-  @current_song, @list, @next = @mpd.current_song, Library.list, Library.next
+  @song, @list, @next = Library.song, Library.list, Library.next
   haml :index
 end
 
 get "/current_song" do
-  song(@mpd.current_song)
+  Library.song
 end
 
 get "/add/:id" do |album_id|
