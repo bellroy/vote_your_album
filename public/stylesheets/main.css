@@ -35,3 +35,10 @@ h1 {
 .album {
 	padding: 2px 0;
 }
+.name {
+	padding-right: 20px;
+}
+.votes {
+	font-weight: bold;
+	padding-right: 10px;
+}

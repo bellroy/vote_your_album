@@ -5,13 +5,15 @@ describe "vote your album:" do
   before do
     @song = MPD::Song.new
     { "artist" => "me", "title" => "song", "album" => "hits" }.each { |k, v| @song[k] = v }
-    MPD.stub!(:new).and_return @mpd = mock('mpd', :connect => true, :current_song => @song, :albums => nil)
-    
-    Library.stub!(:list).and_return [Album.new(1, "one", 0), Album.new(2, "two", 0)]
-    Library.stub!(:next).and_return [Album.new(3, "three", 0)]
+    MPD.stub!(:new).and_return @mpd = mock('mpd', :connect => true, :current_song => @song)
   end
   
   describe "GET '/'" do
+    before do
+      Library.stub!(:list).and_return [Album.new(1, "one", 0), Album.new(2, "two", 0)]
+      Library.stub!(:next).and_return [Album.new(3, "three", 0)]
+    end
+    
     it "should render the homepage" do
       get "/"
       last_response.body.should match(/Currently Playing/)
@@ -59,6 +61,22 @@ describe "vote your album:" do
     
     it "should do nothing when we can't find the album in the list" do
       Library.should_not_receive :<<
+      get "/add/321"
+    end
+  end
+  
+  { :up => 1, :down => -1 }.each do |action, change|
+    before do
+      Library.stub!(:list).and_return [@album = Album.new(123, "album", 0)]
+    end
+    
+    it "should vote the Album #{action}" do
+      @album.should_receive(:vote).with change
+      get "/#{action}/123"
+    end
+    
+    it "should do nothing when we can't find the album in the list" do
+      @album.should_not_receive :vote
       get "/add/321"
     end
   end

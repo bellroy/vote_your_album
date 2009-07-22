@@ -5,12 +5,9 @@ require 'librmpd'
 
 require 'lib/library'
 
-
 # -----------------------------------------------------------------------------------
 # Setup
 # -----------------------------------------------------------------------------------
-Album = Struct.new(:id, :name, :votes)
-
 configure do
   mpd = MPD.new('mpd', 6600)
   mpd.connect
@@ -29,6 +26,11 @@ helpers do
   end
 end
 
+def execute_on_album(album_id, &block)
+  album = Library.list.find { |a| a.id == album_id.to_i }
+  yield(album) if album
+  redirect "/"
+end
 
 # -----------------------------------------------------------------------------------
 # Filters
@@ -44,7 +46,6 @@ end
 # -----------------------------------------------------------------------------------
 get "/" do
   @current_song, @list, @next = @mpd.current_song, Library.list, Library.next
-  
   haml :index
 end
 
@@ -53,7 +54,11 @@ get "/current_song" do
 end
 
 get "/add/:id" do |album_id|
-  album = Library.list.find { |a| a.id == album_id.to_i }
-  Library << album if album
-  redirect "/"
+  execute_on_album(album_id) { |album| Library << album }
+end
+get "/up/:id" do |album_id|
+  execute_on_album(album_id) { |album| album.vote 1 }
+end
+get "/down/:id" do |album_id|
+  execute_on_album(album_id) { |album| album.vote -1 }
 end

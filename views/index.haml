@@ -9,11 +9,15 @@
 		%ul
 			- @list.each do	|album|
 				%li.album
-					= album.name
+					%span.name= album.name
 					%a.add{ :href => "/add/#{album.id}" } Add
 	.selected.album_list
 		%p
 			%b Next Albums
 		%ul
 			- @next.each do |album|
-				%li.album= "#{album.votes} #{album.name}"
+				%li.album
+					%span.votes= album.votes
+					%span.name= album.name
+					%a.up{ :href => "up/#{album.id}" } Up
+					%a.down{ :href => "down/#{album.id}" } Down

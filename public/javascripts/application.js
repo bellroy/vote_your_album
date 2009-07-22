@@ -1,6 +1,6 @@
 // On Load
 $(function() {
-	setTimeout("updateCurrentSong();", 5000);
+	//setTimeout("updateCurrentSong();", 5000);
 });
 
 function updateCurrentSong() {
