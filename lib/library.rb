@@ -19,8 +19,20 @@ class Library
     def next; @next.sort_by { |a| a.votes }.reverse end
     def <<(album); @next << album end
     
+    def play_next
+      return unless next_album = self.next.shift
+      
+      @mpd.clear
+      files = @mpd.find("album", next_album.name).sort_by { |f| f.track.to_i }
+      files.each { |f| @mpd.add f.file }
+      @mpd.play
+    end
+    
     def song; @song end
-    def current_song_callback(new_song); @song = (new_song ? "#{new_song.artist} - #{new_song.title} (#{new_song.album})" : "") end
+    def current_song_callback(new_song)
+      @song = (new_song ? "#{new_song.artist} - #{new_song.title} (#{new_song.album})" : "")
+      play_next if new_song.nil?
+    end
   end
 end
 

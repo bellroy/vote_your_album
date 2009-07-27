@@ -81,6 +81,57 @@ describe Library do
     end
   end
   
+  describe "play next" do
+    before do
+      Library.stub!(:next).and_return [@album = Album.new(1, "my album", 0)]
+      Library.stub! :clear
+      Library.stub! :current_song_callback
+      
+      @song1 = MPD::Song.new
+      { "artist" => "me1", "title" => "song1", "album" => "hits1", "track" => "2", "file" => "file1" }.each { |k, v| @song1[k] = v }
+      @song2 = MPD::Song.new
+      { "artist" => "me2", "title" => "song2", "album" => "hits2", "track" => "1", "file" => "file2" }.each { |k, v| @song2[k] = v }
+      
+      MPD.stub!(:new).and_return @mpd =
+        mock("MPD", :connect => nil, :register_callback => nil, :albums => [], :current_song => nil, :clear => nil, :add => nil, :play => true)
+      @mpd.stub!(:find).and_return @new_songs = [@song1, @song2]
+      
+      Library.setup
+    end
+    
+    it "should do nothing if we dont have a next album in the list" do
+      Library.should_receive(:next).and_return []
+      @mpd.should_not_receive :clear
+      
+      Library.play_next
+    end
+    
+    it "should clear the playlist if we have a album in the list" do
+      @mpd.should_receive :clear
+      Library.play_next
+    end
+    
+    it "should look for all songs matching the album exactly" do
+      @mpd.should_receive(:find).with("album", "my album").and_return []
+      Library.play_next
+    end
+    
+    it "should order the file list by track number" do
+      @new_songs.should_receive(:sort_by).and_return []
+      Library.play_next
+    end
+    
+    it "should add all files to the playlist" do
+      [@song1, @song2].each { |s| @mpd.should_receive(:add).with s.file }
+      Library.play_next
+    end
+    
+    it "should start playback" do
+      @mpd.should_receive :play
+      Library.play_next
+    end
+  end
+  
   describe "song" do
     before do
       Library.class_eval do
@@ -98,6 +149,7 @@ describe Library do
       Library.class_eval do
         @song = nil
       end
+      Library.stub! :play_next
       
       @song = MPD::Song.new
       { "artist" => "me", "title" => "song", "album" => "hits" }.each { |k, v| @song[k] = v }
@@ -111,6 +163,11 @@ describe Library do
     it "should set it to an empty string if we get nothing" do
       Library.current_song_callback nil
       Library.song.should == ""
+    end
+    
+    it "should load next album if the song is nil (no next song in the playlist)" do
+      Library.should_receive :play_next
+      Library.current_song_callback nil
     end
   end
 end
