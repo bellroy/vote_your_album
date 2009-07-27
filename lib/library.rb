@@ -20,7 +20,7 @@ class Library
     def <<(album); @next << album end
     
     def play_next
-      return unless next_album = self.next.shift
+      return unless next_album = @next.shift
       
       @mpd.clear
       files = @mpd.find("album", next_album.name).sort_by { |f| f.track.to_i }

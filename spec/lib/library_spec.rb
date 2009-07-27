@@ -83,7 +83,9 @@ describe Library do
   
   describe "play next" do
     before do
-      Library.stub!(:next).and_return [@album = Album.new(1, "my album", 0)]
+      Library.class_eval do
+        @next = [Album.new(1, "my album", 0)]
+      end
       Library.stub! :clear
       Library.stub! :current_song_callback
       
@@ -100,10 +102,17 @@ describe Library do
     end
     
     it "should do nothing if we dont have a next album in the list" do
-      Library.should_receive(:next).and_return []
+      Library.class_eval do
+        @next = []
+      end
       @mpd.should_not_receive :clear
       
       Library.play_next
+    end
+    
+    it "should remove the album from the list" do
+      Library.play_next
+      Library.next.should be_empty
     end
     
     it "should clear the playlist if we have a album in the list" do
