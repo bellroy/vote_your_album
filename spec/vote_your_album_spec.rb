@@ -34,9 +34,9 @@ describe "vote your album:" do
     end
   end
   
-  describe "GET '/current_song'" do
+  describe "GET '/status'" do
     it "should return the current song as text" do
-      get "/current_song"
+      get "/status"
       last_response.body.should == "me - song (hits)"
     end
   end
@@ -70,6 +70,13 @@ describe "vote your album:" do
     it "should do nothing when we can't find the album in the list" do
       @album.should_not_receive :vote
       get "/add/321"
+    end
+  end
+  
+  [:previous, :next].each do |action|
+    it "should execute the provided action on the Library class" do
+      Library.should_receive(:control).with action
+      get "/control/#{action}"
     end
   end
 end

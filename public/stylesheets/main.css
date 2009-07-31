@@ -20,6 +20,12 @@ h1 {
 	border-top: 1px solid #000;
 	border-bottom: 1px solid #000;
 }
+.controls {
+	text-align: center;
+}
+.controls a {
+	padding: 0 5px;
+}
 .album_list {
 	float: left;
 	margin: 0 15px;

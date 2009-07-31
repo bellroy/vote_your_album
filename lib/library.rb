@@ -33,6 +33,8 @@ class Library
       @song = (new_song ? "#{new_song.artist} - #{new_song.title} (#{new_song.album})" : "")
       play_next if new_song.nil?
     end
+    
+    def control(action); @mpd.send action end
   end
 end
 

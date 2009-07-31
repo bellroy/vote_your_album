@@ -179,6 +179,21 @@ describe Library do
       Library.current_song_callback nil
     end
   end
+  
+  describe "control" do
+    before do
+      MPD.stub!(:new).and_return @mpd =
+        mock("MPD", :connect => nil, :register_callback => nil, :albums => [], :current_song => nil)
+      Library.setup
+      
+      @mpd.stub! :action
+    end
+    
+    it "should execute the given action on the mpd object" do
+      @mpd.should_receive :action
+      Library.control :action
+    end
+  end
 end
 
 describe Album do

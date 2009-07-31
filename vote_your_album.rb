@@ -31,7 +31,7 @@ get "/" do
   haml :index
 end
 
-get "/current_song" do
+get "/status" do
   Library.song
 end
 
@@ -43,4 +43,8 @@ get "/up/:id" do |album_id|
 end
 get "/down/:id" do |album_id|
   execute_on_album(album_id) { |album| album.vote -1 }
+end
+
+get "/control/:action" do |action|
+  Library.control action.to_sym
 end

@@ -4,7 +4,7 @@ $(function() {
 });
 
 function updateCurrentSong() {
-	$.get("/current_song", function(data) {
+	$.get("/status", function(data) {
 		$("#current_song").html(data);
 	});
 	setTimeout("updateCurrentSong();", 5000);
