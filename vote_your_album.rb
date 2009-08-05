@@ -1,7 +1,4 @@
-require 'rubygems'
-require 'sinatra'
-require 'haml'
-require 'librmpd'
+%w[rubygems sinatra json haml librmpd].each { |lib| require lib }
 
 require 'lib/library'
 
@@ -32,7 +29,7 @@ get "/" do
 end
 
 get "/status" do
-  Library.song
+  { :song => Library.song, :next => Library.next.map { |a| a.to_hash } }.to_json
 end
 
 get "/add/:id" do |album_id|

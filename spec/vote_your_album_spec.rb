@@ -35,9 +35,16 @@ describe "vote your album:" do
   end
   
   describe "GET '/status'" do
-    it "should return the current song as text" do
+    it "should return the current song inside the JSON" do
       get "/status"
-      last_response.body.should == "me - song (hits)"
+      last_response.body.should match(/\"song\":\"me - song \(hits\)\"/)
+    end
+    
+    it "should include the next album list as a sub hash" do
+      Library.stub!(:next).and_return [Album.new(3, "three", 0)]
+      get "/status"
+      last_response.body.should match(/\"next\":\[.*\]/)
+      last_response.body.should match(/\"votes\":0,\"name\":\"three\",\"id\":3/)
     end
   end
   

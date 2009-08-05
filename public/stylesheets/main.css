@@ -41,6 +41,9 @@ h1 {
 .album {
 	padding: 2px 0;
 }
+.album.odd {
+	background-color: #ccc;
+}
 .name {
 	padding-right: 20px;
 }

@@ -41,4 +41,5 @@ end
 Album = Struct.new(:id, :name, :votes)
 Album.class_eval do
   def vote(with); self.votes += with end
+  def to_hash; { :id => id, :name => name, :votes => votes } end
 end

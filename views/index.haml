@@ -10,17 +10,17 @@
 	.all.album_list
 		%p
 			%b Available Albums
-		%ul
-			- @list.each do	|album|
-				%li.album
+		%ul#available_albums
+			- @list.each_with_index do |album, i|
+				%li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}"}
 					%span.name= album.name
 					%a.add{ :href => "/add/#{album.id}" } Add
 	.selected.album_list
 		%p
 			%b Next Albums
-		%ul
-			- @next.each do |album|
-				%li.album
+		%ul#next_albums
+			- @next.each_with_index do |album, i|
+				%li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}"}
 					%span.votes= album.votes
 					%span.name= album.name
 					%a.up{ :href => "up/#{album.id}" } Up

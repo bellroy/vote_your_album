@@ -210,4 +210,14 @@ describe Album do
       end
     end
   end
+  
+  describe "to hash" do
+    before do
+      @album = Album.new(1, "album", 0)
+    end
+    
+    it "should map all attributes into a hash" do
+      @album.to_hash.should == { :id => 1, :name => "album", :votes => 0 }
+    end
+  end
 end
