@@ -29,17 +29,17 @@ get "/" do
 end
 
 get "/status" do
-  { :song => Library.song, :next => Library.next.map { |a| a.to_hash } }.to_json
+  { :song => Library.song, :next => Library.next.map { |a| a.to_hash(request.ip) } }.to_json
 end
 
 get "/add/:id" do |album_id|
   execute_on_album(album_id) { |album| Library << album }
 end
 get "/up/:id" do |album_id|
-  execute_on_album(album_id) { |album| album.vote 1 }
+  execute_on_album(album_id) { |album| album.vote 1, request.ip }
 end
 get "/down/:id" do |album_id|
-  execute_on_album(album_id) { |album| album.vote -1 }
+  execute_on_album(album_id) { |album| album.vote -1, request.ip }
 end
 
 get "/control/:action" do |action|

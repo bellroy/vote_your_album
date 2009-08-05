@@ -43,8 +43,7 @@ describe "vote your album:" do
     it "should include the next album list as a sub hash" do
       Library.stub!(:next).and_return [Album.new(3, "three", 0)]
       get "/status"
-      last_response.body.should match(/\"next\":\[.*\]/)
-      last_response.body.should match(/\"votes\":0,\"name\":\"three\",\"id\":3/)
+      [/\"next\":\[.*\]/, /\"id\":3/, /\"name\":\"three\"/, /\"votes\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
     end
   end
   
@@ -70,7 +69,7 @@ describe "vote your album:" do
     end
     
     it "should vote the Album #{action}" do
-      @album.should_receive(:vote).with change
+      @album.should_receive(:vote).with change, "127.0.0.1"
       get "/#{action}/123"
     end
     

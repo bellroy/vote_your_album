@@ -205,9 +205,34 @@ describe Album do
     
     [0, 1, -1, 4, -3].each do |by|
       it "should change the votes by #{by}" do
-        @album.vote by
+        @album.vote by, "me"
         @album.votes.should == by
       end
+    end
+    
+    it "should save the second param in the 'voted by' list" do
+      @album.vote 1, "me"
+      @album.voted_by.should include("me")
+    end
+    
+    it "should not allow a vote, if we have already voted" do
+      2.times { @album.vote 1, "me" }
+      @album.votes.should == 1
+    end
+  end
+  
+  describe "can be voted for by?" do
+    before do
+      @album = Album.new(1, "album", 0)
+    end
+    
+    it "should return true if the 'voted by' list doesnt contain the given string" do
+      @album.can_be_voted_for_by?("me").should be_true
+    end
+    
+    it "should return false if the string is in the 'voted by' list" do
+      @album.vote 1, "me"
+      @album.can_be_voted_for_by?("me").should be_false
     end
   end
   
@@ -217,7 +242,12 @@ describe Album do
     end
     
     it "should map all attributes into a hash" do
-      @album.to_hash.should == { :id => 1, :name => "album", :votes => 0 }
+      @album.to_hash("me").should == { :id => 1, :name => "album", :votes => 0, :votable => true }
+    end
+    
+    it "should have a negative votable value if this user cant vote" do
+      @album.stub!(:can_be_voted_for_by?).and_return false
+      @album.to_hash("me")[:votable].should be_false
     end
   end
 end

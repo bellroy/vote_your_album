@@ -38,8 +38,15 @@ class Library
   end
 end
 
-Album = Struct.new(:id, :name, :votes)
+Album = Struct.new(:id, :name, :votes, :voted_by)
 Album.class_eval do
-  def vote(with); self.votes += with end
-  def to_hash; { :id => id, :name => name, :votes => votes } end
+  def initialize(*args); super; self.voted_by = [] end
+  
+  def vote(with, from)
+    return if voted_by.include?(from)
+    self.votes += with; self.voted_by << from
+  end
+  def can_be_voted_for_by?(it); !voted_by.include?(it) end
+  
+  def to_hash(it); { :id => id, :name => name, :votes => votes, :votable => can_be_voted_for_by?(it) } end
 end

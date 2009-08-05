@@ -23,5 +23,6 @@
 				%li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}"}
 					%span.votes= album.votes
 					%span.name= album.name
-					%a.up{ :href => "up/#{album.id}" } Up
-					%a.down{ :href => "down/#{album.id}" } Down
+					- if album.can_be_voted_for_by?(request.ip)
+						%a.up{ :href => "up/#{album.id}" } Up
+						%a.down{ :href => "down/#{album.id}" } Down
