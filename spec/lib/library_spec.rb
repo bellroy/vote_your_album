@@ -36,6 +36,11 @@ describe Library do
       
       Library.song.should == ""
     end
+    
+    it "should start by being disabled" do
+      Library.setup
+      Library.should_not be_enabled
+    end
   end
   
   describe "list" do
@@ -174,8 +179,15 @@ describe Library do
       Library.song.should == ""
     end
     
-    it "should load next album if the song is nil (no next song in the playlist)" do
+    it "should load next album if the song is nil (no next song in the playlist) and we are enabled" do
+      Library.control :enable
       Library.should_receive :play_next
+      Library.current_song_callback nil
+    end
+    
+    it "should not load the next album if we havent enabled to app" do
+      Library.control :disable
+      Library.should_not_receive :play_next
       Library.current_song_callback nil
     end
   end
@@ -192,6 +204,34 @@ describe Library do
     it "should execute the given action on the mpd object" do
       @mpd.should_receive :action
       Library.control :action
+    end
+    
+    it "should set the enabled variable to true if we call the method with 'enable'" do
+      Library.control :enable
+      Library.should be_enabled
+    end
+    
+    it "should not load a new album if we are currently playing a song" do
+      Library.class_eval do
+        @song = "some song"
+      end
+      
+      Library.should_not_receive :play_next
+      Library.control :enable
+    end
+    
+    it "should load a new album if we are not playing anything right now" do
+      Library.class_eval do
+        @song = ""
+      end
+      
+      Library.should_receive :play_next
+      Library.control :enable
+    end
+    
+    it "should set the enabled variable to false if we call the method with 'disable'" do
+      Library.control :enable; Library.control :disable
+      Library.should_not be_enabled
     end
   end
 end

@@ -11,6 +11,9 @@ function updateCurrentSong() {
 		$.each(data.next, function(i, album) {
 			$("#next_albums").append(albumEntry(album, i));
 		});
+		
+		if (data.enabled && $("#disable").hasClass("disabled")) 			showControl("enable", "disable");
+		else if (!data.enabled && $("#enable").hasClass("disabled")) 	showControl("disable", "enable");
 	});
 	setTimeout("updateCurrentSong();", 5000);
 }
@@ -24,4 +27,9 @@ function albumEntry(album, i) {
 		res += '<a href="/down/' + album.id + '" class="down">Down</a>';
 	}
 	return res + '</li>';
+}
+
+function showControl(show, hide) {
+	$("#" + show).attr("href", "/control/" + show).addClass("disabled");
+	$("#" + hide).attr("href", "#").removeClass("disabled");
 }

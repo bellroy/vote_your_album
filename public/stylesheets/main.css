@@ -7,7 +7,15 @@ body {
 	width: 1000px;
 	margin: 30px auto;
 }
-.header {
+.header a {
+	font-size: 11pt;
+	font-weight: normal;
+	float: right;
+	padding: 0 5px;
+}
+.header a.disabled,
+.header a.disabled:visited {
+	color: #666;
 }
 h1 {
 	font-size: 18pt;

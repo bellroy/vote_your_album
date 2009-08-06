@@ -1,6 +1,7 @@
 class Library
   @list, @next = [], []
   @song = ""
+  @enabled = false
   
   class << self
     def setup
@@ -11,7 +12,11 @@ class Library
       index = 0
       Library.list = @mpd.albums.inject([]) { |list, a| index += 1; list << Album.new(index, a, 0) }
       current_song_callback @mpd.current_song
+      
+      @enabled = false
     end
+    
+    def enabled?; @enabled end
     
     def list; @list.sort_by { |a| a.name } end
     def list=(list); @list = list end
@@ -31,10 +36,20 @@ class Library
     def song; @song end
     def current_song_callback(new_song)
       @song = (new_song ? "#{new_song.artist} - #{new_song.title} (#{new_song.album})" : "")
-      play_next if new_song.nil?
+      play_next if enabled? && new_song.nil?
     end
     
-    def control(action); @mpd.send action end
+    def control(action)
+      case action
+        when :enable
+          @enabled = true
+          play_next if song == ""
+        when :disable
+          @enabled = false
+        else
+          @mpd.send action
+      end
+    end
   end
 end
 

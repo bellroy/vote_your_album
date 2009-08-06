@@ -45,6 +45,12 @@ describe "vote your album:" do
       get "/status"
       [/\"next\":\[.*\]/, /\"id\":3/, /\"name\":\"three\"/, /\"votes\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
     end
+    
+    it "should include the enabled flag" do
+      Library.stub!(:enabled?).and_return true
+      get "/status"
+      last_response.body.should match(/\"enabled\":true/)
+    end
   end
   
   describe "GET '/add/:id'" do
@@ -79,7 +85,7 @@ describe "vote your album:" do
     end
   end
   
-  [:previous, :next].each do |action|
+  [:enable, :disable, :previous, :next].each do |action|
     it "should execute the provided action on the Library class" do
       Library.should_receive(:control).with action
       get "/control/#{action}"

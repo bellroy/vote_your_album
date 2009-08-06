@@ -29,7 +29,7 @@ get "/" do
 end
 
 get "/status" do
-  { :song => Library.song, :next => Library.next.map { |a| a.to_hash(request.ip) } }.to_json
+  { :enabled => Library.enabled?, :song => Library.song, :next => Library.next.map { |a| a.to_hash(request.ip) } }.to_json
 end
 
 get "/add/:id" do |album_id|
@@ -44,4 +44,5 @@ end
 
 get "/control/:action" do |action|
   Library.control action.to_sym
+  redirect "/"
 end
