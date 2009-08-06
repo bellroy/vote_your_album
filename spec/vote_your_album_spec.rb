@@ -85,6 +85,17 @@ describe "vote your album:" do
     end
   end
   
+  describe "search" do
+    before do
+      Library.stub!(:search).and_return []
+    end
+    
+    it "should search for matching album using the library" do
+      Library.should_receive(:search).with("query").and_return []
+      post "/search", :q => "query"
+    end
+  end
+  
   [:enable, :disable, :previous, :next].each do |action|
     it "should execute the provided action on the Library class" do
       Library.should_receive(:control).with action

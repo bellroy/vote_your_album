@@ -10,6 +10,10 @@
   .all.album_list
     %p
       %b Available Albums
+    %form{ :action => "search", :method => :post }
+      %input{ :type => "text", :name => "q", :value => params[:q] }
+      %input{ :type => "submit", :value => "Search" }
+      
     %ul#available_albums
       - @list.each_with_index do |album, i|
         %li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}"}
@@ -25,5 +29,5 @@
           %span.votes= album.votes
           %span.name= album.name
           - if album.can_be_voted_for_by?(request.ip)
-            %a.up{ :href => "up/#{album.id}" } Up
-            %a.down{ :href => "down/#{album.id}" } Down
+            %a.up{ :href => "up/#{album.id}" } +1
+            %a.down{ :href => "down/#{album.id}" } -1

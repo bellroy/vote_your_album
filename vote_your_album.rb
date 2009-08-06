@@ -19,13 +19,20 @@ def execute_on_album(album_id, &block)
   redirect "/"
 end
 
+def render_index_with_list(&block)
+  @song, @list, @next = Library.song, yield, Library.next
+  haml :index
+end
+
 
 # -----------------------------------------------------------------------------------
 # Actions
 # -----------------------------------------------------------------------------------
 get "/" do
-  @song, @list, @next = Library.song, Library.list, Library.next
-  haml :index
+  render_index_with_list { Library.list }
+end
+post "/search" do
+  render_index_with_list { Library.search(params[:q]) }
 end
 
 get "/status" do

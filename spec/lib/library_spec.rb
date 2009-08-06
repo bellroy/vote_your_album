@@ -234,6 +234,61 @@ describe Library do
       Library.should_not be_enabled
     end
   end
+  
+  describe "search" do
+    before do
+      MPD.stub!(:new).and_return @mpd =
+        mock("MPD", :connect => nil, :register_callback => nil, :albums => [], :current_song => nil, :search => [])
+      Library.setup
+      
+      Library.stub!(:list).and_return @list = [Album.new(1, "hits", 0)]
+      
+      @song = MPD::Song.new
+      { "artist" => "me", "title" => "song", "album" => "hits" }.each { |k, v| @song[k] = v }
+    end
+    
+    it "should return the complete list if we have a nil query" do
+      Library.search(nil).should == @list
+    end
+    
+    it "should return the complete list if we have a blank query" do
+      Library.search("").should == @list
+    end
+    
+    it "should return the complete list if we get an error" do
+      @mpd.stub!(:search).and_raise RuntimeError.new
+      Library.search("query").should == @list
+    end
+    
+    it "should use the MPD server to search for matches in title, artist and album" do
+      @mpd.should_receive(:search).with("artist", "query").and_return []
+      @mpd.should_receive(:search).with("album", "query").and_return []
+      @mpd.should_receive(:search).with("title", "query").and_return []
+      
+      Library.search "query"
+    end
+    
+    it "should return an empty array if we cant find anything" do
+      Library.search("query").should be_empty
+    end
+    
+    it "should return an empty array if we found something but dont have a (matching) album in the list" do
+      Library.stub!(:list).and_return []
+      @mpd.should_receive(:search).with("album", "query").and_return [@song]
+      
+      Library.search("query").should be_empty
+    end
+    
+    it "should match the found songs against the album list and return the matches" do
+      @mpd.should_receive(:search).with("album", "query").and_return [@song]
+      Library.search("query").should == @list
+    end
+    
+    it "should return every matched album only once" do
+      @mpd.stub!(:search).and_return [@song]
+      Library.search("query").should == @list
+    end
+  end
 end
 
 describe Album do

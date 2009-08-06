@@ -51,6 +51,16 @@ class Library
           @mpd.send action
       end
     end
+    
+    def search(q)
+      return list if q.nil? || q.empty?
+      
+      res = %w[artist album title].inject([]) { |matches, type|
+        matches += @mpd.search(type, q) }.map { |song| song.album }.uniq
+      list.select { |album| res.include? album.name }
+    rescue RuntimeError
+      list
+    end
   end
 end
 
