@@ -12,7 +12,8 @@ class Library
       index = 0
       Library.list = @mpd.albums.inject([]) { |list, a| index += 1; list << Album.new(index, a, 0) }
       current_song_callback @mpd.current_song
-      
+    rescue SocketError
+    ensure
       @enabled = false
     end
     
