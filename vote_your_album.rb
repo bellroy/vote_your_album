@@ -65,3 +65,7 @@ get "/control/:action" do |action|
   MpdConnection.execute action.to_sym
   redirect "/"
 end
+get "/play" do
+  Library.play_next
+  redirect "/"
+end

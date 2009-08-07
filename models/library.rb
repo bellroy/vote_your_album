@@ -28,12 +28,13 @@ class Library
     end
     
     def current_song_callback(song)
-      lib.update_attributes :current_song => (song ? "#{song.artist} - #{song.title} (#{song.album})" : "")
-      play_next unless song
+      lib.update_attributes :current_song => (song ? "#{song.artist} - #{song.title} (#{song.album})" : nil)
+      play_next
     end
     
+    def playing?; lib.current_song end
     def play_next
-      return unless next_album = upcoming.first
+      return unless !playing? && next_album = upcoming.first
       
       MpdConnection.play_album next_album.name
       next_album.destroy

@@ -14,7 +14,7 @@ describe "vote your album:" do
     
     it "should render the homepage" do
       get "/"
-      last_response.body.should match(/Currently Playing/)
+      last_response.body.should match(/Vote Your Album!/)
     end
     
     it "should asssign the current song to an instance variable" do
@@ -64,22 +64,24 @@ describe "vote your album:" do
   end
   
   { :up => 1, :down => -1 }.each do |action, change|
-    before do
-      Library.stub!(:upcoming).and_return [@album = VoteableAlbum.new(:id => 123, :artist => "artist", :name =>  "album")]
-    end
+    describe "GET '/up/:id'" do
+      before do
+        Library.stub!(:upcoming).and_return [@album = VoteableAlbum.new(:id => 123, :artist => "artist", :name =>  "album")]
+      end
     
-    it "should vote the Album #{action}" do
-      @album.should_receive(:vote).with change, "127.0.0.1"
-      get "/#{action}/123"
-    end
+      it "should vote the Album #{action}" do
+        @album.should_receive(:vote).with change, "127.0.0.1"
+        get "/#{action}/123"
+      end
     
-    it "should do nothing when we can't find the album in the list" do
-      @album.should_not_receive :vote
-      get "/add/321"
+      it "should do nothing when we can't find the album in the list" do
+        @album.should_not_receive :vote
+        get "/add/321"
+      end
     end
   end
   
-  describe "search" do
+  describe "POST '/search/:q'" do
     before do
       Library.stub!(:search).and_return []
     end
@@ -94,6 +96,17 @@ describe "vote your album:" do
     it "should execute the provided action on the Library class" do
       MpdConnection.should_receive(:execute).with action
       get "/control/#{action}"
+    end
+  end
+  
+  describe "GET '/play'" do
+    before do
+      Library.stub! :play_next
+    end
+    
+    it "should play the next album" do
+      Library.should_receive :play_next
+      get "/play"
     end
   end
 end

@@ -1,9 +1,7 @@
 .current
-  %p.left Currently Playing:
-  %p
-    %a{ :href => "control/previous" } Previous
-    %b#current_song= @song
-    %a{ :href => "control/next" } Next
+  %a{ :href => "control/previous" } Previous
+  %b#current_song= @song
+  %a{ :href => "control/next" } Next
 
 .selection
   .all.album_list

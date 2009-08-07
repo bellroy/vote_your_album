@@ -10,15 +10,12 @@ body {
 h1 {
 	font-size: 18pt;
 }
-p {
-	margin: 0;
-	padding: 0;
-}
-p.left {
-	text-align: left;
-}
 a {
 	padding: 0 10px;
+}
+
+.main_controls {
+  text-align: right;
 }
 
 .current {
@@ -27,9 +24,6 @@ a {
 	margin: 20px 0;
 	border-top: 1px solid #000;
 	border-bottom: 1px solid #000;
-}
-.controls {
-	text-align: center;
 }
 .album_list {
 	float: left;

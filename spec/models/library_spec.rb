@@ -51,7 +51,8 @@ describe Library do
   describe "current song callback" do
     before do
       Library.stub!(:lib).and_return @lib = Library.new
-      @lib.stub! :update_attributes; @lib.stub! :play_next
+      Library.stub! :play_next
+      @lib.stub! :update_attributes
       
       @song = MPD::Song.new
       { "artist" => "me", "title" => "song", "album" => "hits" }.each { |k, v| @song[k] = v }
@@ -63,13 +64,28 @@ describe Library do
     end
     
     it "should set it to nil if we get nothing" do
-      @lib.should_receive(:update_attributes).with :current_song => ""
+      @lib.should_receive(:update_attributes).with :current_song => nil
       Library.current_song_callback nil
     end
     
-    it "should load next album if the song is nil (no next song in the playlist)" do
+    it "should load next album" do
       Library.should_receive :play_next
-      Library.current_song_callback nil
+      Library.current_song_callback @song
+    end
+  end
+  
+  describe "playing?" do
+    before do
+      Library.stub!(:lib).and_return @lib = Library.new
+    end
+    
+    it "should return false if no current song is playing" do
+      Library.should_not be_playing
+    end
+    
+    it "should return true if we have a current song playing" do
+      @lib.current_song = "some song"
+      Library.should be_playing
     end
   end
   
@@ -80,6 +96,12 @@ describe Library do
       Library.stub!(:lib).and_return @lib = Library.new
       @next = @lib.voteable_albums.build(:name => "my album")
       @next.stub! :destroy
+    end
+    
+    it "should do nothing if we are currently playing a song" do
+      Library.stub!(:playing?).and_return true
+      MpdConnection.should_not_receive :play_album
+      Library.play_next
     end
     
     it "should do nothing if we dont have an upcoming album" do
