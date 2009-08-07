@@ -2,7 +2,7 @@ class Library
   include DataMapper::Resource
   
   property :id, Serial
-  property :current_song, String
+  property :current_song, String, :length => 200
   
   has n, :albums
   has n, :voteable_albums
@@ -28,8 +28,8 @@ class Library
     end
     
     def current_song_callback(song)
-      lib.update_attributes :current_song => (song ? "#{song.artist} - #{song.title} (#{song.album})" : nil)
-      lib.play_next unless song
+      lib.update_attributes :current_song => (song ? "#{song.artist} - #{song.title} (#{song.album})" : "")
+      play_next unless song
     end
     
     def play_next
