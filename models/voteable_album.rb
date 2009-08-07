@@ -4,10 +4,11 @@ class VoteableAlbum
   property :id, Serial
   property :artist, String, :length => 100
   property :name, String, :length => 100
+  property :created_at, Time
   
   belongs_to :library
   has n, :votes
-    
+  
   def rating; votes.map { |v| v.value }.inject(0) { |sum, v| sum + v } end  
   def vote(value, ip)
     return if votes.map { |v| v.ip }.include?(ip)

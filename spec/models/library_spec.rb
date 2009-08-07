@@ -94,7 +94,7 @@ describe Library do
       MpdConnection.stub! :play_album
       
       Library.stub!(:lib).and_return @lib = Library.new
-      @next = @lib.voteable_albums.build(:name => "my album")
+      @next = @lib.voteable_albums.build(:name => "my album", :created_at => Time.now)
       @next.stub! :destroy
     end
     
@@ -158,16 +158,18 @@ describe Library do
     end
     
     it "should add an album to the upcoming albums when '<<' is called" do
-      @lib.voteable_albums.should_receive(:create).with :artist => "artist", :name => "album"
+      Time.stub!(:now).and_return "now"
+      @lib.voteable_albums.should_receive(:create).with :artist => "artist", :name => "album", :created_at => "now"
       Library << @album
     end
     
-    it "should sort the list by number of votes" do
-      album1 = mock("Album", :votes => 1)
-      album2 = mock("Album", :votes => 2)
-      @lib.stub!(:voteable_albums).and_return [album1, album2]
+    it "should sort the list by number of votes and date of creation then" do
+      album1 = mock("Album", :votes => 1, :created_at => Time.now - 3600)
+      album2 = mock("Album", :votes => 2, :created_at => Time.now)
+      album3 = mock("Album", :votes => 1, :created_at => Time.now)
+      @lib.stub!(:voteable_albums).and_return [album1, album2, album3]
       
-      Library.upcoming.should == [album2, album1]
+      Library.upcoming.should == [album2, album1, album3]
     end
   end
   
