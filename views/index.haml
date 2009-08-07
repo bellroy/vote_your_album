@@ -1,10 +1,9 @@
 .current
-  Currently Playing:
-  %b#current_song= @song
-
-.controls
-  %a{ :href => "control/previous" } Previous
-  %a{ :href => "control/next" } Next
+  %p.left Currently Playing:
+  %p
+    %a{ :href => "control/previous" } Previous
+    %b#current_song= @song
+    %a{ :href => "control/next" } Next
 
 .selection
   .all.album_list
@@ -17,6 +16,8 @@
     %ul#available_albums
       - @list.each_with_index do |album, i|
         %li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}"}
+          %span.artist= album.artist
+          %span -
           %span.name= album.name
           %a.add{ :href => "/add/#{album.id}" } Add
   
@@ -27,6 +28,8 @@
       - @next.each_with_index do |album, i|
         %li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}"}
           %span.votes= album.votes
+          %span.artist= album.artist
+          %span -
           %span.name= album.name
           - if album.can_be_voted_for_by?(request.ip)
             %a.up{ :href => "up/#{album.id}" } +1

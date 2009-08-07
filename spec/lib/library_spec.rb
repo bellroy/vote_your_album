@@ -23,11 +23,35 @@ describe Library do
       Library.setup
     end
     
-    it "should grab the list of albums from the MPD instance" do
-      @mpd.should_receive(:albums).and_return ["first", "second"]
-      Library.setup
+    describe "albums" do
+      before do
+        @mpd.stub!(:find).and_return []
+      end
       
-      Library.list.size.should == 2
+      it "should grab the complete list from the MPD server" do
+        @mpd.should_receive(:albums).and_return ["first", "second"]
+        Library.setup
+
+        Library.list.size.should == 2
+      end
+      
+      it "should try to get the artist, by searching for songs with that exact album name" do
+        @mpd.stub!(:albums).and_return ["first"]
+        @mpd.should_receive(:find).with("album", "first").and_return []
+        
+        Library.setup
+      end
+      
+      it "should assign the first songs artist aas the album artist" do
+        @mpd.stub!(:albums).and_return ["first"]
+        
+        @song = MPD::Song.new
+        { "artist" => "me", "title" => "song", "album" => "hits" }.each { |k, v| @song[k] = v }
+        @mpd.stub!(:find).and_return [@song]
+        
+        Library.setup
+        Library.list.first.artist.should == "me"
+      end
     end
     
     it "should get the currently played song from the server" do
@@ -56,7 +80,7 @@ describe Library do
     end
     
     it "should sort the list by album name" do
-      Library.list = [Album.new(1, "b", 0), Album.new(2, "a", 0)]
+      Library.list = [Album.new(1, "b", "b", 0), Album.new(2, "b", "a", 0)]
       Library.list.first.name.should == "a"
     end
   end
@@ -74,14 +98,14 @@ describe Library do
     end
     
     it "should add an album to the next list when '<<' is called" do
-      album = Album.new(1, "a", 0)
+      album = Album.new(1, "a", "a", 0)
       Library << album
       Library.next.should include(album)
     end
     
     it "should sort the list by number of votes" do
-      Library << album1 = Album.new(1, "a", 0)
-      Library << album2 = Album.new(2, "b", 1)
+      Library << album1 = Album.new(1, "a", "a", 0)
+      Library << album2 = Album.new(2, "a", "b", 1)
       Library.next.should == [album2, album1]
     end
   end
@@ -89,7 +113,7 @@ describe Library do
   describe "play next" do
     before do
       Library.class_eval do
-        @next = [Album.new(1, "my album", 0)]
+        @next = [Album.new(1, "artist", "my album", 0)]
       end
       Library.stub! :clear
       Library.stub! :current_song_callback
@@ -241,7 +265,7 @@ describe Library do
         mock("MPD", :connect => nil, :register_callback => nil, :albums => [], :current_song => nil, :search => [])
       Library.setup
       
-      Library.stub!(:list).and_return @list = [Album.new(1, "hits", 0)]
+      Library.stub!(:list).and_return @list = [Album.new(1, "artist", "hits", 0)]
       
       @song = MPD::Song.new
       { "artist" => "me", "title" => "song", "album" => "hits" }.each { |k, v| @song[k] = v }
@@ -295,7 +319,7 @@ describe Album do
   
   describe "vote" do
     before do
-      @album = Album.new(1, "album", 0)
+      @album = Album.new(1, "artist", "album", 0)
     end
     
     [0, 1, -1, 4, -3].each do |by|
@@ -318,7 +342,7 @@ describe Album do
   
   describe "can be voted for by?" do
     before do
-      @album = Album.new(1, "album", 0)
+      @album = Album.new(1, "artist", "album", 0)
     end
     
     it "should return true if the 'voted by' list doesnt contain the given string" do
@@ -333,11 +357,11 @@ describe Album do
   
   describe "to hash" do
     before do
-      @album = Album.new(1, "album", 0)
+      @album = Album.new(1, "artist", "album", 0)
     end
     
     it "should map all attributes into a hash" do
-      @album.to_hash("me").should == { :id => 1, :name => "album", :votes => 0, :votable => true }
+      @album.to_hash("me").should == { :id => 1, :artist => "artist", :name => "album", :votes => 0, :votable => true }
     end
     
     it "should have a negative votable value if this user cant vote" do

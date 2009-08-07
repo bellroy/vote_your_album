@@ -10,7 +10,16 @@ class Library
       @mpd.connect true
       
       index = 0
-      Library.list = @mpd.albums.inject([]) { |list, a| index += 1; list << Album.new(index, a, 0) }
+      Library.list = @mpd.albums.inject([]) do |new_list, a|
+        index += 1
+        album_song =  begin
+                        @mpd.find("album", a).first   # get the albums artist by searching for songs with the album name
+                      rescue
+                        nil
+                      end
+        new_list << Album.new(index, (album_song.is_a?(MPD::Song) ? album_song.artist : ""), a, 0)
+      end
+      
       current_song_callback @mpd.current_song
     rescue SocketError
     ensure
@@ -64,7 +73,7 @@ class Library
   end
 end
 
-Album = Struct.new(:id, :name, :votes, :voted_by)
+Album = Struct.new(:id, :artist, :name, :votes, :voted_by)
 Album.class_eval do
   def initialize(*args); super; self.voted_by = [] end
   
@@ -74,5 +83,5 @@ Album.class_eval do
   end
   def can_be_voted_for_by?(it); !voted_by.include?(it) end
   
-  def to_hash(it); { :id => id, :name => name, :votes => votes, :votable => can_be_voted_for_by?(it) } end
+  def to_hash(it); { :id => id, :artist => artist, :name => name, :votes => votes, :votable => can_be_voted_for_by?(it) } end
 end

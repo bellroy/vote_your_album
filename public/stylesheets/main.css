@@ -11,7 +11,6 @@ body {
 	font-size: 11pt;
 	font-weight: normal;
 	float: right;
-	padding: 0 5px;
 }
 .header a.disabled,
 .header a.disabled:visited {
@@ -19,6 +18,16 @@ body {
 }
 h1 {
 	font-size: 18pt;
+}
+p {
+	margin: 0;
+	padding: 0;
+}
+p.left {
+	text-align: left;
+}
+a {
+	padding: 0 10px;
 }
 
 .current {
@@ -30,9 +39,6 @@ h1 {
 }
 .controls {
 	text-align: center;
-}
-.controls a {
-	padding: 0 5px;
 }
 .album_list {
 	float: left;
@@ -54,6 +60,7 @@ h1 {
 }
 .name {
 	padding-right: 20px;
+	font-style: italic;
 }
 .votes {
 	font-weight: bold;

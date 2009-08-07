@@ -17,7 +17,7 @@
           Vote Your Album!
           - { "disable" => false, "enable" => true }.each do |action, bool|
             %a{ :id => action, :href => (Library.enabled? == bool ? "#" : "/control/#{action}"), :class => (Library.enabled? == bool ? "disabled" : "") }
-            = "#{action.capitalize} Voting"
+              = "#{action.capitalize}"
       
       .content
         = yield

@@ -8,8 +8,8 @@ describe "vote your album:" do
   
   describe "GET '/'" do
     before do
-      Library.stub!(:list).and_return [Album.new(1, "one", 0), Album.new(2, "two", 0)]
-      Library.stub!(:next).and_return [Album.new(3, "three", 0)]
+      Library.stub!(:list).and_return [Album.new(1, "a", "one", 0), Album.new(2, "b", "two", 0)]
+      Library.stub!(:next).and_return [Album.new(3, "c", "three", 0)]
     end
     
     it "should render the homepage" do
@@ -41,9 +41,9 @@ describe "vote your album:" do
     end
     
     it "should include the next album list as a sub hash" do
-      Library.stub!(:next).and_return [Album.new(3, "three", 0)]
+      Library.stub!(:next).and_return [Album.new(3, "c", "three", 0)]
       get "/status"
-      [/\"next\":\[.*\]/, /\"id\":3/, /\"name\":\"three\"/, /\"votes\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
+      [/\"next\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"votes\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
     end
     
     it "should include the enabled flag" do
@@ -55,7 +55,7 @@ describe "vote your album:" do
   
   describe "GET '/add/:id'" do
     before do
-      Library.stub!(:list).and_return [@album = Album.new(123, "album", 0)]
+      Library.stub!(:list).and_return [@album = Album.new(123, "artist", "album", 0)]
     end
     
     it "should add the Album to the Library's next list if we know the album" do
@@ -71,7 +71,7 @@ describe "vote your album:" do
   
   { :up => 1, :down => -1 }.each do |action, change|
     before do
-      Library.stub!(:list).and_return [@album = Album.new(123, "album", 0)]
+      Library.stub!(:list).and_return [@album = Album.new(123, "artist", "album", 0)]
     end
     
     it "should vote the Album #{action}" do
