@@ -3,13 +3,13 @@ require File.join(File.dirname(__FILE__) + '/spec_helper')
 describe "vote your album:" do
   
   before do
-    Library.stub!(:song).and_return "me - song (hits)"
+    Library.stub!(:current_song).and_return "me - song (hits)"
   end
   
   describe "GET '/'" do
     before do
-      Library.stub!(:list).and_return [Album.new(1, "a", "one", 0), Album.new(2, "b", "two", 0)]
-      Library.stub!(:next).and_return [Album.new(3, "c", "three", 0)]
+      Library.stub!(:list).and_return [Album.new(:artist => "a", :name => "one"), Album.new(:artist => "b", :name => "two")]
+      Library.stub!(:upcoming).and_return [VoteableAlbum.new(:artist => "c", :name => "three")]
     end
     
     it "should render the homepage" do
@@ -41,21 +41,15 @@ describe "vote your album:" do
     end
     
     it "should include the next album list as a sub hash" do
-      Library.stub!(:next).and_return [Album.new(3, "c", "three", 0)]
+      Library.stub!(:upcoming).and_return [VoteableAlbum.new(:id => 3, :artist => "c", :name =>  "three")]
       get "/status"
-      [/\"next\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"votes\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
-    end
-    
-    it "should include the enabled flag" do
-      Library.stub!(:enabled?).and_return true
-      get "/status"
-      last_response.body.should match(/\"enabled\":true/)
+      [/\"next\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"rating\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
     end
   end
   
   describe "GET '/add/:id'" do
     before do
-      Library.stub!(:list).and_return [@album = Album.new(123, "artist", "album", 0)]
+      Library.stub!(:list).and_return [@album = Album.new(:id => 123, :artist => "artist", :name =>  "album")]
     end
     
     it "should add the Album to the Library's next list if we know the album" do
@@ -71,7 +65,7 @@ describe "vote your album:" do
   
   { :up => 1, :down => -1 }.each do |action, change|
     before do
-      Library.stub!(:list).and_return [@album = Album.new(123, "artist", "album", 0)]
+      Library.stub!(:upcoming).and_return [@album = VoteableAlbum.new(:id => 123, :artist => "artist", :name =>  "album")]
     end
     
     it "should vote the Album #{action}" do
@@ -96,9 +90,9 @@ describe "vote your album:" do
     end
   end
   
-  [:enable, :disable, :previous, :next].each do |action|
+  [:previous, :next].each do |action|
     it "should execute the provided action on the Library class" do
-      Library.should_receive(:control).with action
+      MpdConnection.should_receive(:execute).with action
       get "/control/#{action}"
     end
   end

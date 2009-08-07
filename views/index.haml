@@ -27,7 +27,7 @@
     %ul#next_albums
       - @next.each_with_index do |album, i|
         %li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}"}
-          %span.votes= album.votes
+          %span.votes= album.rating
           %span.artist= album.artist
           %span -
           %span.name= album.name

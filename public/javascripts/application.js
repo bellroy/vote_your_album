@@ -20,7 +20,7 @@ function updateCurrentSong() {
 
 function albumEntry(album, i) {
 	res = '<li class="album ' + (i % 2 == 0 ? 'even' : 'odd') + '">';
-	res += 	'<span class="votes">' + album.votes + '</span> ';
+	res += 	'<span class="votes">' + album.rating + '</span> ';
 	res +=	'<span class="artist">' + album.artist + '</span> ';
 	res +=  '<span> - </span>'
 	res +=	'<span class="name">' + album.name + '</span> ';
