@@ -12,12 +12,12 @@ class Library
       index = 0
       Library.list = @mpd.albums.inject([]) do |new_list, a|
         index += 1
-        # album_song =  begin
-        #                 @mpd.find("album", a).first   # get the albums artist by searching for songs with the album name
-        #               rescue
-        #                 nil
-        #               end
-        new_list << Album.new(index, "", a, 0)
+        album_song =  begin
+                        @mpd.find("album", a).first   # get the albums artist by searching for songs with the album name
+                      rescue
+                        nil
+                      end
+        new_list << Album.new(index, (album_song.is_a?(MPD::Song) ? album_song.artist : ""), a, 0)
       end
       
       current_song_callback @mpd.current_song
