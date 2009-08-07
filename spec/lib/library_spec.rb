@@ -79,9 +79,10 @@ describe Library do
       Library.should respond_to(:list=)
     end
     
-    it "should sort the list by album name" do
-      Library.list = [Album.new(1, "b", "b", 0), Album.new(2, "b", "a", 0)]
-      Library.list.first.name.should == "a"
+    it "should sort the list by  artist and then album name" do
+      Library.list = [Album.new(1, "b", "b", 0), Album.new(2, "b", "a", 0), Album.new(3, "a", "c", 0)]
+      Library.list[0].name.should == "c"
+      Library.list[1].name.should == "a"
     end
   end
   

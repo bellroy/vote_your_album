@@ -28,7 +28,7 @@ class Library
     
     def enabled?; @enabled end
     
-    def list; @list.sort_by { |a| a.name } end
+    def list; @list.sort_by { |a| "#{a.artist} #{a.name}" } end
     def list=(list); @list = list end
     
     def next; @next.sort_by { |a| a.votes }.reverse end
