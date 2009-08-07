@@ -63,12 +63,12 @@ describe Library do
     end
     
     it "should set it to nil if we get nothing" do
-      @lib.should_receive(:update_attributes).with :current_song => nil
+      @lib.should_receive(:update_attributes).with :current_song => ""
       Library.current_song_callback nil
     end
     
     it "should load next album if the song is nil (no next song in the playlist)" do
-      @lib.should_receive :play_next
+      Library.should_receive :play_next
       Library.current_song_callback nil
     end
   end

@@ -28,8 +28,8 @@ class Library
     end
     
     def current_song_callback(song)
-      lib.update_attributes :current_song => (song ? "#{song.artist} - #{song.title} (#{song.album})" : nil)
-      lib.play_next unless song
+      lib.update_attributes :current_song => (song ? "#{song.artist} - #{song.title} (#{song.album})" : "")
+      play_next unless song
     end
     
     def play_next
