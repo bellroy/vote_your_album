@@ -53,7 +53,8 @@ a:visited {
   text-align: right;
 }
 .main_controls img {
-  height: 30px;
+  margin-top: 3px;
+  height: 25px;
 }
 
 .album_list {
