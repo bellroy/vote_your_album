@@ -1,4 +1,4 @@
-.album_list
+.album_list.list
   %p
     %b Albums available in the Library
   %form{ :action => "search", :method => :post }
@@ -12,22 +12,33 @@
           %span.artist= album.artist
           %span -
           %span.name= album.name
-        %a{ :href => "/add/#{album.id}" }
-          %img.add{ :src => "/images/add.png", :title => "Add Album to Upcoming Albums" }
+        .right
+          %a{ :href => "/add/#{album.id}" }
+            %img.add{ :src => "/images/add.png", :title => "Add Album to Upcoming Albums" }
         .clear
   
-.album_list
+.album_list.upcoming
   %p
     %b Upcoming Albums
-  .placeholder
+  #top
+    - unless @next.empty?
+      %u Next:
+      %i= @next.first.name
+      = "(#{@next.first.artist})"
   
-  %ul
+  %ul#upcoming
     - @next.each_with_index do |album, i|
       %li{ :class => (i % 2 == 0 ? "even" : "odd") }
-        %span.votes= album.rating
-        %span.artist= album.artist
-        %span -
-        %span.name= album.name
-        - if album.can_be_voted_for_by?(request.ip)
-          %a.up{ :href => "up/#{album.id}" } +1
-          %a.down{ :href => "down/#{album.id}" } -1
+        %span{ :title => "Rating: #{album.rating}", :class => "rating #{album.rating > 0 ? "positive" : (album.rating < 0 ? "negative" : "")}" }
+          = album.rating
+        .left
+          %span.artist= album.artist
+          %span -
+          %span.name= album.name
+        .right
+          - if album.can_be_voted_for_by?(request.ip)
+            %a.up{ :href => "up/#{album.id}" }
+              %img{ :src => "/images/plus.png", :title => "Vote this Album up" }
+            %a.down{ :href => "down/#{album.id}" }
+              %img{ :src => "/images/minus.png", :title => "Vote this Album down" }
+        .clear

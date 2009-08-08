@@ -20,6 +20,12 @@ a:visited {
 .clear {
   clear: both;
 }
+.left {
+  float: left;
+}
+.right {
+  float: right;
+}
 
 .header .title {
 	height: 80px;
@@ -32,7 +38,6 @@ a:visited {
   height: 35px;
 }
 .main_controls .left {
-  float: left;
   width: 20%;
 }
 .main_controls .middle {
@@ -43,7 +48,6 @@ a:visited {
   color: #777;
 }
 .main_controls .right {
-  float: right;
   padding-top: 8px;
   width: 20%;
   text-align: right;
@@ -78,20 +82,39 @@ a:visited {
 	background-color: #ddd;
 }
 .album_list li .left {
-  float: left;
   width: 390px;
 }
-.album_list li a {
-  float: right;
+.album_list.upcoming li .left {
+  width: 365px;
 }
-.album_list li img {
+.album_list.list li img {
   height: 15px;
 }
-.name {
+.album_list.upcoming li img {
+  height: 18px;
+  margin-top: 3px;
+}
+.album_list li .rating {
+  display: block;
+  float: left;
+  width: 22px;
+  font-weight: bold;
+  padding-left: 3px;
+}
+.album_list li .rating.positive {
+  color: #390;
+}
+.album_list li .rating.negative {
+  color: #f30;
+}
+.album_list li .name {
 	font-style: italic;
 }
-.placeholder {
-  height: 27px;
+#top {
+  width: 450px;
+  height: 19px;
+  padding-top: 8px;
+  overflow: hidden;
 }
 form {
   margin: 10px 0;

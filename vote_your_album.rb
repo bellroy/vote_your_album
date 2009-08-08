@@ -48,7 +48,7 @@ post "/search" do
 end
 
 get "/status" do
-  { :song => Library.current_song, :next => Library.upcoming.map { |a| a.to_hash(request.ip) } }.to_json
+  { :song => Library.current_song, :upcoming => Library.upcoming.map { |a| a.to_hash(request.ip) } }.to_json
 end
 
 get "/add/:id" do |album_id|

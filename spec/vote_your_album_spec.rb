@@ -43,7 +43,7 @@ describe "vote your album:" do
     it "should include the next album list as a sub hash" do
       Library.stub!(:upcoming).and_return [VoteableAlbum.new(:id => 3, :artist => "c", :name =>  "three")]
       get "/status"
-      [/\"next\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"rating\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
+      [/\"upcoming\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"rating\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
     end
   end
   

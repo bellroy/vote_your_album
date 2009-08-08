@@ -1,37 +1,47 @@
 // On Load
 $(function() {
-	setTimeout("updateCurrentSong();", 5000);
+	setTimeout("updatePage();", 5000);
 });
 
-function updateCurrentSong() {
+function updatePage() {
 	$.getJSON("/status", function(data) {
 		$("#current_song").html(data.song);
 		
-		$("#next_albums").html("");
-		$.each(data.next, function(i, album) {
-			$("#next_albums").append(albumEntry(album, i));
-		});
+		if (data.upcoming.length > 0) {
+		  album = data.upcoming[0];
+		  $("#top").html('<u>Next:</u> \
+		                  <i>' + album.name + '</i> \
+		                  (' + album.artist + ')');
+		}
 		
-		if (data.enabled && $("#disable").hasClass("disabled")) 			showControl("enable", "disable");
-		else if (!data.enabled && $("#enable").hasClass("disabled")) 	showControl("disable", "enable");
+    $("#upcoming").html("");
+    $.each(data.upcoming, function(i, album) {
+     $("#upcoming").append(albumEntry(album, i));
+    });
 	});
-	setTimeout("updateCurrentSong();", 5000);
+	
+	setTimeout("updatePage();", 5000);
 }
 
 function albumEntry(album, i) {
 	res = '<li class="album ' + (i % 2 == 0 ? 'even' : 'odd') + '">';
-	res += 	'<span class="votes">' + album.rating + '</span> ';
-	res +=	'<span class="artist">' + album.artist + '</span> ';
-	res +=  '<span> - </span>'
-	res +=	'<span class="name">' + album.name + '</span> ';
+	res += 	  '<span class="rating ' + (album.rating > 0 ? "positive" : (album.rating < 0 ? "negative" : 0)) + '\
+	  " title="Rating: ' + album.rating + '">' + album.rating + '</span> ';
+	res +=  '<div class="left">';
+	res +=	  '<span class="artist">' + album.artist + '</span> ';
+	res +=    '<span> - </span>';
+	res +=	  '<span class="name">' + album.name + '</span> ';
+  res +=  '</div>';
+	res +=  '<div class="right">';
 	if (album.votable) {
-		res += '<a href="/up/' + album.id + '" class="up">+1</a> ';
-		res += '<a href="/down/' + album.id + '" class="down">-1</a>';
+		res += '<a href="/up/' + album.id + '" class="up">';
+		res +=    '<img src="/images/plus.png" title="Vote this Album up" />';
+		res += '</a> ';
+		res += '<a href="/down/' + album.id + '" class="down">';
+		res +=    '<img src="/images/minus.png" title="Vote this Album down" />';
+		res += '</a> ';
 	}
+	res += '</div>'
+	res += '<div class="clear"></div>'
 	return res + '</li>';
-}
-
-function showControl(show, hide) {
-	$("#" + show).attr("href", "/control/" + show).addClass("disabled");
-	$("#" + hide).attr("href", "#").removeClass("disabled");
 }
