@@ -164,9 +164,9 @@ describe Library do
     end
     
     it "should sort the list by number of votes and date of creation then" do
-      album1 = mock("Album", :votes => 1, :created_at => Time.now - 3600)
-      album2 = mock("Album", :votes => 2, :created_at => Time.now)
-      album3 = mock("Album", :votes => 1, :created_at => Time.now)
+      album1 = mock("Album", :rating => 1, :created_at => Time.now - 3600)
+      album2 = mock("Album", :rating => 2, :created_at => Time.now)
+      album3 = mock("Album", :rating => 1, :created_at => Time.now)
       @lib.stub!(:voteable_albums).and_return [album1, album2, album3]
       
       Library.upcoming.should == [album2, album1, album3]
