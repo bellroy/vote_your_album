@@ -13,9 +13,17 @@
   %body
     #wrap
       .header
-        %h1
-          Vote Your Album!
+        .title
         .main_controls
-          %a{ :href => "/play" } Start Playback
+          .left
+            %a{ :href => "control/previous" }
+              %img.previous{ :src => "/images/previous.png", :title => "Previous Song" }
+            %a{ :href => "control/next" }
+              %img.next{ :src => "/images/next.png", :title => "Next Song" }
+          .middle
+            %span#current_song= @song
+          .right
+            %a{ :href => "/play" } Start Playback
+      
       .content
         = yield

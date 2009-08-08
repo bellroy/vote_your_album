@@ -1,53 +1,102 @@
 body {
 	margin: 0;
 	padding: 0;
-	background-color: #bbb;
+	font-family: Georgia;
 }
 #wrap {
 	width: 1000px;
-	margin: 30px auto;
-}
-h1 {
-	font-size: 18pt;
+	margin: 20px auto 10px auto;
 }
 a {
-	padding: 0 10px;
-}
-
-.main_controls {
-  text-align: right;
-}
-
-.current {
-	line-height: 40px;
-	text-align: center;
-	margin: 20px 0;
-	border-top: 1px solid #000;
-	border-bottom: 1px solid #000;
-}
-.album_list {
-	float: left;
-	margin: 0 15px;
-}
-.album_list ul {
-	height: 600px;
-	width: 450px;
-	overflow: auto;
-	background-color: #fff;
-	margin: 0;
-	padding: 5px;
-}
-.album {
+	font-size: 12pt;
+	font-weight: bold;
 	padding: 2px 0;
 }
-.album.odd {
-	background-color: #ccc;
+a,
+a:visited {
+  color: #333;
+  text-decoration: none;
+}
+.clear {
+  clear: both;
+}
+
+.header .title {
+	height: 80px;
+	width: 541px;
+	background: url(/images/title.png) no-repeat;
+	margin: 0 auto;
+}
+.main_controls {
+  border-bottom: 2px solid #333;
+  height: 35px;
+}
+.main_controls .left {
+  float: left;
+  width: 20%;
+}
+.main_controls .middle {
+  float: left;
+  width: 60%;
+  text-align: center;
+  padding-top: 10px;
+  color: #777;
+}
+.main_controls .right {
+  float: right;
+  padding-top: 8px;
+  width: 20%;
+  text-align: right;
+}
+.main_controls img {
+  height: 30px;
+}
+
+.album_list {
+	float: left;
+	margin: 20px 15px 0 15px;
+}
+.album_list p {
+  margin: 5px 0;
+  padding: 0;
+}
+.album_list b {
+  text-decoration: underline;
+}
+.album_list ul {
+	height: 400px;
+	width: 450px;
+	overflow: auto;
+	border: 1px solid #000;
+	list-style-type: none;
+	padding: 0;
+}
+.album_list li {
+  padding: 4px 5px;
+}
+.album_list li.odd {
+	background-color: #ddd;
+}
+.album_list li .left {
+  float: left;
+  width: 390px;
+}
+.album_list li a {
+  float: right;
+}
+.album_list li img {
+  height: 15px;
 }
 .name {
-	padding-right: 20px;
 	font-style: italic;
 }
-.votes {
-	font-weight: bold;
-	padding-right: 10px;
+.placeholder {
+  height: 27px;
+}
+form {
+  margin: 10px 0;
+}
+input[type = text] {
+  width: 260px;
+  border: 1px solid #000;
 }

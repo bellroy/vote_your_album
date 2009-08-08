@@ -1,34 +1,33 @@
-.current
-  %a{ :href => "control/previous" } Previous
-  %b#current_song= @song
-  %a{ :href => "control/next" } Next
-
-.selection
-  .all.album_list
-    %p
-      %b Available Albums
-    %form{ :action => "search", :method => :post }
-      %input{ :type => "text", :name => "q", :value => params[:q] }
-      %input{ :type => "submit", :value => "Search" }
-      
-    %ul#available_albums
-      - @list.each_with_index do |album, i|
-        %li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}"}
+.album_list
+  %p
+    %b Albums available in the Library
+  %form{ :action => "search", :method => :post }
+    %input{ :type => "text", :name => "q", :value => params[:q] }
+    %input{ :type => "submit", :value => "Search" }
+    
+  %ul
+    - @list.each_with_index do |album, i|
+      %li{ :class => (i % 2 == 0 ? "even" : "odd") }
+        .left
           %span.artist= album.artist
           %span -
           %span.name= album.name
-          %a.add{ :href => "/add/#{album.id}" } Add
+        %a{ :href => "/add/#{album.id}" }
+          %img.add{ :src => "/images/add.png", :title => "Add Album to Upcoming Albums" }
+        .clear
   
-  .selected.album_list
-    %p
-      %b Next Albums
-    %ul#next_albums
-      - @next.each_with_index do |album, i|
-        %li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}"}
-          %span.votes= album.rating
-          %span.artist= album.artist
-          %span -
-          %span.name= album.name
-          - if album.can_be_voted_for_by?(request.ip)
-            %a.up{ :href => "up/#{album.id}" } +1
-            %a.down{ :href => "down/#{album.id}" } -1
+.album_list
+  %p
+    %b Upcoming Albums
+  .placeholder
+  
+  %ul
+    - @next.each_with_index do |album, i|
+      %li{ :class => (i % 2 == 0 ? "even" : "odd") }
+        %span.votes= album.rating
+        %span.artist= album.artist
+        %span -
+        %span.name= album.name
+        - if album.can_be_voted_for_by?(request.ip)
+          %a.up{ :href => "up/#{album.id}" } +1
+          %a.down{ :href => "down/#{album.id}" } -1
