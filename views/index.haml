@@ -21,13 +21,13 @@
   %p
     %b Upcoming Albums
   #top
-    - unless @next.empty?
+    - unless @upcoming.empty?
       %u Next:
-      %i= @next.first.name
-      = "(#{@next.first.artist})"
+      %i= @upcoming.first.name
+      = "(#{@upcoming.first.artist})"
   
   %ul#upcoming
-    - @next.each_with_index do |album, i|
+    - @upcoming.each_with_index do |album, i|
       %li{ :class => (i % 2 == 0 ? "even" : "odd") }
         %span{ :title => "Rating: #{album.rating}", :class => "rating #{album.rating > 0 ? "positive" : (album.rating < 0 ? "negative" : "")}" }
           = album.rating

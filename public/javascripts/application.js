@@ -5,7 +5,8 @@ $(function() {
 
 function updatePage() {
 	$.getJSON("/status", function(data) {
-		$("#current_song").html(data.song);
+		if (data.current == null) $("#current").html("");
+		else                      $("#current").html(data.current.artist + " - " + data.current.name);
 		
 		if (data.upcoming.length > 0) {
 		  album = data.upcoming[0];

@@ -2,13 +2,13 @@ require File.join(File.dirname(__FILE__) + '/spec_helper')
 
 describe "vote your album:" do
   
-  before do
-    Library.stub!(:current_song).and_return "me - song (hits)"
-  end
-  
   describe "GET '/'" do
     before do
+      album = Album.new(:artist => "0", :name => "current")
+      Library.stub!(:current).and_return PlayedAlbum.new(:album => album)
+      
       Library.stub!(:list).and_return [Album.new(:artist => "a", :name => "one"), Album.new(:artist => "b", :name => "two")]
+      
       album = Album.new(:artist => "c", :name => "three")
       Library.stub!(:upcoming).and_return [VoteableAlbum.new(:album => album)]
     end
@@ -18,32 +18,38 @@ describe "vote your album:" do
       last_response.body.should match(/Vote Your Album!/)
     end
     
-    it "should asssign the current song to an instance variable" do
+    it "should display the currently played album" do
       get "/"
-      last_response.body.should match(/me - song \(hits\)/)
+      last_response.body.should match(/0 - current/)
     end
     
-    it "should assign the complete list of available albums" do
+    it "should display the complete list of available albums" do
       get "/"
       last_response.body.should match(/one/)
       last_response.body.should match(/two/)
     end
     
-    it "should assign the list of next albums" do
+    it "should display the list of next albums" do
       get "/"
       last_response.body.should match(/three/)
     end
   end
   
   describe "GET '/status'" do
-    it "should return the current song inside the JSON" do
+    before do
+      @album = Album.new(:artist => "c", :name =>  "three")
+    end
+    
+    it "should return the currently played album" do
+      Library.stub!(:current).and_return PlayedAlbum.new(:album => @album)
+      
       get "/status"
-      last_response.body.should match(/\"song\":\"me - song \(hits\)\"/)
+      [/\"current\":\{.*\}/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"rating\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
     end
     
     it "should include the next album list as a sub hash" do
-      album = Album.new(:artist => "c", :name =>  "three")
-      Library.stub!(:upcoming).and_return [VoteableAlbum.new(:id => 3, :album => album)]
+      Library.stub!(:upcoming).and_return [VoteableAlbum.new(:id => 3, :album => @album)]
+      
       get "/status"
       [/\"upcoming\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"rating\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
     end

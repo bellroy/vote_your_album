@@ -1,5 +1,6 @@
 %w[rubygems sinatra json haml librmpd dm-core].each { |lib| require lib }
-%w[models/library models/album models/voteable_album models/vote lib/mpd_connection].each { |model| require model }
+%w[lib/belongs_to_album models/library models/album models/voteable_album models/played_album models/vote].each { |model| require model }
+require 'lib/mpd_connection'
 
 # -----------------------------------------------------------------------------------
 # Setup
@@ -32,7 +33,7 @@ def execute_on_album(list, album_id, &block)
 end
 
 def render_index_with_list(&block)
-  @song, @list, @next = Library.current_song, yield, Library.upcoming
+  @current, @list, @upcoming = Library.current, yield, Library.upcoming
   haml :index
 end
 
@@ -48,7 +49,8 @@ post "/search" do
 end
 
 get "/status" do
-  { :song => Library.current_song, :upcoming => Library.upcoming.map { |a| a.to_hash(request.ip) } }.to_json
+  current = (Library.current ? Library.current.to_hash(request.ip) : nil)
+  { :current => current, :upcoming => Library.upcoming.map { |a| a.to_hash(request.ip) } }.to_json
 end
 
 get "/add/:id" do |album_id|

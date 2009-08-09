@@ -25,7 +25,9 @@
             %a{ :href => "control/next" }
               %img{ :src => "/images/next.png", :title => "Next Song" }
           .middle
-            %span#current_song= @song
+            %span#current
+              - if @current
+                = "#{@current.artist} - #{@current.name}"
           .right
             %a{ :href => "/play" } Start Playback
       
