@@ -44,7 +44,7 @@ describe "vote your album:" do
       Library.stub!(:current).and_return PlayedAlbum.new(:album => @album)
       
       get "/status"
-      [/\"current\":\{.*\}/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"rating\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
+      [/\"current\":\{.*\}/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"remaining\":3/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
     end
     
     it "should include the next album list as a sub hash" do
@@ -87,6 +87,23 @@ describe "vote your album:" do
         @v_album.should_not_receive :vote
         get "/add/321"
       end
+    end
+  end
+  
+  describe "GET force" do
+    before do
+      album = Album.new(:artist => "artist", :name =>  "album")
+      Library.stub!(:current).and_return @p_album = PlayedAlbum.new(:album => album)
+    end
+    
+    it "should call vote on the currently played album" do
+      @p_album.should_receive(:vote).with 1, "127.0.0.1"
+      get "/force"
+    end
+    
+    it "should do nothing if we dont have a currently playing album" do
+      Library.stub! :current
+      get "/force"
     end
   end
   

@@ -5,6 +5,14 @@ describe PlayedAlbum do
   def clazz; PlayedAlbum end
   it_should_behave_like "it belongs to an album"
   
+  describe "remaining" do
+    it "should use the result of NECESSARY_VOTES - rating" do
+      @p_album = PlayedAlbum.new
+      @p_album.stub!(:rating).and_return 2
+      @p_album.remaining.should == 1
+    end
+  end
+  
   describe "to hash" do
     before do
       @album = Album.new(:artist => "artist", :name => "album")
@@ -12,7 +20,7 @@ describe PlayedAlbum do
     end
     
     it "should map all attributes into a hash" do
-      @p_album.to_hash("me").should == { :artist => "artist", :name => "album", :rating => 0, :votable => true }
+      @p_album.to_hash("me").should == { :artist => "artist", :name => "album", :remaining => 3, :votable => true }
     end
     
     it "should have a false votable value if this user cant vote" do

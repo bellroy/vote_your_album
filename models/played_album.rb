@@ -3,8 +3,10 @@ class PlayedAlbum
   include BelongsToAlbum
   
   property :id, Serial
+  NECESSARY_VOTES = 3
   
   default_scope(:default).update(:order => [:id.desc])
   
-  def to_hash(ip); { :rating => rating, :votable => can_be_voted_for_by?(ip) }.merge(album.to_hash) end
+  def remaining; NECESSARY_VOTES - rating end
+  def to_hash(ip); { :remaining => remaining, :votable => can_be_voted_for_by?(ip) }.merge(album.to_hash) end
 end

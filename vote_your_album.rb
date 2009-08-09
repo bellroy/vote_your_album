@@ -62,6 +62,10 @@ end
 get "/down/:id" do |album_id|
   execute_on_album(:upcoming, album_id) { |album| album.vote -1, request.ip }
 end
+get "/force" do
+  Library.current.vote(1, request.ip) if Library.current
+  redirect "/"
+end
 
 get "/control/:action" do |action|
   MpdConnection.execute action.to_sym
