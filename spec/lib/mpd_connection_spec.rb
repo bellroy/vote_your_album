@@ -12,23 +12,23 @@ describe MpdConnection do
       Library.stub! :current_song_callback
     end
     
-    it "should get a new connection to the MPD server" do
-      MPD.should_receive(:new).with("mpd", 6600).and_return @mpd
+    it "should get a new connection to the MPD server with the specified parameters" do
+      MPD.should_receive(:new).with("mpd server", 1234).and_return @mpd
       @mpd.should_receive(:connect).with true
       
-      MpdConnection.setup
+      MpdConnection.setup "mpd server", 1234
     end
     
     it "should register a callback for the 'current song'" do
       @mpd.should_receive(:register_callback).with Library.method("current_song_callback"), MPD::CURRENT_SONG_CALLBACK
-      MpdConnection.setup
+      MpdConnection.setup "server", 1234
     end
   end
   
   describe "fetch albums with artists" do
     before do
       MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil, :albums => ["album1"], :find => [])
-      MpdConnection.setup
+      MpdConnection.setup "server", 1234
     end
     
     it "should fetch all albums from the server" do
@@ -59,7 +59,7 @@ describe MpdConnection do
   describe "execute" do
     before do
       MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
-      MpdConnection.setup
+      MpdConnection.setup "server", 1234
       
       @mpd.stub! :action
     end
@@ -78,7 +78,7 @@ describe MpdConnection do
   describe "play album" do
     before do
       MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil, :clear => nil, :add => nil, :play => nil)
-      MpdConnection.setup
+      MpdConnection.setup "server", 1234
       
       @song1 = MPD::Song.new
       { "artist" => "me1", "title" => "song1", "album" => "hits1", "track" => "2", "file" => "file1" }.each { |k, v| @song1[k] = v }
@@ -116,7 +116,7 @@ describe MpdConnection do
   describe "find albums for" do
     before do
       MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil, :search => [])
-      MpdConnection.setup
+      MpdConnection.setup "server", 1234
       
       @song = MPD::Song.new
       { "artist" => "me", "title" => "song", "album" => "hits" }.each { |k, v| @song[k] = v }

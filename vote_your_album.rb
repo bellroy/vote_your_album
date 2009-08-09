@@ -2,26 +2,7 @@
 %w[lib/belongs_to_album models/library models/album models/voteable_album models/played_album models/vote].each { |model| require model }
 require 'lib/mpd_connection'
 
-# -----------------------------------------------------------------------------------
-# Setup
-# -----------------------------------------------------------------------------------
-configure do
-  MpdConnection.setup
-end
-
-configure :development do
-  DataMapper.setup(:default, "mysql://localhost/vote_your_album_dev")
-end
-
-configure :production do
-  DataMapper.setup(:default, {
-    :adapter  => "mysql",
-    :database => "vote_your_album_prod",
-    :username => "album_vote",
-    :password => "EhbwVkKD5OdNY",
-    :host     => "mysql"
-  })
-end
+require 'config'
 
 # -----------------------------------------------------------------------------------
 # Helpers
