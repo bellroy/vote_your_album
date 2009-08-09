@@ -6,4 +6,5 @@ class Vote
   property :ip, String
   
   belongs_to :voteable_album
+  belongs_to :played_album
 end

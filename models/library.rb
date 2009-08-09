@@ -6,6 +6,7 @@ class Library
   
   has n, :albums
   has n, :voteable_albums
+  has n, :played_albums
   
   class << self
     def lib; Library.first || Library.create end
@@ -15,9 +16,9 @@ class Library
       MpdConnection.fetch_albums_with_artists.each { |album| lib.albums.create :artist => album[0], :name => album[1] }
     end
     
-    def current_song; lib.current_song end
     def list; lib.albums.sort_by { |a| "#{a.artist} #{a.name}" } end
     def upcoming; lib.voteable_albums.sort_by { |a| [a.rating, Time.now.tv_sec - a.created_at.tv_sec] }.reverse end
+    def current; playing? ? lib.played_albums.first : nil end
     def <<(album); lib.voteable_albums.create :album => album, :created_at => Time.now end
     
     def search(q)
@@ -27,7 +28,7 @@ class Library
       list.select { |album| res.include? album.name }
     end
     
-    def current_song_callback(song)
+    def current_song_callback(song = nil)
       lib.update_attributes :current_song => (song ? "#{song.artist} - #{song.title} (#{song.album})" : nil)
       play_next
     end
@@ -37,7 +38,7 @@ class Library
       return unless !playing? && next_album = upcoming.first
       
       MpdConnection.play_album next_album.name
-      next_album.destroy
+      lib.played_albums.create(:album => next_album.album) && next_album.destroy
     end
   end
 end

@@ -6,6 +6,8 @@ require 'rack/test'
 set :environment, :test
 include Rack::Test::Methods
 
+require File.expand_path(File.dirname(__FILE__) + '/belongs_to_album_examples')
+
 # Make an instance of the Sinatra app available to the specs
 def app; Sinatra::Application end
 

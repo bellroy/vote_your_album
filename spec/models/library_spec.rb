@@ -94,6 +94,8 @@ describe Library do
       MpdConnection.stub! :play_album
       
       Library.stub!(:lib).and_return @lib = Library.new
+      @lib.played_albums.stub!(:create).and_return true
+      
       album = Album.new(:name => "my name")
       @next = @lib.voteable_albums.build(:album => album, :created_at => Time.now)
       @next.stub! :destroy
@@ -116,23 +118,18 @@ describe Library do
       Library.play_next
     end
     
+    it "should create a played album record" do
+      @lib.played_albums.should_receive(:create).with :album => @next.album
+      Library.play_next
+    end
+    
     it "should destroy the album added to the playlist" do
       @next.should_receive :destroy
       Library.play_next
     end
   end
   
-  describe "current song" do
-    before do
-      Library.stub!(:lib).and_return @lib = Library.new(:current_song => "my song")
-    end
-    
-    it "should return the value of the current son attribute of the lib instance" do
-      Library.current_song.should == "my song"
-    end
-  end
-  
-  describe "albums accessor" do
+  describe "albums list" do
     before do
       Library.stub!(:lib).and_return @lib = Library.new
     end
@@ -171,6 +168,24 @@ describe Library do
       @lib.stub!(:voteable_albums).and_return [album1, album2, album3]
       
       Library.upcoming.should == [album2, album1, album3]
+    end
+  end
+  
+  describe "current album" do
+    before do
+      Library.stub!(:lib).and_return @lib = Library.new
+      Library.stub!(:playing?).and_return true
+      
+      @lib.played_albums.stub!(:first).and_return "album1"
+    end
+    
+    it "should return the first album in the played albums list" do
+      Library.current.should == "album1"
+    end
+    
+    it "should return nil if we arent playing anything right now" do
+      Library.stub! :playing?
+      Library.current.should be_nil
     end
   end
   
