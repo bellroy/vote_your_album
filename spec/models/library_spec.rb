@@ -70,6 +70,12 @@ describe Library do
     
     it "should load next album" do
       Library.should_receive :play_next
+      Library.current_song_callback nil
+    end
+    
+    it "should not load the next album if we are currently playing something" do
+      Library.stub!(:playing?).and_return true
+      Library.should_not_receive :play_next
       Library.current_song_callback @song
     end
   end
@@ -101,12 +107,6 @@ describe Library do
       @next.stub! :destroy
     end
     
-    it "should do nothing if we are currently playing a song" do
-      Library.stub!(:playing?).and_return true
-      MpdConnection.should_not_receive :play_album
-      Library.play_next
-    end
-    
     it "should do nothing if we dont have an upcoming album" do
       @lib.voteable_albums = []
       MpdConnection.should_not_receive :play_album
@@ -126,6 +126,37 @@ describe Library do
     it "should destroy the album added to the playlist" do
       @next.should_receive :destroy
       Library.play_next
+    end
+  end
+  
+  describe "force" do
+    before do
+      Library.stub!(:current).and_return @p_album = PlayedAlbum.new
+      Library.stub! :play_next
+      
+      @p_album.stub! :vote
+    end
+    
+    it "should do nothing if we dont have a currently playing album right now" do
+      Library.stub! :current
+      @p_album.should_not_receive :vote
+      Library.force "me"
+    end
+    
+    it "should add a voting to the currently played album" do
+      @p_album.should_receive(:vote).with 1, "me"
+      Library.force "me"
+    end
+    
+    it "should not play the next album if we have a remaining number > 0" do
+      Library.should_not_receive :play_next
+      Library.force "me"
+    end
+    
+    it "should play the next album if the remaining attribute of the played album is (less than) 0" do
+      @p_album.stub!(:remaining).and_return 0
+      Library.should_receive :play_next
+      Library.force "me"
     end
   end
   

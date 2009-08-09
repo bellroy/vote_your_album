@@ -63,7 +63,7 @@ get "/down/:id" do |album_id|
   execute_on_album(:upcoming, album_id) { |album| album.vote -1, request.ip }
 end
 get "/force" do
-  Library.current.vote(1, request.ip) if Library.current
+  Library.force request.ip
   redirect "/"
 end
 
@@ -72,6 +72,6 @@ get "/control/:action" do |action|
   redirect "/"
 end
 get "/play" do
-  Library.play_next
+  Library.play_next unless Library.playing?
   redirect "/"
 end

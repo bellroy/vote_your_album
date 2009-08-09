@@ -30,15 +30,21 @@ class Library
     
     def current_song_callback(song = nil)
       lib.update_attributes :current_song => (song ? "#{song.artist} - #{song.title} (#{song.album})" : nil)
-      play_next
+      play_next unless Library.playing?
     end
     
     def playing?; !!lib.current_song end
     def play_next
-      return unless !playing? && next_album = upcoming.first
+      return unless next_album = upcoming.first
       
       MpdConnection.play_album next_album.name
       lib.played_albums.create(:album => next_album.album) && next_album.destroy
+    end
+    def force(ip)
+      return unless current
+      
+      current.vote 1, ip
+      play_next if current.remaining <= 0
     end
   end
 end

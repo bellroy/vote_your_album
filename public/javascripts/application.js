@@ -32,11 +32,13 @@ function mainControls(current) {
 	else if (current != null) {
 	  if (!$("#current").html().match(/-/)) {
 	    $("#play").remove();
-	    $(".main_controls .right").html('<a id="force" href="/force" class="' + (current.voteable ? "" : "disabled") + '"></a>');
+	    $(".main_controls .right").html('<a id="force" href="/force"></a>');
 	  }
 	  
 	  $("#current").html(current.artist + " - " + current.name);
 	  $("#force").html("Force Next (" + current.remaining + ")").attr("title", "Necessary Votes to force next album: " + current.remaining);
+	  if (current.voteable) $("#force").removeClass("disabled");
+	  else                  $("#force").addClass("disabled");
 	}
 }
 

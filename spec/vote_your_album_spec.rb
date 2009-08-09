@@ -91,18 +91,8 @@ describe "vote your album:" do
   end
   
   describe "GET force" do
-    before do
-      album = Album.new(:artist => "artist", :name =>  "album")
-      Library.stub!(:current).and_return @p_album = PlayedAlbum.new(:album => album)
-    end
-    
-    it "should call vote on the currently played album" do
-      @p_album.should_receive(:vote).with 1, "127.0.0.1"
-      get "/force"
-    end
-    
-    it "should do nothing if we dont have a currently playing album" do
-      Library.stub! :current
+    it "should force the next album" do
+      Library.should_receive(:force).with "127.0.0.1"
       get "/force"
     end
   end
@@ -128,10 +118,17 @@ describe "vote your album:" do
   describe "GET '/play'" do
     before do
       Library.stub! :play_next
+      Library.stub!(:playing?).and_return false
     end
     
     it "should play the next album" do
       Library.should_receive :play_next
+      get "/play"
+    end
+    
+    it "should not play the next album if we are currently playing something" do
+      Library.stub!(:playing?).and_return true
+      Library.should_not_receive :play_next
       get "/play"
     end
   end
