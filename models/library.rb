@@ -33,7 +33,7 @@ class Library
       play_next
     end
     
-    def playing?; lib.current_song end
+    def playing?; !!lib.current_song end
     def play_next
       return unless !playing? && next_album = upcoming.first
       
