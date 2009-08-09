@@ -1,19 +1,18 @@
 // On Load
 $(function() {
-	setTimeout("updatePage();", 5000);
+  setTimeout("updatePage();", 5000);
 });
 
 function updatePage() {
 	$.getJSON("/status", function(data) {
-		if (data.current == null) $("#current").html("");
-		else                      $("#current").html(data.current.artist + " - " + data.current.name);
-		
-		if (data.upcoming.length > 0) {
-		  album = data.upcoming[0];
-		  $("#top").html('<u>Next:</u> \
-		                  <i>' + album.name + '</i> \
-		                  (' + album.artist + ')');
-		}
+	  mainControls(data.current);
+	  
+	  if (data.upcoming.length > 0) {
+  	  album = data.upcoming[0];
+  	  $("#top").html('<u>Next:</u> \
+  	                  <i>' + album.name + '</i> \
+  	                  (' + album.artist + ')');
+  	}
 		
     $("#upcoming").html("");
     $.each(data.upcoming, function(i, album) {
@@ -22,6 +21,23 @@ function updatePage() {
 	});
 	
 	setTimeout("updatePage();", 5000);
+}
+
+function mainControls(current) {
+  if (current == null && $("#current").html().match(/-/)) {
+	  $("#current").html("");
+    $("#force").remove();
+    $(".main_controls .right").html('<a id="play" href="/play"> Start Playback </a>');
+	}
+	else if (current != null) {
+	  if (!$("#current").html().match(/-/)) {
+	    $("#play").remove();
+	    $(".main_controls .right").html('<a id="force" href="/force" class="' + (current.voteable ? "" : "disabled") + '"></a>');
+	  }
+	  
+	  $("#current").html(current.artist + " - " + current.name);
+	  $("#force").html("Force Next (" + current.remaining + ")").attr("title", "Necessary Votes to force next album: " + current.remaining);
+	}
 }
 
 function albumEntry(album, i) {
@@ -34,7 +50,7 @@ function albumEntry(album, i) {
 	res +=	  '<span class="name">' + album.name + '</span> ';
   res +=  '</div>';
 	res +=  '<div class="right">';
-	if (album.votable) {
+	if (album.voteable) {
 		res += '<a href="/up/' + album.id + '" class="up">';
 		res +=    '<img src="/images/plus.png" title="Vote this Album up" />';
 		res += '</a> ';

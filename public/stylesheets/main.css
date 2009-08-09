@@ -17,6 +17,10 @@ a:visited {
   color: #333;
   text-decoration: none;
 }
+a.disabled,
+a.disabled:visited {
+  color: #aaa;
+}
 .clear {
   clear: both;
 }
@@ -51,6 +55,9 @@ a:visited {
   padding-top: 8px;
   width: 20%;
   text-align: right;
+}
+.main_controls .right a {
+  margin: 0 4px;
 }
 .main_controls img {
   margin-top: 3px;

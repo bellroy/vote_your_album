@@ -29,7 +29,11 @@
               - if @current
                 = "#{@current.artist} - #{@current.name}"
           .right
-            %a{ :href => "/play" } Start Playback
+            - if @current
+              %a#force{ :href => "/force", :title => "Necessary Votes to force next album: #{@current.remaining}", :class => (@current.can_be_voted_for_by?(request.ip) ? "" : "disabled") }
+                = "Force Next (#{@current.remaining})"
+            - else
+              %a#play{ :href => "/play" } Start Playback
       
       .content
         = yield
