@@ -8,5 +8,5 @@ class PlayedAlbum
   default_scope(:default).update(:order => [:id.desc])
   
   def remaining; NECESSARY_VOTES - rating end
-  def to_hash(ip); { :remaining => remaining, :votable => can_be_voted_for_by?(ip) }.merge(album.to_hash) end
+  def to_hash(ip); { :remaining => remaining, :voteable => can_be_voted_for_by?(ip) }.merge(album.to_hash) end
 end

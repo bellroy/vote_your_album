@@ -44,14 +44,14 @@ describe "vote your album:" do
       Library.stub!(:current).and_return PlayedAlbum.new(:album => @album)
       
       get "/status"
-      [/\"current\":\{.*\}/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"remaining\":3/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
+      [/\"current\":\{.*\}/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"remaining\":3/, /\"voteable\":true/].each { |re| last_response.body.should match(re) }
     end
     
     it "should include the next album list as a sub hash" do
       Library.stub!(:upcoming).and_return [VoteableAlbum.new(:id => 3, :album => @album)]
       
       get "/status"
-      [/\"upcoming\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"rating\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
+      [/\"upcoming\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"rating\":0/, /\"voteable\":true/].each { |re| last_response.body.should match(re) }
     end
   end
   

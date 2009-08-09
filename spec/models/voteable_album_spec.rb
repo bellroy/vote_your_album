@@ -12,12 +12,12 @@ describe VoteableAlbum do
     end
     
     it "should map all attributes into a hash" do
-      @v_album.to_hash("me").should == { :id => nil, :artist => "artist", :name => "album", :rating => 0, :votable => true }
+      @v_album.to_hash("me").should == { :id => nil, :artist => "artist", :name => "album", :rating => 0, :voteable => true }
     end
     
-    it "should have a false votable value if this user cant vote" do
+    it "should have a false voteable value if this user cant vote" do
       @v_album.stub!(:can_be_voted_for_by?).and_return false
-      @v_album.to_hash("me")[:votable].should be_false
+      @v_album.to_hash("me")[:voteable].should be_false
     end
   end
 end
