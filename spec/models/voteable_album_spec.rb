@@ -2,6 +2,21 @@ require File.join(File.dirname(__FILE__) + '/../spec_helper')
 
 describe VoteableAlbum do
   
+  describe "album accessors" do
+    before do
+      @album = Album.new(:artist => "artist", :name => "album")
+      @v_album = VoteableAlbum.new(:album => @album)
+    end
+    
+    it "should return the artist of the album" do
+      @v_album.artist.should == "artist"
+    end
+    
+    it "should return the album name of the album" do
+      @v_album.name.should == "album"
+    end
+  end
+  
   describe "rating" do
     before do
       @album = VoteableAlbum.new
@@ -19,7 +34,7 @@ describe VoteableAlbum do
   
   describe "vote" do
     before do
-      @album = VoteableAlbum.new(:artist => "artist", :name => "album")
+      @album = VoteableAlbum.new
       @album.votes.stub! :create
     end
     
@@ -36,7 +51,7 @@ describe VoteableAlbum do
   
   describe "can be voted for by?" do
     before do
-      @album = VoteableAlbum.new(:artist => "artist", :name => "album")
+      @album = VoteableAlbum.new
     end
     
     it "should return true if the votes dont contain a vote by the given 'user'" do
@@ -51,16 +66,17 @@ describe VoteableAlbum do
   
   describe "to hash" do
     before do
-      @album = VoteableAlbum.new(:artist => "artist", :name => "album")
+      @album = Album.new(:artist => "artist", :name => "album")
+      @v_album = VoteableAlbum.new(:album => @album)
     end
     
     it "should map all attributes into a hash" do
-      @album.to_hash("me").should == { :id => nil, :artist => "artist", :name => "album", :rating => 0, :votable => true }
+      @v_album.to_hash("me").should == { :id => nil, :artist => "artist", :name => "album", :rating => 0, :votable => true }
     end
     
     it "should have a negative votable value if this user cant vote" do
-      @album.stub!(:can_be_voted_for_by?).and_return false
-      @album.to_hash("me")[:votable].should be_false
+      @v_album.stub!(:can_be_voted_for_by?).and_return false
+      @v_album.to_hash("me")[:votable].should be_false
     end
   end
 end

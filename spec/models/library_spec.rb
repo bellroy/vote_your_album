@@ -94,7 +94,8 @@ describe Library do
       MpdConnection.stub! :play_album
       
       Library.stub!(:lib).and_return @lib = Library.new
-      @next = @lib.voteable_albums.build(:name => "my album", :created_at => Time.now)
+      album = Album.new(:name => "my name")
+      @next = @lib.voteable_albums.build(:album => album, :created_at => Time.now)
       @next.stub! :destroy
     end
     
@@ -159,7 +160,7 @@ describe Library do
     
     it "should add an album to the upcoming albums when '<<' is called" do
       Time.stub!(:now).and_return "now"
-      @lib.voteable_albums.should_receive(:create).with :artist => "artist", :name => "album", :created_at => "now"
+      @lib.voteable_albums.should_receive(:create).with :album => @album, :created_at => "now"
       Library << @album
     end
     

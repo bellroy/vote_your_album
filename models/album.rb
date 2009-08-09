@@ -6,4 +6,6 @@ class Album
   property :name, String, :length => 100
   
   belongs_to :library
+  
+  def to_hash; { :artist => (artist || ""), :name => name } end
 end

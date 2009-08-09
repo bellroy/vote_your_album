@@ -9,7 +9,8 @@ describe "vote your album:" do
   describe "GET '/'" do
     before do
       Library.stub!(:list).and_return [Album.new(:artist => "a", :name => "one"), Album.new(:artist => "b", :name => "two")]
-      Library.stub!(:upcoming).and_return [VoteableAlbum.new(:artist => "c", :name => "three")]
+      album = Album.new(:artist => "c", :name => "three")
+      Library.stub!(:upcoming).and_return [VoteableAlbum.new(:album => album)]
     end
     
     it "should render the homepage" do
@@ -41,7 +42,8 @@ describe "vote your album:" do
     end
     
     it "should include the next album list as a sub hash" do
-      Library.stub!(:upcoming).and_return [VoteableAlbum.new(:id => 3, :artist => "c", :name =>  "three")]
+      album = Album.new(:artist => "c", :name =>  "three")
+      Library.stub!(:upcoming).and_return [VoteableAlbum.new(:id => 3, :album => album)]
       get "/status"
       [/\"upcoming\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"rating\":0/, /\"votable\":true/].each { |re| last_response.body.should match(re) }
     end
@@ -66,16 +68,17 @@ describe "vote your album:" do
   { :up => 1, :down => -1 }.each do |action, change|
     describe "GET '/up/:id'" do
       before do
-        Library.stub!(:upcoming).and_return [@album = VoteableAlbum.new(:id => 123, :artist => "artist", :name =>  "album")]
+        album = Album.new(:artist => "artist", :name =>  "album")
+        Library.stub!(:upcoming).and_return [@v_album = VoteableAlbum.new(:id => 123, :album => album)]
       end
     
       it "should vote the Album #{action}" do
-        @album.should_receive(:vote).with change, "127.0.0.1"
+        @v_album.should_receive(:vote).with change, "127.0.0.1"
         get "/#{action}/123"
       end
     
       it "should do nothing when we can't find the album in the list" do
-        @album.should_not_receive :vote
+        @v_album.should_not_receive :vote
         get "/add/321"
       end
     end

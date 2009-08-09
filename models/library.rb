@@ -18,7 +18,7 @@ class Library
     def current_song; lib.current_song end
     def list; lib.albums.sort_by { |a| "#{a.artist} #{a.name}" } end
     def upcoming; lib.voteable_albums.sort_by { |a| [a.rating, Time.now.tv_sec - a.created_at.tv_sec] }.reverse end
-    def <<(album); lib.voteable_albums.create :artist => album.artist, :name => album.name, :created_at => Time.now end
+    def <<(album); lib.voteable_albums.create :album => album, :created_at => Time.now end
     
     def search(q)
       return list if q.nil? || q.empty?

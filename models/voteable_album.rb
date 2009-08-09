@@ -2,12 +2,14 @@ class VoteableAlbum
   include DataMapper::Resource
   
   property :id, Serial
-  property :artist, String, :length => 100
-  property :name, String, :length => 100
   property :created_at, Time
   
+  belongs_to :album
   belongs_to :library
   has n, :votes
+  
+  def artist; album.artist end
+  def name; album.name end
   
   def rating; votes.map { |v| v.value }.inject(0) { |sum, v| sum + v } end  
   def vote(value, ip)
@@ -16,5 +18,5 @@ class VoteableAlbum
   end
   
   def can_be_voted_for_by?(ip); !votes.map { |v| v.ip }.include?(ip) end
-  def to_hash(ip); { :id => id, :artist => artist, :name => name, :rating => rating, :votable => can_be_voted_for_by?(ip) } end
+  def to_hash(ip); { :id => id, :rating => rating, :votable => can_be_voted_for_by?(ip) }.merge(album.to_hash) end
 end
