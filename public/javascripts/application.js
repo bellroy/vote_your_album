@@ -2,12 +2,12 @@
 $(function() {
   $("#slider").slider();
   
-  setTimeout("updatePage();", 5000);
+  updatePage();
 });
 
 function updatePage() {
 	$.getJSON("/status", function(data) {
-	  mainControls(data.current);
+	  mainControls(data.current, data.volume);
 	  
 	  if (data.upcoming.length > 0) {
   	  album = data.upcoming[0];
@@ -25,7 +25,9 @@ function updatePage() {
 	setTimeout("updatePage();", 5000);
 }
 
-function mainControls(current) {
+function mainControls(current, volume) {
+  $("#slider").slider("option", "value", volume);
+  
   if (current == null && $("#current").html().match(/-/)) {
 	  $("#current").html("");
     $("#force").remove();

@@ -4,13 +4,7 @@ describe "vote your album:" do
   
   describe "GET '/'" do
     before do
-      album = Album.new(:artist => "0", :name => "current")
-      Library.stub!(:current).and_return PlayedAlbum.new(:album => album)
-      
       Library.stub!(:list).and_return [Album.new(:artist => "a", :name => "one"), Album.new(:artist => "b", :name => "two")]
-      
-      album = Album.new(:artist => "c", :name => "three")
-      Library.stub!(:upcoming).and_return [VoteableAlbum.new(:album => album)]
     end
     
     it "should render the homepage" do
@@ -18,20 +12,10 @@ describe "vote your album:" do
       last_response.body.should match(/Vote Your Album!/)
     end
     
-    it "should display the currently played album" do
-      get "/"
-      last_response.body.should match(/0 - current/)
-    end
-    
     it "should display the complete list of available albums" do
       get "/"
       last_response.body.should match(/one/)
       last_response.body.should match(/two/)
-    end
-    
-    it "should display the list of next albums" do
-      get "/"
-      last_response.body.should match(/three/)
     end
   end
   
@@ -52,6 +36,13 @@ describe "vote your album:" do
       
       get "/status"
       [/\"upcoming\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"rating\":0/, /\"voteable\":true/].each { |re| last_response.body.should match(re) }
+    end
+    
+    it "should return the volume" do
+      Library.stub!(:volume).and_return 32
+      
+      get "/status"
+      last_response.body.should match(/\"volume\":32/)
     end
   end
   

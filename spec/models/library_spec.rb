@@ -232,6 +232,17 @@ describe Library do
     end
   end
   
+  describe "volume" do
+    before do
+      Library.stub!(:lib).and_return @lib = Library.new
+      @lib.volume = 45
+    end
+    
+    it "should return the volume of the lib instance" do
+      Library.volume.should == 45
+    end
+  end
+  
   describe "search" do
     before do
       Library.stub!(:lib).and_return @lib = Library.new
