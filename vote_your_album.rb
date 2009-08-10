@@ -48,7 +48,7 @@ get "/force" do
   redirect "/"
 end
 
-get "/control/:action" do |action|
+post "/control/:action" do |action|
   MpdConnection.execute action.to_sym
   redirect "/"
 end

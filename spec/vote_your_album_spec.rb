@@ -109,9 +109,9 @@ describe "vote your album:" do
   end
   
   [:previous, :stop, :play, :next].each do |action|
-    it "should execute the provided action on the Library class" do
+    it "POST /control/#{action} should execute the provided action on the Library class" do
       MpdConnection.should_receive(:execute).with action
-      get "/control/#{action}"
+      post "/control/#{action}"
     end
   end
   

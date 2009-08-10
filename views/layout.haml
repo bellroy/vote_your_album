@@ -16,14 +16,14 @@
         .title
         .main_controls
           .left
-            %a{ :href => "control/previous" }
-              %img{ :src => "/images/previous.png", :title => "Previous Song" }
-            %a{ :href => "control/stop" }
-              %img{ :src => "/images/stop.png", :title => "Stop Playback" }
-            %a{ :href => "control/play" }
-              %img{ :src => "/images/play.png", :title => "Start Playback" }
-            %a{ :href => "control/next" }
-              %img{ :src => "/images/next.png", :title => "Next Song" }
+            %form{:method => "post", :action => "control/previous"}
+              %input{ :type => "image", :src => "/images/previous.png", :title => "Previous Song" }
+            %form{:method => "post", :action => "control/stop"}
+              %input{ :type => "image",  :src => "/images/stop.png", :title => "Stop Playback" }
+            %form{:method => "post", :action => "control/play"}
+              %input{ :type => "image",  :src => "/images/play.png", :title => "Start Playback" }
+            %form{:method => "post", :action => "control/next"}
+              %input{ :type => "image",  :src => "/images/next.png", :title => "Next Song" }
           .middle
             %span#current
               - if @current

@@ -44,6 +44,9 @@ a.disabled:visited {
 .main_controls .left {
   width: 20%;
 }
+.main_controls .left form {
+  display: inline;
+}
 .main_controls .middle {
   float: left;
   width: 60%;
