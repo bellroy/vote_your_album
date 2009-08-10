@@ -3,6 +3,7 @@ class Library
   
   property :id, Serial
   property :current_song, String, :length => 200
+  property :volume, Integer
   
   has n, :albums
   has n, :voteable_albums
@@ -32,6 +33,7 @@ class Library
       lib.update_attributes :current_song => (song ? "#{song.artist} - #{song.title} (#{song.album})" : nil)
       play_next unless Library.playing?
     end
+    def volume_callback(volume); lib.update_attributes :volume => volume end
     
     def playing?; !!lib.current_song end
     def play_next

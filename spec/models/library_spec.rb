@@ -80,6 +80,18 @@ describe Library do
     end
   end
   
+  describe "volume callback" do
+    before do
+      Library.stub!(:lib).and_return @lib = Library.new
+      @lib.stub! :update_attributes
+    end
+    
+    it "should update the volume attribute of the lib" do
+      @lib.should_receive(:update_attributes).with :volume => 53
+      Library.volume_callback 53
+    end
+  end
+  
   describe "playing?" do
     before do
       Library.stub!(:lib).and_return @lib = Library.new

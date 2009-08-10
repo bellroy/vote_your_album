@@ -5,6 +5,7 @@ class MpdConnection
     def setup(server, port, callbacks = false)
       @mpd = MPD.new(server, port)
       @mpd.register_callback Library.method(:current_song_callback), MPD::CURRENT_SONG_CALLBACK
+      @mpd.register_callback Library.method(:volume_callback), MPD::VOLUME_CALLBACK
       @mpd.connect callbacks
     rescue SocketError
     end
