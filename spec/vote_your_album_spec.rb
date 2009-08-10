@@ -97,14 +97,14 @@ describe "vote your album:" do
     end
   end
   
-  describe "POST '/search/:q'" do
+  describe "GET '/search/:q'" do
     before do
       Library.stub!(:search).and_return []
     end
     
     it "should search for matching album using the library" do
       Library.should_receive(:search).with("query").and_return []
-      post "/search", :q => "query"
+      get "/search", :q => "query"
     end
   end
   

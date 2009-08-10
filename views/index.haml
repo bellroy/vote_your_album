@@ -1,7 +1,7 @@
 .album_list.list
   %p
     %b Albums available in the Library
-  %form{ :action => "search", :method => :post }
+  %form{ :action => "search", :method => :get }
     %input{ :type => "text", :name => "q", :value => params[:q] }
     %input{ :type => "submit", :value => "Search" }
     

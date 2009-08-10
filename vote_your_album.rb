@@ -25,7 +25,7 @@ end
 get "/" do
   render_index_with_list { Library.list }
 end
-post "/search" do
+get "/search" do
   render_index_with_list { Library.search params[:q] }
 end
 
