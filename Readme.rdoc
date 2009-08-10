@@ -33,7 +33,7 @@ This Sinatra application works as an MPD client. Besides the standard functional
 == Loading the albums from the MPD library
 To fill the albums database open irb again and load the application. Then connect to the MPD server (make sure that the configuration is correct in config.rb):<br>
    
-<tt>MpdConnection.setup</tt><br>
+<tt>MpdConnection.setup('localhost', 6600)</tt><br>
    
 If the connection was established you should see something like this:<br>
 
