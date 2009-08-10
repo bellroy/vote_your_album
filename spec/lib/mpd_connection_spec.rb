@@ -14,9 +14,14 @@ describe MpdConnection do
     
     it "should get a new connection to the MPD server with the specified parameters" do
       MPD.should_receive(:new).with("mpd server", 1234).and_return @mpd
-      @mpd.should_receive(:connect).with true
+      @mpd.should_receive(:connect).with false
       
       MpdConnection.setup "mpd server", 1234
+    end
+    
+    it "should connect to the server using callbacks when the callbacks arg is true" do
+      @mpd.should_receive(:connect).with true
+      MpdConnection.setup "mpd server", 1234, true
     end
     
     it "should register a callback for the 'current song'" do

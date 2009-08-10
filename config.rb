@@ -1,10 +1,15 @@
 # -----------------------------------------------------------------------------------
-# Database config
+# Development environment
 # -----------------------------------------------------------------------------------
 configure :development do
   DataMapper.setup(:default, "mysql://localhost/vote_your_album_dev")
+  
+  MpdConnection.setup "mpd", 6600
 end
 
+# -----------------------------------------------------------------------------------
+# Production environment
+# -----------------------------------------------------------------------------------
 configure :production do
   DataMapper.setup(:default, {
     :adapter  => "mysql",
@@ -13,13 +18,8 @@ configure :production do
     :password => "EhbwVkKD5OdNY",
     :host     => "mysql"
   })
-end
-
-# -----------------------------------------------------------------------------------
-# MPD config
-# -----------------------------------------------------------------------------------
-configure do
-  MpdConnection.setup "mpd", 6600
+  
+  MpdConnection.setup "mpd", 6600, true
 end
 
 # -----------------------------------------------------------------------------------
