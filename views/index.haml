@@ -24,24 +24,5 @@
   %p
     %b Upcoming Albums
   #top
-    - unless @upcoming.empty?
-      %u Next:
-      %i= @upcoming.first.name
-      = "(#{@upcoming.first.artist})"
   
   %ul#upcoming
-    - @upcoming.each_with_index do |album, i|
-      %li{ :class => (i % 2 == 0 ? "even" : "odd") }
-        %span{ :title => "Rating: #{album.rating}", :class => "rating #{album.rating > 0 ? "positive" : (album.rating < 0 ? "negative" : "")}" }
-          = album.rating
-        .left
-          %span.artist= album.artist
-          %span -
-          %span.name= album.name
-        .right
-          - if album.can_be_voted_for_by?(request.ip)
-            %a.up{ :href => "up/#{album.id}" }
-              %img{ :src => "/images/plus.png", :title => "Vote this Album up" }
-            %a.down{ :href => "down/#{album.id}" }
-              %img{ :src => "/images/minus.png", :title => "Vote this Album down" }
-        .clear
