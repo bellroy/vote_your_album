@@ -39,7 +39,7 @@ a.disabled:visited {
 }
 .main_controls {
   border-bottom: 2px solid #333;
-  height: 35px;
+  height: 60px;
 }
 .main_controls .left {
   width: 20%;
@@ -47,15 +47,23 @@ a.disabled:visited {
 .main_controls .left form {
   display: inline;
 }
+.main_controls .left #slider {
+	margin-top: 5px;
+	height: 10px;
+}
+.main_controls .left #slider .ui-slider-handle {
+	height: 12px;
+	width: 12px;
+}
 .main_controls .middle {
   float: left;
   width: 60%;
   text-align: center;
-  padding-top: 10px;
+  padding-top: 35px;
   color: #777;
 }
 .main_controls .right {
-  padding-top: 8px;
+  padding-top: 33px;
   width: 20%;
   text-align: right;
 }

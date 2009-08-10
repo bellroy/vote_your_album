@@ -1,5 +1,7 @@
 // On Load
 $(function() {
+  $("#slider").slider();
+  
   setTimeout("updatePage();", 5000);
 });
 

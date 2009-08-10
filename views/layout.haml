@@ -3,11 +3,14 @@
   %head
     %meta{ "http-equiv" => "Content-Type", :content => "text/html; charset=utf-8" }
     %title Vote Your Album! - Trike
-
+    
+    %link{ :rel => "stylesheet", :href => "stylesheets/jquery-ui.css", :type => "text/css", :charset => "utf-8" }
     %link{ :rel => "stylesheet", :href => "stylesheets/main.css", :type => "text/css", :charset => "utf-8" }
 
     %script{ :src => "http://www.google.com/jsapi", :type => "text/javascript" }
-    %script{ :type => "text/javascript" } google.load("jquery", "1");
+    %script{ :type => "text/javascript" }
+      google.load("jquery", "1");
+      google.load("jqueryui", 1);
     %script{ :src => "javascripts/application.js", :type => "text/javascript" }
 
   %body
@@ -24,6 +27,7 @@
               %input{ :type => "image",  :src => "/images/play.png", :title => "Start Playback" }
             %form{:method => "post", :action => "control/next"}
               %input{ :type => "image",  :src => "/images/next.png", :title => "Next Song" }
+            #slider
           .middle
             %span#current
               - if @current
