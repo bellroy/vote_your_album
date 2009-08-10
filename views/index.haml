@@ -4,6 +4,9 @@
   %form{ :action => "search", :method => :get }
     %input{ :type => "text", :name => "q", :value => params[:q] }
     %input{ :type => "submit", :value => "Search" }
+    %a{ :href => "/" }
+      %button{ :type => "button" } Clear
+       
     
   %ul
     - @list.each_with_index do |album, i|
