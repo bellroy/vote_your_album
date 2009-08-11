@@ -10,15 +10,13 @@ class MpdConnection
     rescue SocketError
     end
     
-    def fetch_albums_with_artists
+    def fetch_new_albums_with_artists(existing)
+      songs = @mpd.songs.select { |song| song.artist }.map { |song| [song.artist, song.album] }.sort_by { |song| song[0] }.uniq
       @mpd.albums.inject([]) do |list, album|
-        artist =  begin
-                    @mpd.find("album", album).first.artist
-                  rescue
-                    ""
-                  end
+        artist = (songs.any? { |s| s[1] == album } ? songs.select { |song| song[1] == album }.first[0] : "")
+        next if existing.include? [artist, album]
         list << [artist, album]
-      end
+      end || []
     end
     
     def execute(action); @mpd.send action end

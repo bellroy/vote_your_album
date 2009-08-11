@@ -12,9 +12,9 @@ class Library
   class << self
     def lib; Library.first || Library.create end
     
-    def fetch_albums
-      lib.albums.destroy!
-      MpdConnection.fetch_albums_with_artists.each { |album| lib.albums.create :artist => album[0], :name => album[1] }
+    def update_albums
+      MpdConnection.fetch_new_albums_with_artists(lib.albums.map { |a| [a.artist, a.name] }).each { |album|
+        lib.albums.create :artist => album[0], :name => album[1] }
     end
     
     def volume; lib.volume end
