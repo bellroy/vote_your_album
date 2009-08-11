@@ -21,7 +21,7 @@ function updatePage() {
 		
     $("#upcoming").html("");
     $.each(data.upcoming, function(i, album) {
-     $("#upcoming").append(albumEntry(album, i));
+      $("#upcoming").append(albumEntry(album, i));
     });
 	});
 	
@@ -31,7 +31,7 @@ function updatePage() {
 function mainControls(current, volume) {
   $("#slider").slider("option", "value", volume);
   
-  if (current == null && $("#current").html().match(/-/)) {
+  if (current == null) {
 	  $("#current").html("");
     $("#force").remove();
     $(".main_controls .right").html('<a id="play" href="/play"> Start Playback </a>');

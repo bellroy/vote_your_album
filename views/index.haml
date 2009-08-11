@@ -7,7 +7,6 @@
     %a{ :href => "/" }
       %button{ :type => "button" } Clear
        
-    
   %ul
     - @list.each_with_index do |album, i|
       %li{ :class => (i % 2 == 0 ? "even" : "odd") }
