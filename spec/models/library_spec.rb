@@ -113,22 +113,29 @@ describe Library do
   describe "playlist callback" do
     before do
       Library.stub!(:lib).and_return @lib = Library.new
-      @lib.songs.stub! :destroy
+      @lib.songs.stub! :destroy!
       
+      MpdConnection.stub!(:execute).with(:playlist).and_return []
       @song1 = MPD::Song.new
       @song2 = MPD::Song.new
     end
     
+    it "should do nothing if we have a version of 0" do
+      @lib.songs.should_not_receive :destroy!
+      Library.playlist_callback 0
+    end
+    
     it "should destroy all songs related to the current library" do
-      @lib.songs.should_receive :destroy
-      Library.playlist_callback []
+      @lib.songs.should_receive :destroy!
+      Library.playlist_callback 1
     end
     
     it "should create new songs in the database for the given MPD::Song's" do
-      @lib.songs.should_receive(:create_from_mpd).with @song1
-      @lib.songs.should_receive(:create_from_mpd).with @song2
+      MpdConnection.stub!(:execute).with(:playlist).and_return [@song1, @song2]
+      Song.should_receive(:create_from_mpd).with @lib, @song1
+      Song.should_receive(:create_from_mpd).with @lib, @song2
       
-      Library.playlist_callback [@song1, @song2]
+      Library.playlist_callback 1
     end
   end
   

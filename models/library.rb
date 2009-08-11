@@ -51,9 +51,10 @@ class Library
         play_next
       end
     end
-    def playlist_callback(songs)
-      lib.songs.destroy
-      songs.each { |mpd_song| lib.songs.create_from_mpd mpd_song }
+    def playlist_callback(version = 0)
+      return if version == 0
+      lib.songs.destroy!
+      MpdConnection.execute(:playlist).each { |mpd_song| Song.create_from_mpd(lib, mpd_song) }
     end
     def volume_callback(volume); lib.update_attributes :volume => volume end
     

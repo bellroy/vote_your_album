@@ -10,8 +10,8 @@ class Song
   belongs_to :library
   belongs_to :album
   
-  def self.create_from_mpd(mpd_song)
+  def self.create_from_mpd(library, mpd_song)
     album = (Library.current ? Library.current.album : nil)
-    create :track => mpd_song.track, :artist => mpd_song.artist, :title => mpd_song.title, :album => album
+    create :library => library, :track => mpd_song.track, :artist => mpd_song.artist, :title => mpd_song.title, :album => album
   end
 end
