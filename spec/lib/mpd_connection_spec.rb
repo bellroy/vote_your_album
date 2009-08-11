@@ -10,6 +10,7 @@ describe MpdConnection do
       
       MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
       Library.stub! :current_song_callback
+      Library.stub! :playlist_callback
       Library.stub! :volume_callback
     end
     
@@ -27,6 +28,11 @@ describe MpdConnection do
     
     it "should register a callback for the 'current song'" do
       @mpd.should_receive(:register_callback).with Library.method(:current_song_callback), MPD::CURRENT_SONG_CALLBACK
+      MpdConnection.setup "server", 1234
+    end
+    
+    it "should register a callback for the 'playlist'" do
+      @mpd.should_receive(:register_callback).with Library.method(:playlist_callback), MPD::PLAYLIST_CALLBACK
       MpdConnection.setup "server", 1234
     end
     
