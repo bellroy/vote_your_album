@@ -19,13 +19,13 @@
         .title
         .main_controls
           .left
-            %form{:method => "post", :action => "control/previous"}
+            %form{:method => "post", :action => "/control/previous"}
               %input{ :type => "image", :src => "/images/previous.png", :title => "Previous Song" }
-            %form{:method => "post", :action => "control/stop"}
+            %form{:method => "post", :action => "/control/stop"}
               %input{ :type => "image",  :src => "/images/stop.png", :title => "Stop Playback" }
-            %form{:method => "post", :action => "control/play"}
+            %form{:method => "post", :action => "/control/play"}
               %input{ :type => "image",  :src => "/images/play.png", :title => "Start Playback" }
-            %form{:method => "post", :action => "control/next"}
+            %form{:method => "post", :action => "/control/next"}
               %input{ :type => "image",  :src => "/images/next.png", :title => "Next Song" }
             #slider
           .middle
