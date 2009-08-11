@@ -86,6 +86,18 @@ describe MpdConnection do
     end
   end
   
+  describe "volume =" do
+    before do
+      MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
+      MpdConnection.setup "server", 1234
+    end
+    
+    it "should change the volume on the MPD server" do
+      @mpd.should_receive(:volume=).with 41
+      MpdConnection.volume = 41
+    end
+  end
+  
   describe "play album" do
     before do
       MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil, :clear => nil, :add => nil, :play => nil)

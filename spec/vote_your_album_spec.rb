@@ -100,9 +100,28 @@ describe "vote your album:" do
   end
   
   [:previous, :stop, :play, :next].each do |action|
-    it "POST /control/#{action} should execute the provided action on the Library class" do
-      MpdConnection.should_receive(:execute).with action
-      post "/control/#{action}"
+    describe "POST '/control/#{action}'" do
+      it " should execute the provided action on the Library class" do
+        MpdConnection.should_receive(:execute).with action
+        post "/control/#{action}"
+      end
+    end
+  end
+  
+  describe "POST '/volume/:value" do
+    before do
+      MpdConnection.stub! :volume=
+    end
+    
+    it "should change the volume on the MPD server" do
+      MpdConnection.should_receive(:volume=).with 23
+      post "/volume/23"
+    end
+    
+    it "should render an empty response body and a status of 200" do
+      post "/volume/41"
+      last_response.body.should == ""
+      last_response.status.should == 200
     end
   end
   

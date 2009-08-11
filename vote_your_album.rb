@@ -52,6 +52,9 @@ post "/control/:action" do |action|
   MpdConnection.execute action.to_sym
   redirect "/"
 end
+post "/volume/:value" do |value|
+  MpdConnection.volume = value.to_i
+end
 get "/play" do
   Library.play_next unless Library.playing?
   redirect "/"

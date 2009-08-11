@@ -22,6 +22,7 @@ class MpdConnection
     end
     
     def execute(action); @mpd.send action end
+    def volume=(value); @mpd.volume = value end
     
     def play_album(album)
       @mpd.clear

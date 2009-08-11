@@ -1,6 +1,9 @@
 // On Load
 $(function() {
-  $("#slider").slider();
+  $("#slider").slider({
+    animate: true,
+    stop: function() { $.post("/volume/" + $(this).slider("option", "value")); }
+  });
   
   updatePage();
 });
