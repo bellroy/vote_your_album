@@ -48,6 +48,7 @@ shared_examples_for "it belongs to an album" do
     
     it "should not destroy the record no many how low the rating is" do
       @album.should_not_receive :destroy
+      @album.stub!(:rating).and_return -5
       @album.vote -5, "me"
     end
     
@@ -58,11 +59,13 @@ shared_examples_for "it belongs to an album" do
       
       it "should not destroy itself when the threshold for elimination isnt reached" do
         @album.should_not_receive :destroy
+        @album.stub!(:rating).and_return -2
         @album.vote -2, "me", true
       end
 
       it "should destroy itself when we have reached the elimination threshold (ELIMINATION_RATING)" do
         @album.should_receive :destroy
+        @album.stub!(:rating).and_return -3
         @album.vote -3, "me", true
       end
     end
