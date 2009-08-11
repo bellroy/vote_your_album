@@ -2,14 +2,19 @@ class Library
   include DataMapper::Resource
   
   property :id, Serial
-  property :current_song, String, :length => 200
   property :volume, Integer
   
   has n, :albums
   has n, :voteable_albums
   has n, :played_albums
   
+  has n, :songs
+  
   class << self
+    
+    # -----------------------------------------------------------------------------------
+    # Setup
+    # -----------------------------------------------------------------------------------
     def lib; Library.first || Library.create end
     
     def update_albums
@@ -17,31 +22,55 @@ class Library
         lib.albums.create :artist => album[0], :name => album[1] }
     end
     
-    def volume; lib.volume end
+    # -----------------------------------------------------------------------------------
+    # Album methods
+    # -----------------------------------------------------------------------------------
     def list; lib.albums.sort_by { |a| "#{a.artist} #{a.name}" } end
     def upcoming; lib.voteable_albums.sort_by { |a| [a.rating, Time.now.tv_sec - a.created_at.tv_sec] }.reverse end
     def current; playing? ? lib.played_albums.first : nil end
     def <<(album); lib.voteable_albums.create :album => album, :created_at => Time.now end
+
+    # -----------------------------------------------------------------------------------
+    # Playback methods
+    # -----------------------------------------------------------------------------------    
+    def playlist; lib.songs end
+    def current_song; playlist.select { |song| song.playing }.first end
+    def playing?; !!current_song end
+    def volume; lib.volume end
     
+    # -----------------------------------------------------------------------------------
+    # MPD Callbacks
+    # -----------------------------------------------------------------------------------
+    def current_song_callback(mpd_song = nil)
+      current_song.update_attributes(:playing => false) if playing?
+      
+      if mpd_song
+        song = playlist.select { |song| song.artist == mpd_song.artist && song.title == mpd_song.title }.first
+        song.update_attributes(:playing => true) if song
+      else
+        play_next
+      end
+    end
+    def playlist_callback(songs)
+      lib.songs.destroy
+      songs.each { |mpd_song| lib.songs.create_from_mpd mpd_song }
+    end
+    def volume_callback(volume); lib.update_attributes :volume => volume end
+    
+    # -----------------------------------------------------------------------------------
+    # MPD interfacing methods
+    # -----------------------------------------------------------------------------------
     def search(q)
       return list if q.nil? || q.empty?
       
       res = MpdConnection.find_albums_for(q)
       list.select { |album| res.include? album.name }
     end
-    
-    def current_song_callback(song = nil)
-      lib.update_attributes :current_song => (song ? "#{song.artist} - #{song.title} (#{song.album})" : nil)
-      play_next unless Library.playing?
-    end
-    def volume_callback(volume); lib.update_attributes :volume => volume end
-    
-    def playing?; !!lib.current_song end
     def play_next
       return unless next_album = upcoming.first
       
-      MpdConnection.play_album next_album.name
       lib.played_albums.create(:album => next_album.album) && next_album.destroy
+      MpdConnection.play_album next_album.name
     end
     def force(ip)
       return unless current

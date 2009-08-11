@@ -47,31 +47,88 @@ describe Library do
     before do
       Library.stub!(:lib).and_return @lib = Library.new
       Library.stub! :play_next
-      @lib.stub! :update_attributes
       
-      @song = MPD::Song.new
-      { "artist" => "me", "title" => "song", "album" => "hits" }.each { |k, v| @song[k] = v }
-    end
-    
-    it "should update the song variable" do
-      @lib.should_receive(:update_attributes).with :current_song => "me - song (hits)"
-      Library.current_song_callback @song
-    end
-    
-    it "should set it to nil if we get nothing" do
-      @lib.should_receive(:update_attributes).with :current_song => nil
-      Library.current_song_callback nil
-    end
-    
-    it "should load next album" do
-      Library.should_receive :play_next
-      Library.current_song_callback nil
-    end
-    
-    it "should not load the next album if we are currently playing something" do
       Library.stub!(:playing?).and_return true
-      Library.should_not_receive :play_next
-      Library.current_song_callback @song
+      Library.stub!(:current_song).and_return @song = Song.new
+      @song.stub! :update_attributes
+      
+      Library.stub!(:playlist).and_return []
+      
+      @mpd_song = MPD::Song.new
+      { "artist" => "me", "title" => "song", "album" => "hits" }.each { |k, v| @mpd_song[k] = v }
+    end
+    
+    it "should reset the 'playing' flag of the current_song if we have one" do
+      @song.should_receive(:update_attributes).with :playing => false
+      Library.current_song_callback nil
+    end
+    
+    it "should not reset the 'playing' flag if we arent playing anything right now" do
+      Library.stub!(:playing?).and_return false
+      @song.should_not_receive :update_attributes
+      
+      Library.current_song_callback nil
+    end
+    
+    describe "new song is nil" do
+      it "should not try to set the 'playing' flag" do
+        Library.should_not_receive :playlist
+        Library.current_song_callback nil
+      end
+      
+      it "should load next album" do
+        Library.should_receive :play_next
+        Library.current_song_callback nil
+      end
+    end
+
+    describe "new song is not nil" do
+      before do
+        @song1 = Song.new(:artist => "me", :title => "other")
+        @song2 = Song.new(:artist => "me", :title => "song")
+        @song.stub! :update_attributes
+        
+        Library.stub!(:playlist).and_return [@song1, @song2]
+      end
+           
+      it "should set the 'playing' flag for the matching artist and album from the playlist" do
+        @song2.should_receive(:update_attributes).with :playing => true
+        Library.current_song_callback @mpd_song
+      end
+      
+      it "should not set a 'playing' flag if we cant find a matching song" do
+        @mpd_song["title"] = "title"
+        @song2.should_not_receive :update_attributes
+        
+        Library.current_song_callback @mpd_song
+      end
+      
+      it "should not load the next album" do
+        Library.should_not_receive :play_next
+        Library.current_song_callback @mpd_song
+      end
+    end
+  end
+  
+  describe "playlist callback" do
+    before do
+      Library.stub!(:lib).and_return @lib = Library.new
+      @lib.songs.stub! :destroy
+      
+      @song1 = MPD::Song.new
+      @song2 = MPD::Song.new
+    end
+    
+    it "should destroy all songs related to the current library" do
+      @lib.songs.should_receive :destroy
+      Library.playlist_callback []
+    end
+    
+    it "should create new songs in the database for the given MPD::Song's" do
+      @lib.songs.should_receive(:create_from_mpd).with @song1
+      @lib.songs.should_receive(:create_from_mpd).with @song2
+      
+      Library.playlist_callback [@song1, @song2]
     end
   end
   
@@ -84,21 +141,6 @@ describe Library do
     it "should update the volume attribute of the lib" do
       @lib.should_receive(:update_attributes).with :volume => 53
       Library.volume_callback 53
-    end
-  end
-  
-  describe "playing?" do
-    before do
-      Library.stub!(:lib).and_return @lib = Library.new
-    end
-    
-    it "should return false if no current song is playing" do
-      Library.should_not be_playing
-    end
-    
-    it "should return true if we have a current song playing" do
-      @lib.current_song = "some song"
-      Library.should be_playing
     end
   end
   
@@ -235,6 +277,53 @@ describe Library do
     
     it "should return the volume of the lib instance" do
       Library.volume.should == 45
+    end
+  end
+  
+  describe "playlist" do
+    before do
+      Library.stub!(:lib).and_return @lib = Library.new
+      @lib.stub!(:songs).and_return @list = ["one", "two"]
+    end
+    
+    it "should return the songs associated with the current library" do
+      Library.playlist.should == @list
+    end
+  end
+  
+  describe "current song" do
+    before do
+      Library.stub!(:playlist).and_return []
+      
+      @song1 = Song.new
+      @song2 = Song.new
+    end
+    
+    it "should return nil if we dont any songs in the playlist" do
+      Library.current_song.should be_nil
+    end
+    
+    it "should return nil if we dont have any songs with the 'playing' flag" do
+      Library.stub!(:playlist).and_return [@song1, @song2]
+      Library.current_song.should be_nil
+    end
+    
+    it "should return the song with the 'playing' flag set" do
+      Library.stub!(:playlist).and_return [@song1, @song2]
+      @song2.playing = true
+      
+      Library.current_song.should == @song2
+    end
+  end
+  
+  describe "playing?" do
+    it "should return false if no current song is playing" do
+      Library.should_not be_playing
+    end
+    
+    it "should return true if we have a current song playing" do
+      Library.stub!(:current_song).and_return Song.new
+      Library.should be_playing
     end
   end
   

@@ -5,6 +5,7 @@ class Song
   property :track, String, :length => 10
   property :artist, String, :length => 100
   property :title, String, :length => 100
+  property :playing, Boolean
   
   belongs_to :library
   belongs_to :album
