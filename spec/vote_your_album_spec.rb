@@ -70,7 +70,7 @@ describe "vote your album:" do
       end
     
       it "should vote the Album #{action}" do
-        @v_album.should_receive(:vote).with change, "127.0.0.1"
+        @v_album.should_receive(:vote).with change, "127.0.0.1", true
         get "/#{action}/123"
       end
     

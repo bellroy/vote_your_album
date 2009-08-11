@@ -38,10 +38,10 @@ get "/add/:id" do |album_id|
   execute_on_album(:list, album_id) { |album| Library << album }
 end
 get "/up/:id" do |album_id|
-  execute_on_album(:upcoming, album_id) { |album| album.vote 1, request.ip }
+  execute_on_album(:upcoming, album_id) { |album| album.vote 1, request.ip, true }
 end
 get "/down/:id" do |album_id|
-  execute_on_album(:upcoming, album_id) { |album| album.vote -1, request.ip }
+  execute_on_album(:upcoming, album_id) { |album| album.vote -1, request.ip, true }
 end
 get "/force" do
   Library.force request.ip

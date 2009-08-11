@@ -33,6 +33,7 @@ shared_examples_for "it belongs to an album" do
     before do
       @album = clazz.new
       @album.votes.stub! :create
+      @album.votes.stub! :reload
     end
     
     it "should create an associated vote with the given value and ip" do
@@ -43,6 +44,27 @@ shared_examples_for "it belongs to an album" do
     it "should not allow a vote, if we have already voted" do
       @album.votes.should_receive(:create).once
       2.times { @album.vote 1, "me" }
+    end
+    
+    it "should not destroy the record no many how low the rating is" do
+      @album.should_not_receive :destroy
+      @album.vote -5, "me"
+    end
+    
+    describe "eliminate" do
+      before do
+        @album.stub! :destroy
+      end
+      
+      it "should not destroy itself when the threshold for elimination isnt reached" do
+        @album.should_not_receive :destroy
+        @album.vote -2, "me", true
+      end
+
+      it "should destroy itself when we have reached the elimination threshold (ELIMINATION_RATING)" do
+        @album.should_receive :destroy
+        @album.vote -3, "me", true
+      end
     end
   end
   
