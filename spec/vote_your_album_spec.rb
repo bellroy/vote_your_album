@@ -3,19 +3,31 @@ require File.join(File.dirname(__FILE__) + '/spec_helper')
 describe "vote your album:" do
   
   describe "GET '/'" do
-    before do
-      Library.stub!(:list).and_return [Album.new(:artist => "a", :name => "one"), Album.new(:artist => "b", :name => "two")]
-    end
-    
     it "should render the homepage" do
       get "/"
       last_response.body.should match(/Vote Your Album!/)
     end
+  end
+  
+  describe "GET '/list'" do
+    before do
+      Library.stub!(:list).and_return @list = ["one", "two"]
+    end
     
-    it "should display the complete list of available albums" do
-      get "/"
-      last_response.body.should match(/one/)
-      last_response.body.should match(/two/)
+    it "should the list as a JSON list" do
+      get "/list"
+      last_response.body.should == @list.to_json
+    end
+  end
+  
+  describe "GET '/search/:q'" do
+    before do
+      Library.stub!(:search).and_return []
+    end
+    
+    it "should search for matching album using the library" do
+      Library.should_receive(:search).with("query").and_return []
+      get "/search", :q => "query"
     end
   end
   
@@ -46,64 +58,83 @@ describe "vote your album:" do
     end
   end
   
-  describe "GET '/add/:id'" do
+  describe "POST '/add/:id'" do
     before do
       Library.stub!(:list).and_return [@album = Album.new(:id => 123, :artist => "artist", :name =>  "album")]
+      Library.stub! :<<
     end
     
     it "should add the Album to the Library's next list if we know the album" do
       Library.should_receive(:<<).with @album
-      get "/add/123"
+      post "/add/123"
     end
     
     it "should do nothing when we can't find the album in the list" do
       Library.should_not_receive :<<
-      get "/add/321"
+      post "/add/321"
+    end
+    
+    it "should return the json status response" do
+      post "/add/321"
+      last_response.body.should match(/\"volume\":/)
     end
   end
   
   { :up => 1, :down => -1 }.each do |action, change|
-    describe "GET '/up/:id'" do
+    describe "POST '/up/:id'" do
       before do
         album = Album.new(:artist => "artist", :name =>  "album")
         Library.stub!(:upcoming).and_return [@v_album = VoteableAlbum.new(:id => 123, :album => album)]
+        @v_album.stub! :vote
       end
     
       it "should vote the Album #{action}" do
         @v_album.should_receive(:vote).with change, "127.0.0.1", true
-        get "/#{action}/123"
+        post "/#{action}/123"
       end
     
       it "should do nothing when we can't find the album in the list" do
         @v_album.should_not_receive :vote
-        get "/add/321"
+        post "/#{action}/321"
+      end
+      
+      it "should return the json status response" do
+        post "/#{action}/321"
+        last_response.body.should match(/\"volume\":/)
       end
     end
   end
   
-  describe "GET force" do
-    it "should force the next album" do
-      Library.should_receive(:force).with "127.0.0.1"
-      get "/force"
-    end
-  end
-  
-  describe "GET '/search/:q'" do
+  describe "POST force" do
     before do
-      Library.stub!(:search).and_return []
+      Library.stub! :force
     end
     
-    it "should search for matching album using the library" do
-      Library.should_receive(:search).with("query").and_return []
-      get "/search", :q => "query"
+    it "should force the next album" do
+      Library.should_receive(:force).with "127.0.0.1"
+      post "/force"
+    end
+    
+    it "should return the json status response" do
+      post "/force"
+      last_response.body.should match(/\"volume\":/)
     end
   end
   
   [:previous, :stop, :play, :next].each do |action|
     describe "POST '/control/#{action}'" do
+      before do
+        MpdConnection.stub! :execute
+      end
+      
       it " should execute the provided action on the Library class" do
         MpdConnection.should_receive(:execute).with action
         post "/control/#{action}"
+      end
+      
+      it "should return the json status response" do
+        post "/control/#{action}"
+        last_response.body.should match(/\"volume\":/)
       end
     end
   end
@@ -125,7 +156,7 @@ describe "vote your album:" do
     end
   end
   
-  describe "GET '/play'" do
+  describe "POST '/play'" do
     before do
       Library.stub! :play_next
       Library.stub!(:playing?).and_return false
@@ -133,13 +164,18 @@ describe "vote your album:" do
     
     it "should play the next album" do
       Library.should_receive :play_next
-      get "/play"
+      post "/play"
     end
     
     it "should not play the next album if we are currently playing something" do
       Library.stub!(:playing?).and_return true
       Library.should_not_receive :play_next
-      get "/play"
+      post "/play"
+    end
+    
+    it "should return the json status response" do
+      post "/play"
+      last_response.body.should match(/\"volume\":/)
     end
   end
 end

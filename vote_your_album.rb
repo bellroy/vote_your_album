@@ -10,7 +10,7 @@ require 'config'
 def execute_on_album(list, album_id, &block)
   album = Library.send(list).find { |a| a.id == album_id.to_i }
   yield(album) if album
-  redirect "/"
+  json_status
 end
 
 def render_index_with_list(&block)
@@ -18,44 +18,51 @@ def render_index_with_list(&block)
   haml :index
 end
 
+def json_status
+  current = (Library.current ? Library.current.to_hash(request.ip) : nil)
+  { :volume => Library.volume, :current => current, :upcoming => Library.upcoming.map { |a| a.to_hash(request.ip) } }.to_json
+end
+
 
 # -----------------------------------------------------------------------------------
 # Actions
 # -----------------------------------------------------------------------------------
 get "/" do
-  render_index_with_list { Library.list }
+  haml :index
+end
+get "/list" do
+  Library.list.to_json
 end
 get "/search" do
   render_index_with_list { Library.search params[:q] }
 end
 
 get "/status" do
-  current = (Library.current ? Library.current.to_hash(request.ip) : nil)
-  { :volume => Library.volume, :current => current, :upcoming => Library.upcoming.map { |a| a.to_hash(request.ip) } }.to_json
+  json_status
 end
 
-get "/add/:id" do |album_id|
+post "/add/:id" do |album_id|
   execute_on_album(:list, album_id) { |album| Library << album }
 end
-get "/up/:id" do |album_id|
+post "/up/:id" do |album_id|
   execute_on_album(:upcoming, album_id) { |album| album.vote 1, request.ip, true }
 end
-get "/down/:id" do |album_id|
+post "/down/:id" do |album_id|
   execute_on_album(:upcoming, album_id) { |album| album.vote -1, request.ip, true }
 end
-get "/force" do
+post "/force" do
   Library.force request.ip
-  redirect "/"
+  json_status
 end
 
 post "/control/:action" do |action|
   MpdConnection.execute action.to_sym
-  redirect "/"
+  json_status
 end
 post "/volume/:value" do |value|
   MpdConnection.volume = value.to_i
 end
-get "/play" do
+post "/play" do
   Library.play_next unless Library.playing?
-  redirect "/"
+  json_status
 end

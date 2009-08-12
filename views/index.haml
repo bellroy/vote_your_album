@@ -7,17 +7,17 @@
     %a{ :href => "/" }
       %button{ :type => "button" } Clear
        
-  %ul
-    - @list.each_with_index do |album, i|
-      %li{ :class => (i % 2 == 0 ? "even" : "odd") }
-        .left
-          %span.artist= album.artist
-          %span -
-          %span.name= album.name
-        .right
-          %a{ :href => "/add/#{album.id}" }
-            %img.add{ :src => "/images/add.png", :title => "Add Album to Upcoming Albums" }
-        .clear
+  %ul#list
+    / - @list.each_with_index do |album, i|
+    /   %li{ :class => (i % 2 == 0 ? "even" : "odd") }
+    /     .left
+    /       %span.artist= album.artist
+    /       %span -
+    /       %span.name= album.name
+    /     .right
+    /       %a.add{ :href => "#", :ref => album.id }
+    /         %img{ :src => "/images/add.png", :title => "Add Album to Upcoming Albums" }
+    /     .clear
   
 .album_list.upcoming
   %p
