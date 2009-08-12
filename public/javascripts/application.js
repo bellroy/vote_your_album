@@ -97,7 +97,7 @@ function mainControls(current, volume) {
 	  }
 	  
 	  $("#current").html(current.artist + " - " + current.name);
-	  $("#force").html("Force Next (" + current.remaining + ")").attr("title", "Necessary Votes to force next album: " + current.remaining);
+	  $("#force").html("Force Next (" + current.remaining + " more)").attr("title", "Necessary Votes to force next album: " + current.remaining);
 	  if (current.voteable) $("#force").removeClass("disabled");
 	  else                  $("#force").addClass("disabled");
 	}
