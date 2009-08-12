@@ -11,23 +11,28 @@ describe "vote your album:" do
   
   describe "GET '/list'" do
     before do
-      Library.stub!(:list).and_return @list = ["one", "two"]
+      Library.stub!(:list).and_return [@album = Album.new(:artist => "name")]
     end
     
-    it "should the list as a JSON list" do
+    it "should return the list as a JSON list" do
       get "/list"
-      last_response.body.should == @list.to_json
+      last_response.body.should == [@album.to_hash].to_json
     end
   end
   
   describe "GET '/search/:q'" do
     before do
-      Library.stub!(:search).and_return []
+      Library.stub!(:search).and_return [@album = Album.new(:artist => "name")]
     end
     
     it "should search for matching album using the library" do
       Library.should_receive(:search).with("query").and_return []
       get "/search", :q => "query"
+    end
+    
+    it "should return the list as a JSON list" do
+      get "/search", :q => "query"
+      last_response.body.should == [@album.to_hash].to_json
     end
   end
   

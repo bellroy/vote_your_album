@@ -13,11 +13,6 @@ def execute_on_album(list, album_id, &block)
   json_status
 end
 
-def render_index_with_list(&block)
-  @list = yield
-  haml :index
-end
-
 def json_status
   current = (Library.current ? Library.current.to_hash(request.ip) : nil)
   { :volume => Library.volume, :current => current, :upcoming => Library.upcoming.map { |a| a.to_hash(request.ip) } }.to_json
@@ -31,10 +26,10 @@ get "/" do
   haml :index
 end
 get "/list" do
-  Library.list.to_json
+  Library.list.map { |album| album.to_hash }.to_json
 end
 get "/search" do
-  render_index_with_list { Library.search params[:q] }
+  Library.search(params[:q]).map { |album| album.to_hash }.to_json
 end
 
 get "/status" do

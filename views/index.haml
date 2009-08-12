@@ -1,23 +1,12 @@
 .album_list.list
   %p
     %b Albums available in the Library
-  %form{ :action => "search", :method => :get }
-    %input{ :type => "text", :name => "q", :value => params[:q] }
+  %form#search{ :action => "search", :method => :get }
+    %input#query{ :type => "text", :name => "q", :value => params[:q] }
     %input{ :type => "submit", :value => "Search" }
-    %a{ :href => "/" }
-      %button{ :type => "button" } Clear
+    %button#clear{ :type => "button" } Clear
        
   %ul#list
-    / - @list.each_with_index do |album, i|
-    /   %li{ :class => (i % 2 == 0 ? "even" : "odd") }
-    /     .left
-    /       %span.artist= album.artist
-    /       %span -
-    /       %span.name= album.name
-    /     .right
-    /       %a.add{ :href => "#", :ref => album.id }
-    /         %img{ :src => "/images/add.png", :title => "Add Album to Upcoming Albums" }
-    /     .clear
   
 .album_list.upcoming
   %p

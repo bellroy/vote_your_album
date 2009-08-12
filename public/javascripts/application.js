@@ -1,5 +1,7 @@
 // On Load
 $(function() {
+  
+  // Volume Slider definition
   $("#slider").slider({
     animate: true,
     stop: function() { $.post("/volume/" + $(this).slider("option", "value")); }
@@ -15,6 +17,8 @@ $(function() {
     });
     return false;
   }
+  
+  // Click Events
   $.each(["add", "up", "down", "control"], function() {
     var action = this;
     $("." + action).live("click", function() { return executeAndUpdate("/" + action + "/" + $(this).attr("ref")); });
@@ -24,17 +28,29 @@ $(function() {
     $("." + action).live("click", function() { return executeAndUpdate("/" + action); });
   });
   
+  // Search
+  $("#search").ajaxForm({
+    dataType: "json",
+    success: updateList
+  });
+  $("#clear").click(function() {
+    $("#search").clearForm();
+    getListUpdate();
+  });
+  
   // Initial page update to load the lists
-  updateList();
+  getListUpdate();
   getPageUpdate();
 });
 
-function updateList() {
-  $.getJSON("/", function(data) {
-    $("#list").html();
-    $.each(data, function(i, album) {
-      $("#list").append(albumElement(album, i));
-    });
+/*
+ * Requests a update of the available albums and updates the list with the JSON result
+ */
+function getListUpdate() { $.getJSON("/list", updateList); }
+function updateList(data) {
+  $("#list").html("");
+  $.each(data, function(i, album) {
+    $("#list").append(albumElement(album, i));
   });
 }
 
@@ -89,12 +105,12 @@ function mainControls(current, volume) {
 
 function albumElement(album, i) {
   res = '<li class="album ' + (i % 2 == 0 ? 'even' : 'odd') + '">';
-	res += commonAlbumElements(res, album);
-	res +=  '<div class="right">';
-	res +=    '<a href="#" class="add" ref="' + album.id + '">';
-	res +=      '<img src="/images/add.png" title="Add Album to Upcoming Albums" />'
-	res +=    '</a>';
-	res += '</div>';
+  res += commonAlbumElements(album);
+  res +=  '<div class="right">';
+  res +=    '<a href="#" class="add" ref="' + album.id + '">';
+  res +=      '<img src="/images/add.png" title="Add Album to Upcoming Albums" />'
+  res +=    '</a>';
+  res += '</div>';
 	res += '<div class="clear"></div>';
 	return res + '</li>';
 }
@@ -106,7 +122,7 @@ function voteableAlbumElement(album, i) {
   res = '<li class="album ' + (i % 2 == 0 ? 'even' : 'odd') + '">';
 	res += 	  '<span class="rating ' + (album.rating > 0 ? "positive" : (album.rating < 0 ? "negative" : 0)) + '\
 	  " title="Rating: ' + album.rating + '">' + album.rating + '</span> ';
-  res += commonAlbumElements(res, album);
+  res += commonAlbumElements(album);
 	res +=  '<div class="right">';
 	if (album.voteable) {
 		res += '<a href="#" class="up" ref="' + album.id + '">';
@@ -122,11 +138,11 @@ function voteableAlbumElement(album, i) {
 	return res;
 }
 
-function commonAlbumElements(res, album) {
-  res +=  '<div class="left">';
-	res +=	  '<span class="artist">' + album.artist + '</span> ';
-	res +=    '<span> - </span>';
-	res +=	  '<span class="name">' + album.name + '</span> ';
-  res +=  '</div>';
+function commonAlbumElements(album) {
+  res = '<div class="left">';
+	res +=  '<span class="artist">' + album.artist + '</span> ';
+	res +=  '<span> - </span>';
+	res +=  '<span class="name">' + album.name + '</span> ';
+  res += '</div>';
   return res;
 }
