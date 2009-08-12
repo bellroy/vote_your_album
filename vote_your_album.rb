@@ -26,10 +26,10 @@ get "/" do
   haml :index
 end
 get "/list" do
-  Library.list.map { |album| album.to_hash }.to_json
+  Library.list.map { |album| album.id_hash }.to_json
 end
 get "/search" do
-  Library.search(params[:q]).map { |album| album.to_hash }.to_json
+  Library.search(params[:q]).map { |album| album.id_hash }.to_json
 end
 
 get "/status" do

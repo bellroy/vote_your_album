@@ -8,4 +8,5 @@ class Album
   belongs_to :library
   
   def to_hash; { :artist => (artist || ""), :name => name } end
+  def id_hash; to_hash.merge :id => id end
 end
