@@ -56,6 +56,7 @@ class Library
       return if version == 0
       lib.songs.destroy!
       MpdConnection.execute(:playlist).each { |mpd_song| Song.create_from_mpd(lib, mpd_song) }
+      current_song_callback MpdConnection.execute(:current_song)
     end
     def volume_callback(volume); lib.update_attributes :volume => volume end
     

@@ -128,9 +128,11 @@ describe Library do
   
   describe "playlist callback" do
     before do
+      Library.stub! :current_song_callback
       Library.stub!(:lib).and_return @lib = Library.new
       @lib.songs.stub! :destroy!
       
+      MpdConnection.stub!(:execute).with :current_song
       MpdConnection.stub!(:execute).with(:playlist).and_return []
       @song1 = MPD::Song.new
       @song2 = MPD::Song.new
@@ -151,6 +153,12 @@ describe Library do
       Song.should_receive(:create_from_mpd).with @lib, @song1
       Song.should_receive(:create_from_mpd).with @lib, @song2
       
+      Library.playlist_callback 1
+    end
+    
+    it "should ask the MPD server for the currently played song" do
+      MpdConnection.should_receive(:execute).with(:current_song).and_return @song1
+      Library.should_receive(:current_song_callback).with @song1
       Library.playlist_callback 1
     end
   end
