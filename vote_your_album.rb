@@ -1,6 +1,7 @@
 %w[rubygems sinatra json haml librmpd dm-core].each { |lib| require lib }
+%w[lib/file_mutex lib/mpd_connection].each { |lib| require lib }
 %w[lib/belongs_to_album models/library models/album models/voteable_album models/played_album models/vote models/song].each { |model| require model }
-require 'lib/mpd_connection'
+
 
 require 'config'
 
