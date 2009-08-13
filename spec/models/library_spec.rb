@@ -71,12 +71,28 @@ describe Library do
     end
     
     describe "new song is nil" do
+      before do
+        @lib.last_album_load = Time.now - 120
+      end
+      
       it "should not try to set the 'playing' flag" do
         Library.should_not_receive :playlist
         Library.current_song_callback nil
       end
       
-      it "should load next album" do
+      it "should load next album if we havent loaded an album in the last minute" do
+        Library.should_receive :play_next
+        Library.current_song_callback nil
+      end
+      
+      it "should not load next album if we have loaded an album within the last minute" do
+        @lib.last_album_load = Time.now - 10
+        Library.should_not_receive :play_next
+        Library.current_song_callback nil
+      end
+      
+      it "should load next album if we havent loaded an album at all" do
+        @lib.last_album_load = nil
         Library.should_receive :play_next
         Library.current_song_callback nil
       end
@@ -157,6 +173,7 @@ describe Library do
       
       Library.stub!(:lib).and_return @lib = Library.new
       @lib.played_albums.stub!(:create).and_return true
+      @lib.stub! :update_attributes
       
       album = Album.new(:name => "my name")
       @next = @lib.voteable_albums.build(:album => album, :created_at => Time.now)
@@ -181,6 +198,12 @@ describe Library do
     
     it "should destroy the album added to the playlist" do
       @next.should_receive :destroy
+      Library.play_next
+    end
+    
+    it "should update the 'last album load' attribute of the library" do
+      Time.stub!(:now).and_return @time = mock("Now", :tv_sec => 1)
+      @lib.should_receive(:update_attributes).with :last_album_load => @time
       Library.play_next
     end
   end

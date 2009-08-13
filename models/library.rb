@@ -3,6 +3,7 @@ class Library
   
   property :id, Serial
   property :volume, Integer
+  property :last_album_load, Time
   
   has n, :albums
   has n, :voteable_albums
@@ -48,7 +49,7 @@ class Library
         song = playlist.select { |song| song.artist == mpd_song.artist && song.title == mpd_song.title }.first
         song.update_attributes(:playing => true) if song
       else
-        play_next
+        play_next unless lib.last_album_load && Time.now < (lib.last_album_load + 60)
       end
     end
     def playlist_callback(version = 0)
@@ -71,6 +72,7 @@ class Library
       return unless next_album = upcoming.first
       
       lib.played_albums.create(:album => next_album.album) && next_album.destroy
+      lib.update_attributes :last_album_load => Time.now
       MpdConnection.play_album next_album.name
     end
     def force(ip)
