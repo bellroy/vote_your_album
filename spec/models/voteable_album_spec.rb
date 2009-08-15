@@ -8,11 +8,11 @@ describe VoteableAlbum do
   describe "to hash" do
     before do
       @album = Album.new(:artist => "artist", :name => "album")
-      @v_album = VoteableAlbum.new(:album => @album)
+      @v_album = VoteableAlbum.new(:album => @album, :added_by => "ip")
     end
     
     it "should map all attributes into a hash" do
-      @v_album.to_hash("me").should == { :id => nil, :artist => "artist", :name => "album", :rating => 0, :voteable => true }
+      @v_album.to_hash("me").should == { :id => nil, :artist => "artist", :name => "album", :score => 0, :voteable => true, :added_by => "ip" }
     end
     
     it "should have a false voteable value if this user cant vote" do

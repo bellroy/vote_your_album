@@ -1,5 +1,5 @@
 %w[rubygems sinatra json haml librmpd dm-core].each { |lib| require lib }
-%w[lib/belongs_to_album models/library models/album models/voteable_album models/played_album models/vote models/song].each { |model| require model }
+%w[lib/belongs_to_album models/library models/album models/nomination models/voteable_album models/played_album models/vote models/song].each { |model| require model }
 require 'lib/mpd_connection'
 
 require 'config'
@@ -37,7 +37,7 @@ get "/status" do
 end
 
 post "/add/:id" do |album_id|
-  execute_on_album(:list, album_id) { |album| Library << album }
+  execute_on_album(:list, album_id) { |album| Library.<< album, request.ip }
 end
 post "/up/:id" do |album_id|
   execute_on_album(:upcoming, album_id) { |album| album.vote 1, request.ip, true }

@@ -275,14 +275,14 @@ describe Library do
     
     it "should add an album to the upcoming albums when '<<' is called" do
       Time.stub!(:now).and_return "now"
-      @lib.voteable_albums.should_receive(:create).with :album => @album, :created_at => "now"
-      Library << @album
+      @lib.voteable_albums.should_receive(:create).with :album => @album, :created_at => "now", :added_by => "me"
+      Library.<< @album, "me"
     end
     
     it "should sort the list by number of votes and date of creation then" do
-      album1 = mock("Album", :rating => 1, :created_at => Time.now - 3600)
-      album2 = mock("Album", :rating => 2, :created_at => Time.now)
-      album3 = mock("Album", :rating => 1, :created_at => Time.now)
+      album1 = mock("Album", :score => 1, :created_at => Time.now - 3600)
+      album2 = mock("Album", :score => 2, :created_at => Time.now)
+      album3 = mock("Album", :score => 1, :created_at => Time.now)
       @lib.stub!(:voteable_albums).and_return [album1, album2, album3]
       
       Library.upcoming.should == [album2, album1, album3]

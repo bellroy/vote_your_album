@@ -14,18 +14,18 @@ shared_examples_for "it belongs to an album" do
     end
   end
   
-  describe "rating" do
+  describe "score" do
     before do
       @album = clazz.new
     end
     
     it "should return 0 by default" do
-      @album.rating.should == 0
+      @album.score.should == 0
     end
     
     it "should add up the values of the assigned votes" do
       @album.stub!(:votes).and_return [Vote.new(:value => 3), Vote.new(:value => -1)]
-      @album.rating.should == 2
+      @album.score.should == 2
     end
   end
   
@@ -46,9 +46,9 @@ shared_examples_for "it belongs to an album" do
       2.times { @album.vote 1, "me" }
     end
     
-    it "should not destroy the record no many how low the rating is" do
+    it "should not destroy the record no many how low the score is" do
       @album.should_not_receive :destroy
-      @album.stub!(:rating).and_return -5
+      @album.stub!(:score).and_return -5
       @album.vote -5, "me"
     end
     
@@ -59,13 +59,13 @@ shared_examples_for "it belongs to an album" do
       
       it "should not destroy itself when the threshold for elimination isnt reached" do
         @album.should_not_receive :destroy
-        @album.stub!(:rating).and_return -2
+        @album.stub!(:score).and_return -2
         @album.vote -2, "me", true
       end
 
-      it "should destroy itself when we have reached the elimination threshold (ELIMINATION_RATING)" do
+      it "should destroy itself when we have reached the elimination threshold (ELIMINATION_SCORE)" do
         @album.should_receive :destroy
-        @album.stub!(:rating).and_return -3
+        @album.stub!(:score).and_return -3
         @album.vote -3, "me", true
       end
     end

@@ -87,7 +87,7 @@ a.disabled:visited {
   text-decoration: underline;
 }
 .album_list ul {
-	height: 400px;
+	height: 500px;
 	width: 450px;
 	overflow: auto;
 	border: 1px solid #000;
@@ -113,17 +113,17 @@ a.disabled:visited {
   height: 18px;
   margin-top: 3px;
 }
-.album_list li .rating {
+.album_list li .score {
   display: block;
   float: left;
   width: 22px;
   font-weight: bold;
   padding-left: 3px;
 }
-.album_list li .rating.positive {
+.album_list li .score.positive {
   color: #390;
 }
-.album_list li .rating.negative {
+.album_list li .score.negative {
   color: #f30;
 }
 .album_list li .name {

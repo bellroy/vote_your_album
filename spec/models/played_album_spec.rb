@@ -6,9 +6,9 @@ describe PlayedAlbum do
   it_should_behave_like "it belongs to an album"
   
   describe "remaining" do
-    it "should use the result of FORCE_VOTES - rating" do
+    it "should use the result of FORCE_VOTES - score" do
       @p_album = PlayedAlbum.new
-      @p_album.stub!(:rating).and_return 1
+      @p_album.stub!(:score).and_return 1
       @p_album.remaining.should == 2
     end
   end

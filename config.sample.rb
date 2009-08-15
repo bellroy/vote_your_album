@@ -18,4 +18,4 @@ end
 # General config
 # -----------------------------------------------------------------------------------
 FORCE_VOTES = 3 # number of votes necessary to force the next album
-ELIMINATION_RATING = -3 # (negative) rating necessary so that a upcoming album is removed
+ELIMINATION_SCORE = -3 # (negative) score necessary so that a upcoming album is removed

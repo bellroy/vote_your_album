@@ -52,7 +52,7 @@ describe "vote your album:" do
       Library.stub!(:upcoming).and_return [VoteableAlbum.new(:id => 3, :album => @album)]
       
       get "/status"
-      [/\"upcoming\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"rating\":0/, /\"voteable\":true/].each { |re| last_response.body.should match(re) }
+      [/\"upcoming\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"score\":0/, /\"voteable\":true/].each { |re| last_response.body.should match(re) }
     end
     
     it "should return the volume" do
@@ -70,7 +70,7 @@ describe "vote your album:" do
     end
     
     it "should add the Album to the Library's next list if we know the album" do
-      Library.should_receive(:<<).with @album
+      Library.should_receive(:<<).with @album, "127.0.0.1"
       post "/add/123"
     end
     

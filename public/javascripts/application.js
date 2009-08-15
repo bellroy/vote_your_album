@@ -120,8 +120,8 @@ function albumElement(album, i) {
  */
 function voteableAlbumElement(album, i) {
   res = '<li class="album ' + (i % 2 == 0 ? 'even' : 'odd') + '">';
-	res += 	  '<span class="rating ' + (album.rating > 0 ? "positive" : (album.rating < 0 ? "negative" : 0)) + '\
-	  " title="Rating: ' + album.rating + '">' + album.rating + '</span> ';
+	res += 	  '<span class="score ' + (album.score > 0 ? "positive" : (album.score < 0 ? "negative" : 0)) + '\
+	  " title="Score: ' + album.score + '">' + album.score + '</span> ';
   res += commonAlbumElements(album);
 	res +=  '<div class="right">';
 	if (album.voteable) {
