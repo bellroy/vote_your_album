@@ -2,6 +2,10 @@ require File.join(File.dirname(__FILE__) + '/spec_helper')
 
 describe "vote your album:" do
   
+  before do
+    Library.stub!(:current).and_return nil
+  end
+  
   describe "GET '/'" do
     it "should render the homepage" do
       get "/"
@@ -42,10 +46,10 @@ describe "vote your album:" do
     end
     
     it "should return the currently played album" do
-      Library.stub!(:current).and_return PlayedAlbum.new(:album => @album)
+      Library.stub!(:current).and_return @album
       
       get "/status"
-      [/\"current\":\{.*\}/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"remaining\":3/, /\"voteable\":true/].each { |re| last_response.body.should match(re) }
+      [/\"current\":\{.*\}/, /\"artist\":\"c\"/, /\"name\":\"three\"/].each { |re| last_response.body.should match(re) }
     end
     
     it "should include the next album list as a sub hash" do

@@ -6,5 +6,4 @@ class Vote
   property :ip, String
   
   belongs_to :nomination
-  belongs_to :played_album
 end

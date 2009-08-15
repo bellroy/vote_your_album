@@ -180,11 +180,12 @@ describe Library do
       MpdConnection.stub! :play_album
       
       Library.stub!(:lib).and_return @lib = Library.new
-      @lib.played_albums.stub!(:create).and_return true
       @lib.stub! :update_attributes
       
-      album = Album.new(:name => "my name")
-      @next = @lib.nominations.build(:album => album, :created_at => Time.now)
+      @album = Album.new(:name => "my name")
+      @album.stub!(:update_attributes).and_return true
+      
+      @next = @lib.nominations.build(:album => @album, :created_at => Time.now)
       @next.stub! :destroy
     end
     
@@ -199,8 +200,9 @@ describe Library do
       Library.play_next
     end
     
-    it "should create a played album record" do
-      @lib.played_albums.should_receive(:create).with :album => @next.album
+    it "should update the 'last played at' attribute of the associated album" do
+      Time.stub!(:now).and_return time = mock("Now", :tv_sec => 1)
+      @album.should_receive(:update_attributes).with :last_played_at => time
       Library.play_next
     end
     
@@ -216,36 +218,36 @@ describe Library do
     end
   end
   
-  describe "force" do
-    before do
-      Library.stub!(:current).and_return @p_album = PlayedAlbum.new
-      Library.stub! :play_next
-      
-      @p_album.stub! :vote
-    end
-    
-    it "should do nothing if we dont have a currently playing album right now" do
-      Library.stub! :current
-      @p_album.should_not_receive :vote
-      Library.force "me"
-    end
-    
-    it "should add a voting to the currently played album" do
-      @p_album.should_receive(:vote).with 1, "me"
-      Library.force "me"
-    end
-    
-    it "should not play the next album if we have a remaining number > 0" do
-      Library.should_not_receive :play_next
-      Library.force "me"
-    end
-    
-    it "should play the next album if the remaining attribute of the played album is (less than) 0" do
-      @p_album.stub!(:remaining).and_return 0
-      Library.should_receive :play_next
-      Library.force "me"
-    end
-  end
+  # describe "force" do
+  #   before do
+  #     Library.stub!(:current).and_return @p_album = PlayedAlbum.new
+  #     Library.stub! :play_next
+  #     
+  #     @p_album.stub! :vote
+  #   end
+  #   
+  #   it "should do nothing if we dont have a currently playing album right now" do
+  #     Library.stub! :current
+  #     @p_album.should_not_receive :vote
+  #     Library.force "me"
+  #   end
+  #   
+  #   it "should add a voting to the currently played album" do
+  #     @p_album.should_receive(:vote).with 1, "me"
+  #     Library.force "me"
+  #   end
+  #   
+  #   it "should not play the next album if we have a remaining number > 0" do
+  #     Library.should_not_receive :play_next
+  #     Library.force "me"
+  #   end
+  #   
+  #   it "should play the next album if the remaining attribute of the played album is (less than) 0" do
+  #     @p_album.stub!(:remaining).and_return 0
+  #     Library.should_receive :play_next
+  #     Library.force "me"
+  #   end
+  # end
   
   describe "albums list" do
     before do
@@ -294,10 +296,11 @@ describe Library do
       Library.stub!(:lib).and_return @lib = Library.new
       Library.stub!(:playing?).and_return true
       
-      @lib.played_albums.stub!(:first).and_return "album1"
+      @lib.albums.stub!(:first).and_return "album1"
     end
     
-    it "should return the first album in the played albums list" do
+    it "should return the first album in the played albums list (ordered by last_played_at DESC)" do
+      @lib.albums.should_receive(:first).with(:order => :last_played_at.desc).and_return "album1"
       Library.current.should == "album1"
     end
     

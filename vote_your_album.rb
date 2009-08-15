@@ -1,5 +1,5 @@
 %w[rubygems sinatra json haml librmpd dm-core].each { |lib| require lib }
-%w[lib/belongs_to_album models/library models/album models/nomination models/played_album models/vote models/song].each { |model| require model }
+%w[lib/belongs_to_album models/library models/album models/nomination models/vote models/song].each { |model| require model }
 require 'lib/mpd_connection'
 
 require 'config'
@@ -14,7 +14,7 @@ def execute_on_album(list, album_id, &block)
 end
 
 def json_status
-  current = (Library.current ? Library.current.to_hash(request.ip) : nil)
+  current = (Library.current ? Library.current.to_hash : nil)
   { :volume => Library.volume, :current => current, :upcoming => Library.upcoming.map { |a| a.to_hash(request.ip) } }.to_json
 end
 

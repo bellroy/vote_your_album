@@ -7,7 +7,6 @@ class Library
   
   has n, :albums
   has n, :nominations
-  has n, :played_albums
   
   has n, :songs
   
@@ -28,7 +27,7 @@ class Library
     # -----------------------------------------------------------------------------------
     def list; lib.albums.sort_by { |a| "#{a.artist} #{a.name}" } end
     def upcoming; lib.nominations.sort_by { |a| [a.score, Time.now.tv_sec - a.created_at.tv_sec] }.reverse end
-    def current; playing? ? lib.played_albums.first : nil end
+    def current; playing? ? lib.albums.first(:order => :last_played_at.desc) : nil end
     def <<(album, ip); lib.nominations.create :album => album, :created_at => Time.now, :added_by => ip end
 
     # -----------------------------------------------------------------------------------
@@ -72,7 +71,7 @@ class Library
     def play_next
       return unless next_album = upcoming.first
       
-      lib.played_albums.create(:album => next_album.album) && next_album.destroy
+      next_album.album.update_attributes(:last_played_at => Time.now) && next_album.destroy
       lib.update_attributes :last_album_load => Time.now
       MpdConnection.play_album next_album.name
     end

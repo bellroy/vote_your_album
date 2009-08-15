@@ -10,8 +10,7 @@ describe Song do
       @mpd_song = MPD::Song.new
       { "track" => "1", "artist" => "me", "title" => "song", "album" => "hits" }.each { |k, v| @mpd_song[k] = v }
       
-      @album = Album.new
-      Library.stub!(:current).and_return PlayedAlbum.new(:album => @album)
+      Library.stub!(:current).and_return @album = Album.new
     end
     
     it "should take the respective attributes from the given MPD::Song object" do
