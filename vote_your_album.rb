@@ -1,5 +1,5 @@
 %w[rubygems sinatra json haml librmpd dm-core].each { |lib| require lib }
-%w[lib/belongs_to_album models/library models/album models/nomination models/voteable_album models/played_album models/vote models/song].each { |model| require model }
+%w[lib/belongs_to_album models/library models/album models/nomination models/played_album models/vote models/song].each { |model| require model }
 require 'lib/mpd_connection'
 
 require 'config'

@@ -75,7 +75,7 @@ function updatePage(data) {
 	
   $("#upcoming").html("");
   $.each(data.upcoming, function(i, album) {
-    $("#upcoming").append(voteableAlbumElement(album, i));
+    $("#upcoming").append(nominationElement(album, i));
   });
 }
 
@@ -118,7 +118,7 @@ function albumElement(album, i) {
 /*
  * Returns a list element for the list of 'upcoming' (voteable) albums
  */
-function voteableAlbumElement(album, i) {
+function nominationElement(album, i) {
   res = '<li class="album ' + (i % 2 == 0 ? 'even' : 'odd') + '">';
 	res += 	  '<span class="score ' + (album.score > 0 ? "positive" : (album.score < 0 ? "negative" : 0)) + '\
 	  " title="Score: ' + album.score + '">' + album.score + '</span> ';

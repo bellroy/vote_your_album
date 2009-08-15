@@ -184,12 +184,12 @@ describe Library do
       @lib.stub! :update_attributes
       
       album = Album.new(:name => "my name")
-      @next = @lib.voteable_albums.build(:album => album, :created_at => Time.now)
+      @next = @lib.nominations.build(:album => album, :created_at => Time.now)
       @next.stub! :destroy
     end
     
     it "should do nothing if we dont have an upcoming album" do
-      @lib.voteable_albums = []
+      @lib.nominations = []
       MpdConnection.should_not_receive :play_album
       Library.play_next
     end
@@ -275,7 +275,7 @@ describe Library do
     
     it "should add an album to the upcoming albums when '<<' is called" do
       Time.stub!(:now).and_return "now"
-      @lib.voteable_albums.should_receive(:create).with :album => @album, :created_at => "now", :added_by => "me"
+      @lib.nominations.should_receive(:create).with :album => @album, :created_at => "now", :added_by => "me"
       Library.<< @album, "me"
     end
     
@@ -283,7 +283,7 @@ describe Library do
       album1 = mock("Album", :score => 1, :created_at => Time.now - 3600)
       album2 = mock("Album", :score => 2, :created_at => Time.now)
       album3 = mock("Album", :score => 1, :created_at => Time.now)
-      @lib.stub!(:voteable_albums).and_return [album1, album2, album3]
+      @lib.stub!(:nominations).and_return [album1, album2, album3]
       
       Library.upcoming.should == [album2, album1, album3]
     end

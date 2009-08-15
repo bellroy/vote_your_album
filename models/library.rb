@@ -6,7 +6,7 @@ class Library
   property :last_album_load, Time
   
   has n, :albums
-  has n, :voteable_albums
+  has n, :nominations
   has n, :played_albums
   
   has n, :songs
@@ -27,9 +27,9 @@ class Library
     # Album methods
     # -----------------------------------------------------------------------------------
     def list; lib.albums.sort_by { |a| "#{a.artist} #{a.name}" } end
-    def upcoming; lib.voteable_albums.sort_by { |a| [a.score, Time.now.tv_sec - a.created_at.tv_sec] }.reverse end
+    def upcoming; lib.nominations.sort_by { |a| [a.score, Time.now.tv_sec - a.created_at.tv_sec] }.reverse end
     def current; playing? ? lib.played_albums.first : nil end
-    def <<(album, ip); lib.voteable_albums.create :album => album, :created_at => Time.now, :added_by => ip end
+    def <<(album, ip); lib.nominations.create :album => album, :created_at => Time.now, :added_by => ip end
 
     # -----------------------------------------------------------------------------------
     # Playback methods

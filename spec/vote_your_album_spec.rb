@@ -49,7 +49,7 @@ describe "vote your album:" do
     end
     
     it "should include the next album list as a sub hash" do
-      Library.stub!(:upcoming).and_return [VoteableAlbum.new(:id => 3, :album => @album)]
+      Library.stub!(:upcoming).and_return [Nomination.new(:id => 3, :album => @album)]
       
       get "/status"
       [/\"upcoming\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"score\":0/, /\"voteable\":true/].each { |re| last_response.body.should match(re) }
@@ -89,7 +89,7 @@ describe "vote your album:" do
     describe "POST '/up/:id'" do
       before do
         album = Album.new(:artist => "artist", :name =>  "album")
-        Library.stub!(:upcoming).and_return [@v_album = VoteableAlbum.new(:id => 123, :album => album)]
+        Library.stub!(:upcoming).and_return [@v_album = Nomination.new(:id => 123, :album => album)]
         @v_album.stub! :vote
       end
     
