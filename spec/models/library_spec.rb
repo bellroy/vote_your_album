@@ -18,31 +18,6 @@ describe Library do
     end
   end
   
-  describe "update albums" do
-    before do
-      MpdConnection.stub!(:fetch_new_albums_with_artists).and_return []
-      
-      Library.stub!(:lib).and_return @lib = Library.new
-      @lib.stub!(:albums).and_return @list = [Album.new(:artist => "a", :name => "name")]
-    end
-    
-    it "should fetch all new albums from the mpd connection" do
-      MpdConnection.should_receive(:fetch_new_albums_with_artists).with([["a", "name"]]).and_return []
-      Library.update_albums
-    end
-    
-    it "should not create anything if we have an empty list" do
-      @lib.albums.should_not_receive :create
-      Library.update_albums
-    end
-    
-    it "should create an album in the database for each returned artist - album combination" do
-      MpdConnection.stub!(:fetch_new_albums_with_artists).and_return [["artist", "album"]]
-      @lib.albums.should_receive(:create).with :artist => "artist", :name => "album"
-      Library.update_albums
-    end
-  end
-  
   describe "current song callback" do
     before do
       Library.stub!(:lib).and_return @lib = Library.new

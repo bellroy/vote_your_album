@@ -42,52 +42,6 @@ describe MpdConnection do
     end
   end
   
-  describe "fetch new albums with artists" do
-    before do
-      @song = MPD::Song.new
-      { "artist" => "me", "title" => "song", "album" => "album1" }.each { |k, v| @song[k] = v }
-      
-      MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil, :songs => [@song], :albums => ["album1"])
-      MpdConnection.setup "server", 1234
-    end
-    
-    it "should fetch all songs from the server" do
-      @mpd.should_receive(:songs).and_return []
-      MpdConnection.fetch_new_albums_with_artists []
-    end
-    
-    it "should fetch all albums from the server" do
-      @mpd.should_receive(:albums).and_return []
-      MpdConnection.fetch_new_albums_with_artists []
-    end
-    
-    it "should return the album + artist in the return if we have one or more songs matching the album name" do
-      MpdConnection.fetch_new_albums_with_artists([]).should include(["me", "album1"])
-    end
-    
-    it "should return an empty artist name if we dont have a song that matches the album name" do
-      @mpd.stub!(:songs).and_return []
-      MpdConnection.fetch_new_albums_with_artists([]).should include(["", "album1"])
-    end
-    
-    it "should return an empty artist if we have a nil artist in the song list" do
-      @song["artist"] = nil
-      MpdConnection.fetch_new_albums_with_artists([]).should include(["", "album1"])
-    end
-    
-    it "should exclude the album in the return if we provided the exact match in existing param" do
-      MpdConnection.fetch_new_albums_with_artists([["me", "album1"]]).should be_empty
-    end
-    
-    it "should not exclude the album in the return if we provided a matching album name only" do
-      MpdConnection.fetch_new_albums_with_artists([["other", "album1"]]).should_not be_empty
-    end
-    
-    it "should exclude the album in the return if we provided a matching artist name only" do
-      MpdConnection.fetch_new_albums_with_artists([["me", "album2"]]).should_not be_empty
-    end
-  end
-  
   describe "execute" do
     before do
       MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
