@@ -30,6 +30,7 @@ class MpdProxy
       
       nomination.update_attributes :status => "played", :played_at => Time.now
       nomination.album.songs.each { |song| @mpd.add song.file }
+      @mpd.play
     end
   end
 end

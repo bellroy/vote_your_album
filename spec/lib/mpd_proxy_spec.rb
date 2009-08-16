@@ -132,6 +132,7 @@ describe MpdProxy do
       MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
       MpdProxy.setup "server", 1234
       @mpd.stub! :add
+      @mpd.stub! :play
       
       @album = Album.new(:name => "my name")
       @album.stub!(:update_attributes).and_return true
@@ -156,6 +157,11 @@ describe MpdProxy do
     it "should add all songs of the album" do
       @album.stub!(:songs).and_return [song = Song.new(:file => "path")]
       @mpd.should_receive(:add).with "path"
+      MpdProxy.play_next
+    end
+    
+    it "should start playback" do
+      @mpd.should_receive :play
       MpdProxy.play_next
     end
   end
