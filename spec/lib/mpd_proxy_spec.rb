@@ -131,6 +131,8 @@ describe MpdProxy do
     before do
       MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
       MpdProxy.setup "server", 1234
+      
+      @mpd.stub! :clear
       @mpd.stub! :add
       @mpd.stub! :play
       
@@ -145,6 +147,11 @@ describe MpdProxy do
     it "should do nothing if we dont have an upcoming album" do
       Nomination.stub!(:first).and_return nil
       @album.should_not_receive :update_attributes
+      MpdProxy.play_next
+    end
+    
+    it "should clear the playlist before we add the new stuff" do
+      @mpd.should_receive :clear
       MpdProxy.play_next
     end
     
