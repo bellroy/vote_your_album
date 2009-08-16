@@ -2,13 +2,13 @@ require File.join(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Album do
   
-  describe "to hash" do
+  describe "to s" do
     before do
       @album = Album.new(:id => 123, :artist => "artist", :name => "album")
     end
     
-    it "should map all attributes into a hash" do
-      @album.to_hash.should == { :id => 123, :artist => "artist", :name => "album" }
+    it "should return the artist and name in a string" do
+      @album.to_s.should == "artist - album"
     end
   end
   
@@ -107,7 +107,7 @@ describe Album do
     end
     
     it "should return the first album (ordered by last_played_at DESC)" do
-      Album.should_receive(:first).with(:order => :last_played_at.desc).and_return "album1"
+      Album.should_receive(:first).with(:order => [:last_played_at.desc]).and_return "album1"
       Album.current.should == "album1"
     end
   end

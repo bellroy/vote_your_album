@@ -11,7 +11,7 @@ class Album
   
   default_scope(:default).update :order => [:artist, :name]
   
-  def to_hash; { :id => id, :artist => artist, :name => name } end
+  def to_s; "#{artist} - #{name}" end
   
   class << self
     def update
@@ -27,7 +27,7 @@ class Album
       end
     end
     
-    def current; first :order => :last_played_at.desc end
+    def current; first :order => [:last_played_at.desc] end
     def search(q)
       return all if q.nil? || q.empty?
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]

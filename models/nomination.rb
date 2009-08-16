@@ -23,6 +23,4 @@ class Nomination
     save
   end
   def can_be_voted_for_by?(ip); !votes.map { |v| v.ip }.include?(ip) end
-  
-  def to_hash(ip); { :id => id, :artist => artist, :name => name, :score => score, :voteable => can_be_voted_for_by?(ip), :nominated_by => nominated_by } end
 end
