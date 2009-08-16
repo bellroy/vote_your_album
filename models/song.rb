@@ -2,7 +2,7 @@ class Song
   include DataMapper::Resource
   
   property :id, Serial
-  property :track, String, :length => 10
+  property :track, Integer
   property :artist, String, :length => 200
   property :title, String, :length => 200
   property :file, String, :length => 500

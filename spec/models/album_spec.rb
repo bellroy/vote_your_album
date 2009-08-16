@@ -15,7 +15,7 @@ describe Album do
   describe "update" do
     before do
       @song = MPD::Song.new
-      { "track" => 1, "artist" => "me", "title" => "song", "album" => "album1", "file" => "path" }.each { |k, v| @song[k] = v }
+      { "track" => "1", "artist" => "me", "title" => "song", "album" => "album1", "file" => "path" }.each { |k, v| @song[k] = v }
       
       MpdProxy.stub!(:execute).with(:songs).and_return @songs = [@song]
       MpdProxy.stub!(:execute).with(:albums).and_return ["album1"]
@@ -50,7 +50,7 @@ describe Album do
     end
     
     it "should fetch all the songs for that album from the list of songs" do
-      @album.songs.should_receive(:build).with :track => 1, :artist => "me", :title => "song", :file => "path"
+      @album.songs.should_receive(:build).with :track => "1", :artist => "me", :title => "song", :file => "path"
       Album.update
     end
     
