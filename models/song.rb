@@ -3,9 +3,9 @@ class Song
   
   property :id, Serial
   property :track, String, :length => 10
-  property :artist, String, :length => 100
-  property :title, String, :length => 100
-  property :file, String, :length => 200
+  property :artist, String, :length => 200
+  property :title, String, :length => 200
+  property :file, String, :length => 500
   
   belongs_to :album
   
