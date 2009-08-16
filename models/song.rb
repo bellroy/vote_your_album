@@ -6,8 +6,8 @@ class Song
   property :artist, String, :length => 100
   property :title, String, :length => 100
   property :file, String, :length => 200
-  property :playing, Boolean
   
-  # belongs_to :library
   belongs_to :album
+  
+  default_scope(:default).update :order => [:track]
 end

@@ -1,10 +1,28 @@
 class Nomination
   include DataMapper::Resource
-  include BelongsToAlbum
   
   property :id, Serial
+  property :score, Integer, :default => 0
+  property :status, String, :length => 20
   property :created_at, Time
   property :nominated_by, String
   
-  def to_hash(ip); { :id => id, :score => score, :voteable => can_be_voted_for_by?(ip), :nominated_by => nominated_by }.merge(album.to_hash) end
+  belongs_to :album
+  has n, :votes
+  
+  default_scope(:default).update :status => "active", :order => [:score.desc, :created_at]
+  
+  def artist; album.artist end
+  def name; album.name end
+  
+  def vote(value, ip)
+    return if votes.map { |v| v.ip }.include?(ip)
+    
+    self.votes.create(:value => value, :ip => ip) && self.score = score + value
+    self.status = "deleted" if score <= ELIMINATION_SCORE
+    save
+  end
+  def can_be_voted_for_by?(ip); !votes.map { |v| v.ip }.include?(ip) end
+  
+  def to_hash(ip); { :id => id, :artist => artist, :name => name, :score => score, :voteable => can_be_voted_for_by?(ip), :nominated_by => nominated_by } end
 end

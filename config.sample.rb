@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------------
 configure :development do
   DataMapper.setup(:default, "mysql://localhost/vote_your_album_dev")
-  MpdConnection.setup "mpd", 6600
+  MpdProxy.setup "mpd", 6600
 end
 
 # -----------------------------------------------------------------------------------
@@ -11,7 +11,7 @@ end
 # -----------------------------------------------------------------------------------
 configure :production do
   DataMapper.setup(:default, "mysql://localhost/vote_your_album_prod")
-  MpdConnection.setup "mpd", 6600, true
+  MpdProxy.setup "mpd", 6600, true
 end
 
 # -----------------------------------------------------------------------------------

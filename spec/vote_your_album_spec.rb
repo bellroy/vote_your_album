@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__) + '/spec_helper')
 describe "vote your album:" do
   
   before do
-    Library.stub!(:current).and_return nil
+    Album.stub!(:current).and_return nil
   end
   
   describe "GET '/'" do
@@ -15,28 +15,28 @@ describe "vote your album:" do
   
   describe "GET '/list'" do
     before do
-      Library.stub!(:list).and_return [@album = Album.new(:id => 1, :artist => "name")]
+      Album.stub!(:all).and_return [@album = Album.new(:id => 1, :artist => "name")]
     end
     
     it "should return the list as a JSON list" do
       get "/list"
-      last_response.body.should == [@album.id_hash].to_json
+      last_response.body.should == [@album.to_hash].to_json
     end
   end
   
   describe "GET '/search/:q'" do
     before do
-      Library.stub!(:search).and_return [@album = Album.new(:id => 1, :artist => "name")]
+      Album.stub!(:search).and_return [@album = Album.new(:id => 1, :artist => "name")]
     end
     
     it "should search for matching album using the library" do
-      Library.should_receive(:search).with("query").and_return []
+      Album.should_receive(:search).with("query").and_return []
       get "/search", :q => "query"
     end
     
     it "should return the list as a JSON list" do
       get "/search", :q => "query"
-      last_response.body.should == [@album.id_hash].to_json
+      last_response.body.should == [@album.to_hash].to_json
     end
   end
   
@@ -46,21 +46,21 @@ describe "vote your album:" do
     end
     
     it "should return the currently played album" do
-      Library.stub!(:current).and_return @album
+      Album.stub!(:current).and_return @album
       
       get "/status"
       [/\"current\":\{.*\}/, /\"artist\":\"c\"/, /\"name\":\"three\"/].each { |re| last_response.body.should match(re) }
     end
     
     it "should include the next album list as a sub hash" do
-      Library.stub!(:upcoming).and_return [Nomination.new(:id => 3, :album => @album)]
+      Nomination.stub!(:all).and_return [Nomination.new(:id => 3, :album => @album)]
       
       get "/status"
       [/\"upcoming\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"score\":0/, /\"voteable\":true/].each { |re| last_response.body.should match(re) }
     end
     
     it "should return the volume" do
-      Library.stub!(:volume).and_return 32
+      MpdProxy.stub!(:volume).and_return 32
       
       get "/status"
       last_response.body.should match(/\"volume\":32/)
@@ -69,17 +69,21 @@ describe "vote your album:" do
   
   describe "POST '/add/:id'" do
     before do
-      Library.stub!(:list).and_return [@album = Album.new(:id => 123, :artist => "artist", :name =>  "album")]
-      Library.stub! :<<
+      Album.stub!(:get).and_return @album = Album.new(:id => 123, :artist => "artist", :name =>  "album")
+      @album.nominations.stub! :create
     end
     
     it "should add the Album to the Library's next list if we know the album" do
-      Library.should_receive(:<<).with @album, "127.0.0.1"
+      Time.stub!(:now).and_return time = mock("Now", :tv_sec => 1)
+      Album.should_receive(:get).with(123).and_return @album
+      
+      @album.nominations.should_receive(:create).with :status => "active", :created_at => time, :nominated_by => "127.0.0.1"
       post "/add/123"
     end
     
     it "should do nothing when we can't find the album in the list" do
-      Library.should_not_receive :<<
+      Album.should_receive(:get).with(321).and_return nil
+      Nomination.should_not_receive :create
       post "/add/321"
     end
     
@@ -93,17 +97,19 @@ describe "vote your album:" do
     describe "POST '/up/:id'" do
       before do
         album = Album.new(:artist => "artist", :name =>  "album")
-        Library.stub!(:upcoming).and_return [@v_album = Nomination.new(:id => 123, :album => album)]
-        @v_album.stub! :vote
+        Nomination.stub!(:get).and_return @nomination = Nomination.new(:id => 123, :album => album)
+        @nomination.stub! :vote
       end
     
-      it "should vote the Album #{action}" do
-        @v_album.should_receive(:vote).with change, "127.0.0.1", true
+      it "should vote the Nomination #{action}" do
+        Nomination.should_receive(:get).with(123).and_return @nomination
+        @nomination.should_receive(:vote).with change, "127.0.0.1"
         post "/#{action}/123"
       end
     
-      it "should do nothing when we can't find the album in the list" do
-        @v_album.should_not_receive :vote
+      it "should do nothing when we can't find the nomination" do
+        Nomination.should_receive(:get).with(321).and_return nil
+        @nomination.should_not_receive :vote
         post "/#{action}/321"
       end
       
@@ -115,14 +121,14 @@ describe "vote your album:" do
   end
   
   describe "POST force" do
-    before do
-      Library.stub! :force
-    end
-    
-    it "should force the next album" do
-      Library.should_receive(:force).with "127.0.0.1"
-      post "/force"
-    end
+    # before do
+    #   Library.stub! :force
+    # end
+    # 
+    # it "should force the next album" do
+    #   Library.should_receive(:force).with "127.0.0.1"
+    #   post "/force"
+    # end
     
     it "should return the json status response" do
       post "/force"
@@ -133,11 +139,11 @@ describe "vote your album:" do
   [:previous, :stop, :play, :next].each do |action|
     describe "POST '/control/#{action}'" do
       before do
-        MpdConnection.stub! :execute
+        MpdProxy.stub! :execute
       end
       
       it " should execute the provided action on the Library class" do
-        MpdConnection.should_receive(:execute).with action
+        MpdProxy.should_receive(:execute).with action
         post "/control/#{action}"
       end
       
@@ -150,11 +156,11 @@ describe "vote your album:" do
   
   describe "POST '/volume/:value" do
     before do
-      MpdConnection.stub! :volume=
+      MpdProxy.stub! :change_volume_to
     end
     
     it "should change the volume on the MPD server" do
-      MpdConnection.should_receive(:volume=).with 23
+      MpdProxy.should_receive(:change_volume_to).with 23
       post "/volume/23"
     end
     
@@ -167,18 +173,18 @@ describe "vote your album:" do
   
   describe "POST '/play'" do
     before do
-      Library.stub! :play_next
-      Library.stub!(:playing?).and_return false
+      MpdProxy.stub! :play_next
+      MpdProxy.stub!(:playing?).and_return false
     end
     
     it "should play the next album" do
-      Library.should_receive :play_next
+      MpdProxy.should_receive :play_next
       post "/play"
     end
     
     it "should not play the next album if we are currently playing something" do
-      Library.stub!(:playing?).and_return true
-      Library.should_not_receive :play_next
+      MpdProxy.stub!(:playing?).and_return true
+      MpdProxy.should_not_receive :play_next
       post "/play"
     end
     
