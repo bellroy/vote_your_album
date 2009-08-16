@@ -42,7 +42,8 @@ $(function() {
   
   // Click events that update the status of the application
   $(".control").click(function() { return executeAndUpdate("/control/" + $(this).attr("ref")); });
-  $(".play").click(function() { return executeAndUpdate("/play"); });
+  $("#play").click(function() { return executeAndUpdate("/play"); });
+  $("#force").click(function() { return executeAndUpdate("/force"); });
   
   // Click Events that update the 'upcoming list'
   $.each(["add", "up", "down"], function() {
@@ -95,11 +96,18 @@ function mainControls(data) {
   
   if (data.playing) {
     $("#play").hide();
-    $("#current").html(data.current);
+    $("#current").html(data.current_album);
+    
+    $("#force").show();
+    $("#force").attr("title", "Necessary Votes to force next album: " + data.force_score);
+    $("#force .necessary").html(data.force_score);
+    if (data.forceable) $("#force").removeClass("disabled");
+    else                $("#force").addClass("disabled");
   }
   else {
     $("#play").show();
     $("#current").html("");
+    $("#force").hide();
   }
 }
 

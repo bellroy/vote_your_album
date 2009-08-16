@@ -4,7 +4,6 @@ class Album
   property :id, Serial
   property :artist, String, :length => 100
   property :name, String, :length => 100
-  property :last_played_at, Time
   
   has n, :songs
   has n, :nominations
@@ -27,16 +26,9 @@ class Album
       end
     end
     
-    def current; first :order => [:last_played_at.desc] end
     def search(q)
       return all if q.nil? || q.empty?
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
-    # def search(q)
-    #   return list if q.nil? || q.empty?
-    #   
-    #   res = MpdProxy.find_albums_for(q)
-    #   list.select { |album| res.include? album.name }
-    # end
   end
 end

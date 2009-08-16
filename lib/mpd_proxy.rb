@@ -28,8 +28,8 @@ class MpdProxy
     def play_next
       return unless nomination = Nomination.first
       
-      album = nomination.album; nomination.update_attributes :status => "played"
-      album.update_attributes :last_played_at => Time.now; album.songs.each { |song| @mpd.add song.file }
+      nomination.update_attributes :status => "played", :played_at => Time.now
+      nomination.album.songs.each { |song| @mpd.add song.file }
     end
   end
 end

@@ -101,17 +101,6 @@ describe Album do
     end
   end
   
-  describe "current" do
-    before do
-      Album.stub!(:first).and_return "album1"
-    end
-    
-    it "should return the first album (ordered by last_played_at DESC)" do
-      Album.should_receive(:first).with(:order => [:last_played_at.desc]).and_return "album1"
-      Album.current.should == "album1"
-    end
-  end
-  
   describe "search" do
     before do
       Album.stub!(:all).and_return @list = ["one", "two"]

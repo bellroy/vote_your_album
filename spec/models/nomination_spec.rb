@@ -69,7 +69,7 @@ describe Nomination do
         @nomination.vote -2, "me"
       end
 
-      it "should change the status to 'deleted' when we have reached the elimination threshold (ELIMINATION_SCORE)" do
+      it "should change the status to 'deleted' when we have reached the elimination threshold (3)" do
         @nomination.should_receive(:status=).with "deleted"
         @nomination.stub!(:score).and_return -3
         @nomination.vote -3, "me"
@@ -106,6 +106,68 @@ describe Nomination do
     it "should set the status to 'deleted' when we are the 'owner'" do
       @nomination.should_receive(:update_attributes).with :status => "deleted"
       @nomination.remove "me"
+    end
+  end
+  
+  describe "force" do
+    before do
+      @nomination = Nomination.new(:nominated_by => "me", :force_score => 3)
+      @nomination.force_votes.stub!(:create).and_return true
+      @nomination.stub! :update_attributes
+    end
+    
+    it "should create an associated force vote with the ip" do
+      @nomination.force_votes.should_receive(:create).with :value => 1, :ip => "me", :type => "force"
+      @nomination.force "me"
+    end
+    
+    it "should update the force score attribute" do
+      @nomination.should_receive(:update_attributes).with :force_score => 2
+      @nomination.force "me"
+    end
+    
+    it "should not allow a vote, if we have already forced" do
+      @nomination.force_votes.should_receive(:create).once
+      2.times { @nomination.force "me" }
+    end
+    
+    it "should not play the next album if we have a 'force score' of 1 or more" do
+      @nomination.stub!(:force_score).and_return 1
+      MpdProxy.should_not_receive :play_next
+      @nomination.force "me"
+    end
+    
+    it "should play the next album if we have a 'force score' of 0 or less" do
+      @nomination.stub!(:force_score).and_return 0
+      MpdProxy.should_receive :play_next
+      @nomination.force "me"
+    end
+  end
+  
+  describe "can be forced by?" do
+    before do
+      @nomination = Nomination.new
+    end
+    
+    it "should return true if the force votes dont contain a vote by the given 'user'" do
+      @nomination.can_be_forced_by?("me").should be_true
+    end
+    
+    it "should return false if the string is in the 'forced by' list" do
+      @nomination.stub!(:force_votes).and_return [Vote.new(:ip => "me")]
+      @nomination.can_be_forced_by?("me").should be_false
+    end
+  end
+  
+  describe "current" do
+    before do
+      @nomination = Nomination.new
+      Nomination.stub! :first
+    end
+    
+    it "should return the first album flagged as 'played' ordered by 'played_at' attribute" do
+      Nomination.should_receive(:first).with(:status => "played", :order => [:played_at.desc]).and_return @nomination
+      Nomination.current.should == @nomination
     end
   end
 end

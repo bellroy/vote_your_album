@@ -147,14 +147,9 @@ describe MpdProxy do
       MpdProxy.play_next
     end
     
-    it "should update the 'last played at' attribute of the associated album" do
-      Time.stub!(:now).and_return time = mock("Now", :tv_sec => 1)
-      @album.should_receive(:update_attributes).with :last_played_at => time
-      MpdProxy.play_next
-    end
-    
     it "should update the status of the nomination to 'played'" do
-      @next.should_receive(:update_attributes).with :status => "played"
+      Time.stub!(:now).and_return "time"
+      @next.should_receive(:update_attributes).with :status => "played", :played_at => "time"
       MpdProxy.play_next
     end
     

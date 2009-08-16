@@ -28,7 +28,11 @@
           .middle
             %span#current
           .right
-            %a#play.play{ :href => "#" } Start Playback
+            %a#play{ :href => "#" } Start Playback
+            %a#force{ :href => "#" }
+              Force Next (
+              %span.necessary
+              more )
             
       .content
         = yield

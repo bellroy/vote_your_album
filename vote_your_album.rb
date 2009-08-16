@@ -14,7 +14,12 @@ def execute_on_nomination(id, &block)
 end
 
 def json_status
-  { :playing => MpdProxy.playing?, :volume => MpdProxy.volume, :current => Album.current.to_s }.to_json
+  current = Nomination.current
+  
+  status = { :playing => MpdProxy.playing?, :volume => MpdProxy.volume }
+  status = status.merge(:current_album => current.album.to_s,
+    :force_score => current.force_score, :forceable => current.can_be_forced_by?(request.ip)) if MpdProxy.playing?
+  status.to_json
 end
 
 def render_upcoming
@@ -64,7 +69,7 @@ post "/remove/:id" do |nomination_id|
   execute_on_nomination(nomination_id) { |nomination| nomination.remove request.ip }
 end
 post "/force" do
-  # Library.force request.ip
+  Nomination.current.force request.ip
   json_status
 end
 

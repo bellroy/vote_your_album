@@ -82,25 +82,7 @@ describe "vote your album:" do
     end
   end
   
-  describe "GET '/status'" do
-    before do
-      @album = Album.new(:artist => "c", :name =>  "three")
-    end
-    
-    it "should return the currently played album" do
-      Album.stub!(:current).and_return @album
-      
-      get "/status"
-      last_response.body.should match(/\"current\":\"c - three\"/)
-    end
-    
-    it "should return an empty string if wedont have a current album" do
-      Album.stub!(:current).and_return nil
-      
-      get "/status"
-      last_response.body.should match(/\"current\":\"\"/)
-    end
-    
+  describe "GET '/status'" do    
     it "should return the volume" do
       MpdProxy.stub!(:volume).and_return 32
       
@@ -109,10 +91,43 @@ describe "vote your album:" do
     end
     
     it "should contain the 'playing' flag" do
-      MpdProxy.stub!(:playing?).and_return true
+      MpdProxy.stub!(:playing?).and_return false
       
       get "/status"
-      last_response.body.should match(/\"playing\":true/)
+      last_response.body.should match(/\"playing\":false/)
+    end
+    
+    it "should not include the information about the current album if we are not playing anything" do
+      MpdProxy.stub!(:playing?).and_return false
+      
+      get "/status"
+      last_response.body.should_not match(/\"current_album\"/)
+    end
+    
+    describe "currently playing an album" do
+      before do
+        MpdProxy.stub!(:playing?).and_return true
+        
+        @album = Album.new(:artist => "c", :name =>  "three")
+        Nomination.stub!(:current).and_return @nomination = Nomination.new(:album => @album, :force_score => 1)
+      end
+      
+      it "should include the name of the current album" do
+        get "/status"
+        last_response.body.should match(/\"current_album\":\"c - three\"/)
+      end
+      
+      it "should include the number of necessary (remaining) forces" do
+        get "/status"
+        last_response.body.should match(/\"force_score\":1/)
+      end
+      
+      it "should include whether we can force" do
+        @nomination.stub!(:can_be_forced_by?).and_return false
+        
+        get "/status"
+        last_response.body.should match(/\"forceable\":false/)
+      end
     end
   end
   
@@ -201,14 +216,15 @@ describe "vote your album:" do
   end
   
   describe "POST force" do
-    # before do
-    #   Library.stub! :force
-    # end
-    # 
-    # it "should force the next album" do
-    #   Library.should_receive(:force).with "127.0.0.1"
-    #   post "/force"
-    # end
+    before do
+      Nomination.stub!(:current).and_return @nomination = Nomination.new(:id => 123)
+      @nomination.stub! :force
+    end
+    
+    it "should force the next album" do
+      @nomination.should_receive(:force).with "127.0.0.1"
+      post "/force"
+    end
     
     it "should return the json status response" do
       post "/force"
@@ -255,6 +271,7 @@ describe "vote your album:" do
     before do
       MpdProxy.stub! :play_next
       MpdProxy.stub!(:playing?).and_return false
+      Nomination.stub!(:current).and_return Nomination.new
     end
     
     it "should play the next album" do
