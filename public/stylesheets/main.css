@@ -77,6 +77,7 @@ a.disabled:visited {
 
 .album_list {
 	float: left;
+	position: relative;
 	margin: 20px 15px 0 15px;
 }
 .album_list p {
@@ -94,21 +95,25 @@ a.disabled:visited {
 	list-style-type: none;
 	padding: 0;
 }
-.album_list ul.active {
+.album_list ul.over {
   border-style: dashed;
 }
 .album_list li {
   padding: 4px 5px;
+  width: 440px;
 }
 .album_list li.odd {
 	background-color: #ddd;
 }
 .album_list li .left {
   width: 390px;
-  cursor: pointer;
 }
 .album_list.upcoming li .left {
   width: 365px;
+}
+.album_list.list li .left,
+.album_list.upcoming li.deleteable .left {
+  cursor: pointer;
 }
 .album_list.list li img {
   height: 15px;

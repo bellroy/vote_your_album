@@ -9,19 +9,35 @@ $(function() {
   
   // Drop container definitions
   $("#upcoming").droppable({
-    activeClass: "active",
+    scope: "adding",
+    hoverClass: "over",
     drop: function(event, ui) {
       $.post("/add/" + ui.draggable.attr("ref"), function(list) { $("#upcoming").html(list); });
     }
   });
+  $("#list").droppable({
+    scope: "removing",
+    hoverClass: "over",
+    drop: function(event, ui) {
+      $.post("/remove/" + ui.draggable.attr("ref"), function(list) { $("#upcoming").html(list); });
+    }
+  });
   
-  // Drag definition
+  // Drag definitions
+  var drag_options = {
+    handle: ".left",
+    helper: "clone",
+    opacity: 0.4
+  }
   $("#list").live("mouseover", function() {
-    $("#list .album").draggable({
-      handle: ".left",
-      helper: "clone",
-      opacity: 0.4
-    });
+    $("#list .album").draggable($.extend(drag_options, {
+      scope: "adding"
+    }));
+  });
+  $("#upcoming").live("mouseover", function() {
+    $("#upcoming .album.deleteable").draggable($.extend(drag_options, {
+      scope: "removing"
+    }));
   });
   
   // Click events that update the status of the application

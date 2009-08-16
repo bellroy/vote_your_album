@@ -60,6 +60,9 @@ end
 post "/down/:id" do |nomination_id|
   execute_on_nomination(nomination_id) { |nomination| nomination.vote -1, request.ip }
 end
+post "/remove/:id" do |nomination_id|
+  execute_on_nomination(nomination_id) { |nomination| nomination.remove request.ip }
+end
 post "/force" do
   # Library.force request.ip
   json_status

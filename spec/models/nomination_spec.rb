@@ -17,6 +17,20 @@ describe Nomination do
     end
   end
   
+  describe "owned by?" do
+    before do
+      @nomination = Nomination.new(:nominated_by => "me")
+    end
+    
+    it "should return true if we have nominated the album" do
+      @nomination.should be_owned_by("me")
+    end
+    
+    it "should return false if haven't nominated the album" do
+      @nomination.should_not be_owned_by("you")
+    end
+  end
+  
   describe "vote" do
     before do
       @nomination = Nomination.new(:score => 0)
@@ -75,6 +89,23 @@ describe Nomination do
     it "should return false if the string is in the 'voted by' list" do
       @nomination.stub!(:votes).and_return [Vote.new(:ip => "me")]
       @nomination.can_be_voted_for_by?("me").should be_false
+    end
+  end
+  
+  describe "remove" do
+    before do
+      @nomination = Nomination.new(:nominated_by => "me")
+      @nomination.stub! :update_attributes
+    end
+    
+    it "should do nothing if we havent nominated the album" do
+      @nomination.should_not_receive :update_attributes
+      @nomination.remove "other"
+    end
+    
+    it "should set the status to 'deleted' when we are the 'owner'" do
+      @nomination.should_receive(:update_attributes).with :status => "deleted"
+      @nomination.remove "me"
     end
   end
 end

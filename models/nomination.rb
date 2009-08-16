@@ -15,6 +15,8 @@ class Nomination
   def artist; album.artist end
   def name; album.name end
   
+  def owned_by?(ip); nominated_by == ip end
+  
   def vote(value, ip)
     return if votes.map { |v| v.ip }.include?(ip)
     
@@ -23,4 +25,6 @@ class Nomination
     save
   end
   def can_be_voted_for_by?(ip); !votes.map { |v| v.ip }.include?(ip) end
+
+  def remove(ip); self.update_attributes(:status => "deleted") if owned_by?(ip) end
 end

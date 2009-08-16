@@ -68,6 +68,18 @@ describe "vote your album:" do
       last_response.body.should_not match(%{a class='up'})
       last_response.body.should_not match(%{a class='down'})
     end
+    
+    it "should not have a deleteable class if we arent the 'owner'" do
+      get "/upcoming"
+      last_response.body.should match(%{li class='album even '})
+    end
+    
+    it "should have a deleteable class if we are the 'owner'" do
+      @nomination.nominated_by = "127.0.0.1"
+      
+      get "/upcoming"
+      last_response.body.should match(%{li class='album even deleteable'})
+    end
   end
   
   describe "GET '/status'" do
@@ -154,10 +166,37 @@ describe "vote your album:" do
         post "/#{action}/321"
       end
       
-      it "should return the json status response" do
+      it "should return the new list" do
         post "/#{action}/321"
         last_response.body.should match(%q{<span class='score})
       end
+    end
+  end
+  
+  describe "POST '/remove/:id" do
+    before do
+      album = Album.new(:artist => "artist", :name =>  "album")
+      Nomination.stub!(:get).and_return @nomination = Nomination.new(:id => 123, :album => album)
+      @nomination.stub! :remove
+      
+      Nomination.stub!(:all).and_return [@nomination]
+    end
+    
+    it "should remove the Nomination" do
+      Nomination.should_receive(:get).with(123).and_return @nomination
+      @nomination.should_receive(:remove).with "127.0.0.1"
+      post "/remove/123"
+    end
+  
+    it "should do nothing when we can't find the nomination" do
+      Nomination.should_receive(:get).with(321).and_return nil
+      @nomination.should_not_receive :remove
+      post "/remove/321"
+    end
+    
+    it "should return the new list" do
+      post "/remove/321"
+      last_response.body.should match(%q{<span class='score})
     end
   end
   

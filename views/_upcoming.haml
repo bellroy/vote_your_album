@@ -1,5 +1,5 @@
 - @nominations.each_with_index do |nomination, i|
-  %li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}" }
+  %li{ :class => "album #{i % 2 == 0 ? "even" : "odd"} #{nomination.owned_by?(request.ip) ? "deleteable" : ""}", :ref => nomination.id }
     .left
       %span{ :class => "score #{score_class(nomination.score)}", :title => "Score: #{nomination.score}" }= nomination.score
       = haml :_album, :locals => { :album => nomination }, :layout => false
