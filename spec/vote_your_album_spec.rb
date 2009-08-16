@@ -15,18 +15,19 @@ describe "vote your album:" do
   
   describe "GET '/list'" do
     before do
-      Album.stub!(:all).and_return [@album = Album.new(:id => 1, :artist => "name")]
+      Album.stub!(:all).and_return [@album = Album.new(:id => 1, :artist => "artist", :name => "name")]
     end
     
-    it "should return the list as a JSON list" do
+    it "should return the list" do
       get "/list"
-      last_response.body.should == [@album.to_hash].to_json
+      last_response.body.should match(%q{<span class='artist'>artist</span>})
+      last_response.body.should match(%q{<span class='name'>name</span>})
     end
   end
   
   describe "GET '/search/:q'" do
     before do
-      Album.stub!(:search).and_return [@album = Album.new(:id => 1, :artist => "name")]
+      Album.stub!(:search).and_return [@album = Album.new(:id => 1, :artist => "artist", :name => "name")]
     end
     
     it "should search for matching album using the library" do
@@ -34,9 +35,38 @@ describe "vote your album:" do
       get "/search", :q => "query"
     end
     
-    it "should return the list as a JSON list" do
+    it "should return the list" do
       get "/search", :q => "query"
-      last_response.body.should == [@album.to_hash].to_json
+      last_response.body.should match(%q{<span class='artist'>artist</span>})
+      last_response.body.should match(%q{<span class='name'>name</span>})
+    end
+  end
+  
+  describe "GET '/upcoming'" do
+    before do
+      @album = Album.new(:artist => "artist", :name => "name")
+      Nomination.stub!(:all).and_return [@nomination = Nomination.new(:id => 1, :album => @album, :score => 2)]
+    end
+    
+    it "should return the list" do
+      get "/upcoming"
+      last_response.body.should match(%q{<span class='score positive' title='Score: 2'>2</span>})
+      last_response.body.should match(%q{<span class='artist'>artist</span>})
+      last_response.body.should match(%q{<span class='name'>name</span>})
+    end
+    
+    it "should show the vote buttons if we can vote" do
+      get "/upcoming"
+      last_response.body.should match(%{a class='up'})
+      last_response.body.should match(%{a class='down'})
+    end
+    
+    it "should not show the vote buttons if we cant vote" do
+      @nomination.stub!(:can_be_voted_for_by?).and_return false
+      
+      get "/upcoming"
+      last_response.body.should_not match(%{a class='up'})
+      last_response.body.should_not match(%{a class='down'})
     end
   end
   
@@ -49,14 +79,14 @@ describe "vote your album:" do
       Album.stub!(:current).and_return @album
       
       get "/status"
-      [/\"current\":\{.*\}/, /\"artist\":\"c\"/, /\"name\":\"three\"/].each { |re| last_response.body.should match(re) }
+      last_response.body.should match(/\"current\":\"c - three\"/)
     end
     
-    it "should include the next album list as a sub hash" do
-      Nomination.stub!(:all).and_return [Nomination.new(:id => 3, :album => @album)]
+    it "should return an empty string if wedont have a current album" do
+      Album.stub!(:current).and_return nil
       
       get "/status"
-      [/\"upcoming\":\[.*\]/, /\"id\":3/, /\"artist\":\"c\"/, /\"name\":\"three\"/, /\"score\":0/, /\"voteable\":true/].each { |re| last_response.body.should match(re) }
+      last_response.body.should match(/\"current\":\"\"/)
     end
     
     it "should return the volume" do
@@ -65,12 +95,21 @@ describe "vote your album:" do
       get "/status"
       last_response.body.should match(/\"volume\":32/)
     end
+    
+    it "should contain the 'playing' flag" do
+      MpdProxy.stub!(:playing?).and_return true
+      
+      get "/status"
+      last_response.body.should match(/\"playing\":true/)
+    end
   end
   
   describe "POST '/add/:id'" do
     before do
       Album.stub!(:get).and_return @album = Album.new(:id => 123, :artist => "artist", :name =>  "album")
       @album.nominations.stub! :create
+      
+      Nomination.stub!(:all).and_return [Nomination.new(:album => @album)]
     end
     
     it "should add the Album to the Library's next list if we know the album" do
@@ -87,9 +126,9 @@ describe "vote your album:" do
       post "/add/321"
     end
     
-    it "should return the json status response" do
+    it "should return the new list" do
       post "/add/321"
-      last_response.body.should match(/\"volume\":/)
+      last_response.body.should match(%q{<span class='score})
     end
   end
   
@@ -99,6 +138,8 @@ describe "vote your album:" do
         album = Album.new(:artist => "artist", :name =>  "album")
         Nomination.stub!(:get).and_return @nomination = Nomination.new(:id => 123, :album => album)
         @nomination.stub! :vote
+        
+        Nomination.stub!(:all).and_return [@nomination]
       end
     
       it "should vote the Nomination #{action}" do
@@ -115,7 +156,7 @@ describe "vote your album:" do
       
       it "should return the json status response" do
         post "/#{action}/321"
-        last_response.body.should match(/\"volume\":/)
+        last_response.body.should match(%q{<span class='score})
       end
     end
   end

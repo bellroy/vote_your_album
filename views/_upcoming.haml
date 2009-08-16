@@ -1,0 +1,12 @@
+- @nominations.each_with_index do |nomination, i|
+  %li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}" }
+    .left
+      %span{ :class => "score #{score_class(nomination.score)}", :title => "Score: #{nomination.score}" }= nomination.score
+      = haml :_album, :locals => { :album => nomination }, :layout => false
+    .right
+      - if nomination.can_be_voted_for_by?(request.ip)
+        %a.up{ :href => "#", :ref => nomination.id }
+          %img{ :src => "/images/plus.png", :title => "Vote this Album up" }
+        %a.down{ :href => "#", :ref => nomination.id }
+          %img{ :src => "/images/minus.png", :title => "Vote this Album down" }
+    .clear

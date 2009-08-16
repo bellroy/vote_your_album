@@ -1,0 +1,7 @@
+- @albums.each_with_index do |album, i|
+  %li{ :class => "album #{i % 2 == 0 ? "even" : "odd"}", :ref => album.id }
+    .left= haml :_album, :locals => { :album => album }, :layout => false
+    .right
+      %a.add{ :href => "#", :ref => album.id }
+        %img{ :src => "/images/add.png", :title => "Add Album to Upcoming Albums" }
+    .clear

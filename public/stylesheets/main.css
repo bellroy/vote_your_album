@@ -94,6 +94,9 @@ a.disabled:visited {
 	list-style-type: none;
 	padding: 0;
 }
+.album_list ul.active {
+  border-style: dashed;
+}
 .album_list li {
   padding: 4px 5px;
 }
@@ -102,6 +105,7 @@ a.disabled:visited {
 }
 .album_list li .left {
   width: 390px;
+  cursor: pointer;
 }
 .album_list.upcoming li .left {
   width: 365px;
