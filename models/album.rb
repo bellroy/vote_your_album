@@ -30,7 +30,7 @@ class Album
     def current; first :order => :last_played_at.desc end
     def search(q)
       return all if q.nil? || q.empty?
-      all :conditions => ["artist LIKE :q OR name LIKE :q", "%#{q}%"]
+      all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
     # def search(q)
     #   return list if q.nil? || q.empty?

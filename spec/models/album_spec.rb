@@ -126,7 +126,7 @@ describe Album do
     end
     
     it "should return the result of a DB search if we have a query" do
-      Album.should_receive(:all).with(:conditions => ["artist LIKE :q OR name LIKE :q", "%query%"]).and_return @list
+      Album.should_receive(:all).with(:conditions => ["artist LIKE ? OR name LIKE ?", "%query%", "%query%"]).and_return @list
       Album.search("query").should == @list
     end
   end
