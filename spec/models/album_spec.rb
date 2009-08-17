@@ -2,6 +2,33 @@ require File.join(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Album do
   
+  describe "play count" do
+    before do
+      @album = Album.new
+      @album.nominations.stub!(:played).and_return [1, 2, 3]
+    end
+    
+    it "should return the number of associated played nominations" do
+      @album.play_count.should == 3
+    end
+  end
+  
+  describe "total score" do
+    before do
+      @album = Album.new
+      @album.stub!(:nominations).and_return [Nomination.new(:score => 3), Nomination.new(:score => -1)]
+    end
+    
+    it "should return the summed up score of all nominations" do
+      @album.total_score.should == 2
+    end
+    
+    it "should return 0 if we dont have a nomination" do
+      @album.stub!(:nominations).and_return []
+      @album.total_score.should == 0
+    end
+  end
+  
   describe "to s" do
     before do
       @album = Album.new(:id => 123, :artist => "artist", :name => "album")
@@ -122,8 +149,8 @@ describe Album do
   
   describe "most listened" do
     before do
-      @album1 = Album.new(:id => 1); @album1.nominations.stub!(:played).and_return [1]
-      @album2 = Album.new(:id => 2); @album2.nominations.stub!(:played).and_return [2, 1]
+      @album1 = Album.new(:id => 1); @album1.stub!(:play_count).and_return 1
+      @album2 = Album.new(:id => 2); @album2.stub!(:play_count).and_return 2
       Album.stub!(:all).and_return @list = [@album1, @album2]
     end
     
@@ -139,14 +166,19 @@ describe Album do
   
   describe "most popular" do
     before do
-      @album1 = Album.new(:id => 1); @album1.stub!(:nominations).and_return [Nomination.new(:score => 5)]
-      @album2 = Album.new(:id => 2); @album2.stub!(:nominations).and_return [Nomination.new(:score => 3), Nomination.new(:score => 3)]
-      Album.stub!(:all).and_return @list = [@album1, @album2]
+      @album1 = Album.new(:id => 1); @album1.stub!(:total_score).and_return 5
+      @album2 = Album.new(:id => 2); @album2.stub!(:total_score).and_return 6
+      @album3 = Album.new(:id => 3); @album3.stub!(:total_score).and_return -1
+      Album.stub!(:all).and_return @list = [@album1, @album2, @album3]
     end
     
     it "should grab the albums that have already been voted for" do
       Album.should_receive(:all).with("nominations.score.gt" => 0).and_return @list
       Album.most_popular
+    end
+    
+    it "should remove all albums with a 0 or negative total score" do
+      Album.most_popular.should_not include(@album3)
     end
     
     it "should then sort the list by total number of votes" do

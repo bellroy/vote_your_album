@@ -10,6 +10,9 @@ class Album
   
   default_scope(:default).update :order => [:artist, :name]
   
+  def play_count; nominations.played.size end
+  def total_score; nominations.inject(0) { |sum, n| sum + n.score } end
+  
   def to_s; "#{artist} - #{name}" end
   
   class << self
@@ -31,7 +34,7 @@ class Album
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
     
-    def most_listened; all("nominations.status" => "played").sort_by { |album| album.nominations.played.size }.reverse end
-    def most_popular; all("nominations.score.gt" => 0).sort_by { |album| album.nominations.inject(0) { |sum, n| sum + n.score } }.reverse end
+    def most_listened; all("nominations.status" => "played").sort_by { |a| a.play_count }.reverse end
+    def most_popular; all("nominations.score.gt" => 0).select { |a| a.total_score > 0 }.sort_by { |a| a.total_score }.reverse end
   end
 end
