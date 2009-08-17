@@ -141,11 +141,11 @@ describe MpdProxy do
       
       @next = Nomination.new(:album => @album, :created_at => Time.now)
       @next.stub! :update_attributes
-      Nomination.stub!(:first).and_return @next
+      Nomination.stub!(:active).and_return [@next]
     end
     
     it "should do nothing if we dont have an upcoming album" do
-      Nomination.stub!(:first).and_return nil
+      Nomination.stub!(:active).and_return []
       @album.should_not_receive :update_attributes
       MpdProxy.play_next
     end

@@ -13,8 +13,6 @@ class Nomination
   has n, :votes, :type => nil
   has n, :force_votes, :class_name => "Vote", :type => "force"
   
-  default_scope(:default).update :status => "active", :order => [:score.desc, :created_at]
-  
   def artist; album.artist end
   def name; album.name end
   
@@ -40,6 +38,7 @@ class Nomination
   def can_be_forced_by?(ip); !force_votes.map { |v| v.ip }.include?(ip) end
   
   class << self
+    def active; all :status => "active", :order => [:score.desc, :created_at] end
     def played; all :status => "played", :order => [:played_at.desc] end
     def current; played.first end
   end

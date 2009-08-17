@@ -26,7 +26,7 @@ class MpdProxy
     end
     
     def play_next
-      return unless nomination = Nomination.first
+      return unless nomination = Nomination.active.first
       
       @mpd.clear
       nomination.update_attributes :status => "played", :played_at => Time.now

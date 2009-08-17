@@ -159,6 +159,18 @@ describe Nomination do
     end
   end
   
+  describe "active" do
+    before do
+      @nomination = Nomination.new
+      Nomination.stub!(:all).and_return [@nomination]
+    end
+    
+    it "should grab all nominations that are voteable" do
+      Nomination.should_receive(:all).with(:status => "active", :order => [:score.desc, :created_at]).and_return [@nomination]
+      Nomination.active.should == [@nomination]
+    end
+  end
+  
   describe "played" do
     before do
       @nomination = Nomination.new
