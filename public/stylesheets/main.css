@@ -21,6 +21,9 @@ a.disabled,
 a.disabled:visited {
   color: #aaa;
 }
+a img {
+  border: none;
+}
 .clear {
   clear: both;
 }
