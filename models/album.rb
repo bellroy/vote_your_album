@@ -10,6 +10,8 @@ class Album
   
   default_scope(:default).update :order => [:artist, :name]
   
+  VALUE_METHODS = { "most_listened" => :play_count, "most_popular" => :total_score }
+  
   def play_count; nominations.played.size end
   def total_score; nominations.inject(0) { |sum, n| sum + n.score } end
   
@@ -36,5 +38,7 @@ class Album
     
     def most_listened; all("nominations.status" => "played").sort_by { |a| a.play_count }.reverse end
     def most_popular; all("nominations.score.gt" => 0).select { |a| a.total_score > 0 }.sort_by { |a| a.total_score }.reverse end
+    
+    def value_method_for(scope); VALUE_METHODS[scope] end
   end
 end

@@ -28,6 +28,12 @@ describe "vote your album:" do
       last_response.body.should match(%q{<span class='artist'>artist</span>})
       last_response.body.should match(%q{<span class='name'>name</span>})
     end
+    
+    it "should call the 'value' method on the album(s) if we get one" do
+      Album.stub!(:value_method_for).and_return :something
+      @album.should_receive :something
+      get "/list/all"
+    end
   end
   
   describe "GET '/search/:q'" do

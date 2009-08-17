@@ -116,6 +116,9 @@ a.disabled:visited {
 .album_list.upcoming li.deleteable .left {
   cursor: pointer;
 }
+.album_list.list li .left .value {
+  font-weight: bold;
+}
 .album_list.list li img {
   height: 15px;
 }

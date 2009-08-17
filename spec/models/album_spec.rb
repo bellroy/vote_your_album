@@ -185,4 +185,12 @@ describe Album do
       Album.most_popular.first.should == @album2
     end
   end
+  
+  describe "value method for" do
+    { "most_listened" => :play_count, "most_popular" => :total_score, "all" => nil, "bla" => nil }.each do |scope, method|
+      it "should return the method name '#{method}' for the scope '#{scope}'" do
+        Album.value_method_for(scope).should == method
+      end
+    end
+  end
 end
