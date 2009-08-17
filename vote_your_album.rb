@@ -23,7 +23,7 @@ def json_status
 end
 
 def render_upcoming
-  @nominations = Nomination.all
+  @nominations = Nomination.active
   haml :_upcoming, :layout => false
 end
 
@@ -38,8 +38,8 @@ end
 get "/" do
   haml :index
 end
-get "/list" do
-  @albums = Album.all
+get "/list/:type" do |list_type|
+  @albums = Album.send(list_type)
   haml :_list, :layout => false
 end
 get "/search" do

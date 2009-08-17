@@ -1,12 +1,20 @@
 .album_list.list
   %p
-    %b Albums available in the Library
+    %b Library Albums
   %form#search{ :action => "search", :method => :get }
     %input#query{ :type => "text", :name => "q", :value => params[:q] }
     %input{ :type => "submit", :value => "Search" }
     %button#clear{ :type => "button" } Clear
        
   %ul#list
+  
+  %ul#tabs
+    %li
+      %a.all{ :href => "#", :title => "Show all albums" } All
+    %li
+      %a.most_listened{ :href => "#", :title => "Show the albums that where listened to the most" } Most Listened
+    %li
+      %a.most_popular{ :href => "#", :title => "Show the albums with the most votes" } Most Popular
   
 .album_list.upcoming
   %p

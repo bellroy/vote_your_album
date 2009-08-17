@@ -13,13 +13,18 @@ describe "vote your album:" do
     end
   end
   
-  describe "GET '/list'" do
+  describe "GET '/list/:type'" do
     before do
-      Album.stub!(:all).and_return [@album = Album.new(:id => 1, :artist => "artist", :name => "name")]
+      Album.stub!("all").and_return [@album = Album.new(:id => 1, :artist => "artist", :name => "name")]
+    end
+    
+    it "should call the given type on the Album class to get the list" do
+      Album.should_receive("some_list").and_return []
+      get "/list/some_list"
     end
     
     it "should return the list" do
-      get "/list"
+      get "/list/all"
       last_response.body.should match(%q{<span class='artist'>artist</span>})
       last_response.body.should match(%q{<span class='name'>name</span>})
     end
@@ -45,7 +50,7 @@ describe "vote your album:" do
   describe "GET '/upcoming'" do
     before do
       @album = Album.new(:artist => "artist", :name => "name")
-      Nomination.stub!(:all).and_return [@nomination = Nomination.new(:id => 1, :album => @album, :score => 2)]
+      Nomination.stub!(:active).and_return [@nomination = Nomination.new(:id => 1, :album => @album, :score => 2)]
     end
     
     it "should return the list" do
@@ -136,7 +141,7 @@ describe "vote your album:" do
       Album.stub!(:get).and_return @album = Album.new(:id => 123, :artist => "artist", :name =>  "album")
       @album.nominations.stub! :create
       
-      Nomination.stub!(:all).and_return [Nomination.new(:album => @album)]
+      Nomination.stub!(:active).and_return [Nomination.new(:album => @album)]
     end
     
     it "should add the Album to the Library's next list if we know the album" do
@@ -166,7 +171,7 @@ describe "vote your album:" do
         Nomination.stub!(:get).and_return @nomination = Nomination.new(:id => 123, :album => album)
         @nomination.stub! :vote
         
-        Nomination.stub!(:all).and_return [@nomination]
+        Nomination.stub!(:active).and_return [@nomination]
       end
     
       it "should vote the Nomination #{action}" do
@@ -194,7 +199,7 @@ describe "vote your album:" do
       Nomination.stub!(:get).and_return @nomination = Nomination.new(:id => 123, :album => album)
       @nomination.stub! :remove
       
-      Nomination.stub!(:all).and_return [@nomination]
+      Nomination.stub!(:active).and_return [@nomination]
     end
     
     it "should remove the Nomination" do

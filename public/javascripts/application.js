@@ -55,14 +55,23 @@ $(function() {
   });
   
   // Search
-  $("#search").ajaxForm({ success: function(list) { $("#list").html(list); } });
+  $("#search").ajaxForm({ success: function(list) {
+    highlightTab(".all");
+    $("#list").html(list);
+  } });
   $("#clear").click(function() {
     $("#search").clearForm();
-    getList();
+    getList("all");
+  });
+  
+  // Lists
+  $.each(["all", "most_listened", "most_popular"], function() {
+    var type = this;
+    $("." + type).click(function() { getList(type); });
   });
   
   // Initial page update to load the lists and the status
-  getList();
+  getList("all");
   getUpcoming();
   getStatus();
 });
@@ -70,7 +79,15 @@ $(function() {
 /*
  * Requests an update of the available albums and updates the list
  */
-function getList() { $.get("/list", function(list) { $("#list").html(list); }); }
+function getList(type) { $.get("/list/" + type, function(list) {
+  highlightTab("." + type);
+  $("#list").html(list);
+  return false;
+}); }
+function highlightTab(link) {
+  $("#tabs li").removeClass("selected");
+  $(link).parent().addClass("selected");
+}
 
 /*
  * Requests an update of the upcoming albums and updates the list

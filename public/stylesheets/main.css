@@ -90,17 +90,18 @@ a.disabled:visited {
 .album_list ul {
 	height: 500px;
 	width: 450px;
-	overflow: auto;
 	border: 1px solid #000;
 	list-style-type: none;
 	padding: 0;
+	margin-bottom: 0;
+	overflow-y: scroll;
 }
 .album_list ul.over {
   border-style: dashed;
 }
 .album_list li {
   padding: 4px 5px;
-  width: 440px;
+  width: 425px;
 }
 .album_list li.odd {
 	background-color: #ddd;
@@ -150,4 +151,30 @@ form {
 input[type = text] {
   width: 260px;
   border: 1px solid #000;
+}
+
+#tabs {
+  height: 23px;
+  overflow-y: hidden;
+  border: none;
+  margin-top: 0;
+}
+#tabs li {
+  float: left;
+  width: auto;
+  border: 1px solid #000;
+  border-top: none;
+  padding: 1px 5px;
+  margin: 0 3px;
+}
+#tabs li.selected {
+  border-style: dashed;
+  border-top: none;
+}
+#tabs li a {
+  font-size: 10pt;
+  font-weight: normal;
+}
+#tabs li a:hover {
+  font-weight: bold;
 }
