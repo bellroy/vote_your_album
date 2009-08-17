@@ -1,9 +1,12 @@
 class Nomination
   include DataMapper::Resource
   
+  ELIMINATION_SCORE = -3
+  INITIAL_FORCE_SCORE = 3
+  
   property :id, Serial
   property :score, Integer, :default => 0
-  property :force_score, Integer, :default => 3
+  property :force_score, Integer, :default => INITIAL_FORCE_SCORE
   property :status, String, :length => 20
   property :nominated_by, String
   property :played_at, DateTime
@@ -22,7 +25,7 @@ class Nomination
     return if votes.map { |v| v.ip }.include?(ip)
     
     self.votes.create(:value => value, :ip => ip) && self.score = score + value
-    self.status = "deleted" if score <= -3
+    self.status = "deleted" if score <= ELIMINATION_SCORE
     save
   end
   def can_be_voted_for_by?(ip); !votes.map { |v| v.ip }.include?(ip) end

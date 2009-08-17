@@ -1,6 +1,8 @@
 class Album
   include DataMapper::Resource
   
+  VALUE_METHODS = { "most_listened" => :play_count, "most_popular" => :total_score }
+  
   property :id, Serial
   property :artist, String, :length => 200
   property :name, String, :length => 200
@@ -9,8 +11,6 @@ class Album
   has n, :nominations
   
   default_scope(:default).update :order => [:artist, :name]
-  
-  VALUE_METHODS = { "most_listened" => :play_count, "most_popular" => :total_score }
   
   def play_count; nominations.played.size end
   def total_score; nominations.inject(0) { |sum, n| sum + n.score } end
