@@ -40,6 +40,7 @@ class Nomination
   def can_be_forced_by?(ip); !force_votes.map { |v| v.ip }.include?(ip) end
   
   class << self
-    def current; first :status => "played", :order => [:played_at.desc] end
+    def played; all :status => "played", :order => [:played_at.desc] end
+    def current; played.first end
   end
 end

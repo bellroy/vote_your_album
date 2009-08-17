@@ -30,5 +30,8 @@ class Album
       return all if q.nil? || q.empty?
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
+    
+    def most_listened; all("nominations.status" => "played").sort_by { |album| album.nominations.played.size }.reverse end
+    def most_popular; all("nominations.score.gt" => 0).sort_by { |album| album.nominations.inject(0) { |sum, n| sum + n.score } }.reverse end
   end
 end

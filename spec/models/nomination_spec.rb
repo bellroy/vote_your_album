@@ -159,14 +159,26 @@ describe Nomination do
     end
   end
   
+  describe "played" do
+    before do
+      @nomination = Nomination.new
+      Nomination.stub!(:all).and_return [@nomination]
+    end
+    
+    it "should grab all nominations that have been played" do
+      Nomination.should_receive(:all).with(:status => "played", :order => [:played_at.desc]).and_return [@nomination]
+      Nomination.played.should == [@nomination]
+    end
+  end
+  
   describe "current" do
     before do
       @nomination = Nomination.new
-      Nomination.stub! :first
+      Nomination.stub! :played
     end
     
     it "should return the first album flagged as 'played' ordered by 'played_at' attribute" do
-      Nomination.should_receive(:first).with(:status => "played", :order => [:played_at.desc]).and_return @nomination
+      Nomination.should_receive(:played).and_return [@nomination]
       Nomination.current.should == @nomination
     end
   end

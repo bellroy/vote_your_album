@@ -4,7 +4,7 @@ This Sinatra application works as an MPD client. Besides the standard functional
 == Installation
 1. Clone this repository in a folder of your choice
 2. The application can be run with any ruby application server (e.g. Thin) or with Passenger.
-   * To use a traditional server, just execute<br>
+   * To use a traditional server, just execute
       
      <tt>ruby vote_your_album.rb</tt>
      
@@ -19,28 +19,28 @@ This Sinatra application works as an MPD client. Besides the standard functional
         </directory>
       </VirtualHost>
 3. Change the config file to suit your needs (See comments inside the config.rb file).
-4. Open a irb console and load the application:<br>
+4. Open a irb console and load the application:
    
-   <tt>require 'vote_your_album'</tt><br>
+   <tt>require 'vote_your_album'</tt>
    
-   Then execute<br>
+   Then execute
    
-   <tt>DataMapper.auto_migrate!</tt><br>
+   <tt>DataMapper.auto_migrate!</tt>
    
    to setup the database. The database has to be created before (i.e. in the mysql console)!
    If you want to setup a different database than development, just execute the respective DataMapper setup statement from the config.rb before running the migrations.
 
 == Loading the albums from the MPD library
-To fill the albums database open irb again and load the application. Then connect to the MPD server (make sure that the configuration is correct in config.rb):<br>
+To fill the albums database open irb again and load the application. Then connect to the MPD server (make sure that the configuration is correct in config.rb):
    
-<tt>MpdProxy.setup('localhost', 6600)</tt><br>
+<tt>MpdProxy.setup('localhost', 6600)</tt>
    
-If the connection was established you should see something like this:<br>
+If the connection was established you should see something like this:
 
-<tt>OK MPD 0.11.5\n</tt><br>
+<tt>OK MPD 0.11.5\n</tt>
 
-You can then execute<br>
+You can then execute
 
-<tt>Album.update</tt><br>
+<tt>Album.update</tt>
   
 which will create new albums in the database (with associated songs) for all unknown albums on the MPD server. Already existing albums won't be changed.

@@ -119,4 +119,38 @@ describe Album do
       Album.search("query").should == @list
     end
   end
+  
+  describe "most listened" do
+    before do
+      @album1 = Album.new(:id => 1); @album1.nominations.stub!(:played).and_return [1]
+      @album2 = Album.new(:id => 2); @album2.nominations.stub!(:played).and_return [2, 1]
+      Album.stub!(:all).and_return @list = [@album1, @album2]
+    end
+    
+    it "should grab the albums that have already been played" do
+      Album.should_receive(:all).with("nominations.status" => "played").and_return @list
+      Album.most_listened
+    end
+    
+    it "should then sort this list by number of 'listenings'" do
+      Album.most_listened.first.should == @album2
+    end
+  end
+  
+  describe "most popular" do
+    before do
+      @album1 = Album.new(:id => 1); @album1.stub!(:nominations).and_return [Nomination.new(:score => 5)]
+      @album2 = Album.new(:id => 2); @album2.stub!(:nominations).and_return [Nomination.new(:score => 3), Nomination.new(:score => 3)]
+      Album.stub!(:all).and_return @list = [@album1, @album2]
+    end
+    
+    it "should grab the albums that have already been voted for" do
+      Album.should_receive(:all).with("nominations.score.gt" => 0).and_return @list
+      Album.most_popular
+    end
+    
+    it "should then sort the list by total number of votes" do
+      Album.most_popular.first.should == @album2
+    end
+  end
 end
