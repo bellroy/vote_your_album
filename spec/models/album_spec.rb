@@ -151,7 +151,7 @@ describe Album do
     before do
       @album1 = Album.new(:id => 1); @album1.stub!(:play_count).and_return 1
       @album2 = Album.new(:id => 2); @album2.stub!(:play_count).and_return 2
-      Album.stub!(:all).and_return @list = [@album1, @album2]
+      Album.stub!(:all).and_return @list = [@album1, @album2, @album1]
     end
     
     it "should grab the albums that have already been played" do
@@ -162,6 +162,10 @@ describe Album do
     it "should then sort this list by number of 'listenings'" do
       Album.most_listened.first.should == @album2
     end
+    
+    it "should get the unique list" do
+      Album.most_listened.size.should == 2
+    end
   end
   
   describe "most popular" do
@@ -169,7 +173,7 @@ describe Album do
       @album1 = Album.new(:id => 1); @album1.stub!(:total_score).and_return 5
       @album2 = Album.new(:id => 2); @album2.stub!(:total_score).and_return 6
       @album3 = Album.new(:id => 3); @album3.stub!(:total_score).and_return -1
-      Album.stub!(:all).and_return @list = [@album1, @album2, @album3]
+      Album.stub!(:all).and_return @list = [@album1, @album2, @album3, @album1]
     end
     
     it "should grab the albums that have already been voted for" do
@@ -183,6 +187,10 @@ describe Album do
     
     it "should then sort the list by total number of votes" do
       Album.most_popular.first.should == @album2
+    end
+    
+    it "should get the unique list" do
+      Album.most_popular.size.should == 2
     end
   end
   

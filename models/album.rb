@@ -36,8 +36,8 @@ class Album
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
     
-    def most_listened; all("nominations.status" => "played").sort_by { |a| a.play_count }.reverse end
-    def most_popular; all("nominations.score.gt" => 0).select { |a| a.total_score > 0 }.sort_by { |a| a.total_score }.reverse end
+    def most_listened; all("nominations.status" => "played").uniq.sort_by { |a| a.play_count }.reverse end
+    def most_popular; all("nominations.score.gt" => 0).uniq.select { |a| a.total_score > 0 }.sort_by { |a| a.total_score }.reverse end
     
     def value_method_for(scope); VALUE_METHODS[scope] end
   end
