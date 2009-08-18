@@ -38,6 +38,9 @@ end
 get "/" do
   haml :index
 end
+get "/embed" do
+  haml :index, :layout => :embed
+end
 get "/list/:type" do |list_type|
   @albums = Album.send(list_type); @value_method = Album.value_method_for(list_type)
   haml :_list, :layout => false

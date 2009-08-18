@@ -12,6 +12,18 @@ describe "vote your album:" do
       last_response.body.should match(/Vote Your Album!/)
     end
   end
+
+  # it "should get these tests to stop things from failing!"
+  describe "GET '/embed'" do
+    it "should render the homepage" do
+      get "/embed"
+      last_response.body.should match(/Vote Your Album!/)
+    end
+    it 'should use the embed stylesheet' do
+      get "/embed"
+      last_response.body.should match(/embed.css/)
+    end
+  end
   
   describe "GET '/list/:type'" do
     before do

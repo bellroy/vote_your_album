@@ -1,0 +1,38 @@
+!!! Strict
+%html{ :xmlns => "http://www.w3.org/1999/xhtml", "xml:lang" => "en", :lang => "en" }
+  %head
+    %meta{ "http-equiv" => "Content-Type", :content => "text/html; charset=utf-8" }
+    %title Vote Your Album! - Trike
+    
+    %link{ :rel => "stylesheet", :href => "stylesheets/jquery-ui.css", :type => "text/css", :charset => "utf-8" }
+    %link{ :rel => "stylesheet", :href => "stylesheets/embed.css", :type => "text/css", :charset => "utf-8" }
+
+    %script{ :src => "http://www.google.com/jsapi", :type => "text/javascript" }
+    %script{ :type => "text/javascript" }
+      google.load("jquery", "1");
+      google.load("jqueryui", 1);
+    %script{ :src => "javascripts/jquery.form.js", :type => "text/javascript" }
+    %script{ :src => "javascripts/application.js", :type => "text/javascript" }
+
+  %body
+    #wrap
+      .header
+        .title
+        .main_controls
+          .left
+            - { "previous" => "Previous Song", "stop" => "Stop Playback",                   |
+                "play" => "Start Playback", "next" => "Next Song" }.each do |action, title| |
+              %a.control{ :href => "#", :ref => action }
+                %img{ :src => "/images/#{action}.png", :title => title }
+            #slider
+          .middle
+            %span#current
+          .right
+            %a#play{ :href => "#" } Start Playback
+            %a#force{ :href => "#" }
+              Force Next (
+              %span.necessary
+              more )
+            
+      .content
+        = yield
