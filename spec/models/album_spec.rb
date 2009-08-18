@@ -13,19 +13,44 @@ describe Album do
     end
   end
   
-  describe "total score" do
+  describe "score" do
     before do
       @album = Album.new
       @album.stub!(:nominations).and_return [Nomination.new(:score => 3), Nomination.new(:score => -1)]
     end
     
     it "should return the summed up score of all nominations" do
-      @album.total_score.should == 2
+      @album.score.should == 2
     end
     
     it "should return 0 if we dont have a nomination" do
       @album.stub!(:nominations).and_return []
-      @album.total_score.should == 0
+      @album.score.should == 0
+    end
+  end
+  
+  describe "rating" do
+    before do
+      @nom1 = Nomination.new; @nom1.stub!(:ratings).and_return [Vote.new(:value => 1), Vote.new(:value => 2)]
+      @nom2 = Nomination.new; @nom2.stub!(:ratings).and_return [Vote.new(:value => 5)]
+      @nom3 = Nomination.new; @nom3.stub!(:ratings).and_return []
+      
+      @album = Album.new
+      @album.stub!(:nominations).and_return []
+    end
+    
+    it "should return 0 if we dont have any nominations" do
+      @album.rating.should == 0
+    end
+    
+    it "should return 0 if we only have nomination without ratings" do
+      @album.stub!(:nominations).and_return [@nom3]
+      @album.rating.should == 0
+    end
+    
+    it "should return the rounded value of the rating average" do
+      @album.stub!(:nominations).and_return [@nom1, @nom2, @nom3]
+      @album.rating.should == (8.to_f / 3 * 10).round / 10.0
     end
   end
   
@@ -147,55 +172,33 @@ describe Album do
     end
   end
   
-  describe "most listened" do
-    before do
-      @album1 = Album.new(:id => 1); @album1.stub!(:play_count).and_return 1
-      @album2 = Album.new(:id => 2); @album2.stub!(:play_count).and_return 2
-      Album.stub!(:all).and_return @list = [@album1, @album2, @album1]
-    end
-    
-    it "should grab the albums that have already been played" do
-      Album.should_receive(:all).with("nominations.status" => "played").and_return @list
-      Album.most_listened
-    end
-    
-    it "should then sort this list by number of 'listenings'" do
-      Album.most_listened.first.should == @album2
-    end
-    
-    it "should get the unique list" do
-      Album.most_listened.size.should == 2
-    end
-  end
-  
-  describe "most popular" do
-    before do
-      @album1 = Album.new(:id => 1); @album1.stub!(:total_score).and_return 5
-      @album2 = Album.new(:id => 2); @album2.stub!(:total_score).and_return 6
-      @album3 = Album.new(:id => 3); @album3.stub!(:total_score).and_return -1
-      Album.stub!(:all).and_return @list = [@album1, @album2, @album3, @album1]
-    end
-    
-    it "should grab the albums that have already been voted for" do
-      Album.should_receive(:all).with("nominations.score.gt" => 0).and_return @list
-      Album.most_popular
-    end
-    
-    it "should remove all albums with a 0 or negative total score" do
-      Album.most_popular.should_not include(@album3)
-    end
-    
-    it "should then sort the list by total number of votes" do
-      Album.most_popular.first.should == @album2
-    end
-    
-    it "should get the unique list" do
-      Album.most_popular.size.should == 2
+  { :most_listened => :play_count, :most_popular => :score, :top_rated => :rating }.each do |method, criteria|
+    describe method do
+      before do
+        @album1 = Album.new(:id => 1); @album1.stub!(criteria).and_return 1
+        @album2 = Album.new(:id => 2); @album2.stub!(criteria).and_return 4
+        @album3 = Album.new(:id => 3); @album3.stub!(criteria).and_return 0
+        Album.stub!(:all).and_return @list = [@album1, @album2, @album3]
+      end
+
+      it "should grab the albums" do
+        Album.should_receive(:all).and_return @list
+        Album.send method
+      end
+
+      it "should remove all albums with a #{criteria} equal to" do
+        Album.send(method).should_not include(@album3)
+      end
+
+      it "should then sort the list by the #{criteria} value" do
+        Album.send(method).first.should == @album2
+      end
     end
   end
   
   describe "value method for" do
-    { "most_listened" => :play_count, "most_popular" => :total_score, "all" => nil, "bla" => nil }.each do |scope, method|
+    { "most_listened" => :play_count, "most_popular" => :score, "top_rated" => :rating,
+      "all" => nil, "bla" => nil }.each do |scope, method|
       it "should return the method name '#{method}' for the scope '#{scope}'" do
         Album.value_method_for(scope).should == method
       end

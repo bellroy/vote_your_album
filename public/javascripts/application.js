@@ -65,7 +65,7 @@ $(function() {
   });
   
   // Lists
-  $.each(["all", "most_listened", "most_popular"], function() {
+  $.each(["all", "most_listened", "top_rated", "most_popular"], function() {
     var type = this;
     $("." + type).click(function() { getList(type); });
   });
@@ -116,8 +116,8 @@ function mainControls(data) {
     $("#current").html(data.current_album);
     
     $("#force").show();
-    $("#force").attr("title", "Necessary Votes to force next album: " + data.force_score);
-    $("#force .necessary").html(data.force_score);
+    $("#force").attr("title", "Necessary Votes to force next album: " + data.down_votes_left);
+    $("#force .necessary").html(data.down_votes_left);
     if (data.forceable) $("#force").removeClass("disabled");
     else                $("#force").addClass("disabled");
   }

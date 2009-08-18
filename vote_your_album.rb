@@ -18,7 +18,7 @@ def json_status
   
   status = { :playing => MpdProxy.playing?, :volume => MpdProxy.volume }
   status = status.merge(:current_album => current.album.to_s,
-    :force_score => current.force_score, :forceable => current.can_be_forced_by?(request.ip)) if MpdProxy.playing?
+    :down_votes_left => current.down_votes_left, :forceable => current.can_be_forced_by?(request.ip)) if MpdProxy.playing?
   status.to_json
 end
 

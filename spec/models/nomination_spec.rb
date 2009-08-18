@@ -39,7 +39,7 @@ describe Nomination do
     end
     
     it "should create an associated vote with the given value and ip" do
-      @nomination.votes.should_receive(:create).with :value => 1, :ip => "me"
+      @nomination.votes.should_receive(:create).with :value => 1, :ip => "me", :type => "vote"
       @nomination.vote 1, "me"
     end
     
@@ -111,34 +111,34 @@ describe Nomination do
   
   describe "force" do
     before do
-      @nomination = Nomination.new(:nominated_by => "me", :force_score => 3)
-      @nomination.force_votes.stub!(:create).and_return true
+      @nomination = Nomination.new(:nominated_by => "me", :down_votes_left => 3)
+      @nomination.down_votes.stub!(:create).and_return true
       @nomination.stub! :update_attributes
     end
     
     it "should create an associated force vote with the ip" do
-      @nomination.force_votes.should_receive(:create).with :value => 1, :ip => "me", :type => "force"
+      @nomination.down_votes.should_receive(:create).with :value => 1, :ip => "me", :type => "force"
       @nomination.force "me"
     end
     
     it "should update the force score attribute" do
-      @nomination.should_receive(:update_attributes).with :force_score => 2
+      @nomination.should_receive(:update_attributes).with :down_votes_left => 2
       @nomination.force "me"
     end
     
     it "should not allow a vote, if we have already forced" do
-      @nomination.force_votes.should_receive(:create).once
+      @nomination.down_votes.should_receive(:create).once
       2.times { @nomination.force "me" }
     end
     
     it "should not play the next album if we have a 'force score' of 1 or more" do
-      @nomination.stub!(:force_score).and_return 1
+      @nomination.stub!(:down_votes_left).and_return 1
       MpdProxy.should_not_receive :play_next
       @nomination.force "me"
     end
     
     it "should play the next album if we have a 'force score' of 0 or less" do
-      @nomination.stub!(:force_score).and_return 0
+      @nomination.stub!(:down_votes_left).and_return 0
       MpdProxy.should_receive :play_next
       @nomination.force "me"
     end
@@ -153,9 +153,49 @@ describe Nomination do
       @nomination.can_be_forced_by?("me").should be_true
     end
     
-    it "should return false if the string is in the 'forced by' list" do
-      @nomination.stub!(:force_votes).and_return [Vote.new(:ip => "me")]
+    it "should return false if the string is in the 'down votes' list" do
+      @nomination.stub!(:down_votes).and_return [Vote.new(:ip => "me")]
       @nomination.can_be_forced_by?("me").should be_false
+    end
+  end
+  
+  describe "rate" do
+    before do
+      @nomination = Nomination.new(:nominated_by => "me")
+      @nomination.ratings.stub!(:create).and_return true
+      @nomination.stub! :update_attributes
+    end
+    
+    it "should create an associated rating with the ip" do
+      @nomination.ratings.should_receive(:create).with :value => 4, :ip => "me", :type => "rating"
+      @nomination.rate 4, "me"
+    end
+
+    { -1 => 1, 0 => 1, 6 => 5 }.each do |param, value|
+      it "should change the param #{param} to #{value}" do
+        @nomination.ratings.should_receive(:create).with :value => value, :ip => "me", :type => "rating"
+        @nomination.rate param, "me"
+      end
+    end
+    
+    it "should not allow a rating, if we have already rated" do
+      @nomination.ratings.should_receive(:create).once
+      2.times { @nomination.rate 1, "me" }
+    end
+  end
+  
+  describe "can be rated by?" do
+    before do
+      @nomination = Nomination.new
+    end
+    
+    it "should return true if the force votes dont contain a vote by the given 'user'" do
+      @nomination.can_be_rated_by?("me").should be_true
+    end
+    
+    it "should return false if the string is in the 'forced by' list" do
+      @nomination.stub!(:ratings).and_return [Vote.new(:ip => "me")]
+      @nomination.can_be_rated_by?("me").should be_false
     end
   end
   

@@ -132,7 +132,7 @@ describe "vote your album:" do
         MpdProxy.stub!(:playing?).and_return true
         
         @album = Album.new(:artist => "c", :name =>  "three")
-        Nomination.stub!(:current).and_return @nomination = Nomination.new(:album => @album, :force_score => 1)
+        Nomination.stub!(:current).and_return @nomination = Nomination.new(:album => @album, :down_votes_left => 1)
       end
       
       it "should include the name of the current album" do
@@ -142,7 +142,7 @@ describe "vote your album:" do
       
       it "should include the number of necessary (remaining) forces" do
         get "/status"
-        last_response.body.should match(/\"force_score\":1/)
+        last_response.body.should match(/\"down_votes_left\":1/)
       end
       
       it "should include whether we can force" do
