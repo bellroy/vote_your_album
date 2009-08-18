@@ -181,8 +181,8 @@ describe Album do
         Album.stub!(:all).and_return @list = [@album1, @album2, @album3]
       end
 
-      it "should grab the albums" do
-        Album.should_receive(:all).and_return @list
+      it "should grab the albums (with a hack to preload the nominations)" do
+        Album.should_receive(:all).with("nominations.status.not" => nil).and_return @list
         Album.send method
       end
 
