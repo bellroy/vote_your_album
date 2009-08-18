@@ -27,6 +27,9 @@
             #slider
           .middle
             %span#current
+            %span#rate_current
+              - (1..5).each do |value|
+                %a.rate{ :href => "#", :title => "Rate with #{value}", :ref => value }= value
           .right
             %a#play{ :href => "#" } Start Playback
             %a#force{ :href => "#" }

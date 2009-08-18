@@ -151,6 +151,13 @@ describe "vote your album:" do
         get "/status"
         last_response.body.should match(/\"forceable\":false/)
       end
+      
+      it "should have a flag saying if the user can rate this album (nomination)" do
+        @nomination.stub!(:can_be_rated_by?).and_return false
+        
+        get "/status"
+        last_response.body.should match(/\"rateable\":false/)
+      end
     end
   end
   
@@ -238,7 +245,7 @@ describe "vote your album:" do
     end
   end
   
-  describe "POST force" do
+  describe "POST '/force" do
     before do
       Nomination.stub!(:current).and_return @nomination = Nomination.new(:id => 123)
       @nomination.stub! :force
@@ -251,6 +258,23 @@ describe "vote your album:" do
     
     it "should return the json status response" do
       post "/force"
+      last_response.body.should match(/\"volume\":/)
+    end
+  end
+  
+  describe "POST '/rate/:value'" do
+    before do
+      Nomination.stub!(:current).and_return @nomination = Nomination.new(:id => 123)
+      @nomination.stub! :rate
+    end
+    
+    it "should rate the currently playing album with the given value" do
+      @nomination.should_receive(:rate).with 3, "127.0.0.1"
+      post "/rate/3"
+    end
+    
+    it "should return the json status response" do
+      post "/rate/1"
       last_response.body.should match(/\"volume\":/)
     end
   end

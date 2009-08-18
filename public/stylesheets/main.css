@@ -65,6 +65,9 @@ a img {
   padding-top: 35px;
   color: #777;
 }
+.main_controls .middle span {
+  margin: 0 5px;
+}
 .main_controls .right {
   padding-top: 33px;
   width: 20%;

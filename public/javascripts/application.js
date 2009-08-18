@@ -41,7 +41,10 @@ $(function() {
   });
   
   // Click events that update the status of the application
-  $(".control").click(function() { return executeAndUpdate("/control/" + $(this).attr("ref")); });
+  $.each(["control", "rate"], function() {
+    var action = this;
+    $("." + action).click(function() { return executeAndUpdate("/" + action + "/" + $(this).attr("ref")); });
+  });
   $("#play").click(function() { return executeAndUpdate("/play"); });
   $("#force").click(function() { return executeAndUpdate("/force"); });
   
@@ -126,6 +129,9 @@ function mainControls(data) {
     $("#current").html("");
     $("#force").hide();
   }
+  
+  if (data.playing && data.rateable) $("#rate_current").show();
+  else                               $("#rate_current").hide();
 }
 
 /*
