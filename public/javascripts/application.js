@@ -41,12 +41,14 @@ $(function() {
   });
   
   // Click events that update the status of the application
-  $.each(["control", "rate"], function() {
-    var action = this;
-    $("." + action).click(function() { return executeAndUpdate("/" + action + "/" + $(this).attr("ref")); });
-  });
+  $(".control").click(function() { return executeAndUpdate("/control/" + $(this).attr("ref")); });
   $("#play").click(function() { return executeAndUpdate("/play"); });
   $("#force").click(function() { return executeAndUpdate("/force"); });
+  
+  // Callback definition for the rating system
+  $(".rate_star").rating({
+    callback: function(value) { return executeAndUpdate("/rate/" + value); }
+  });
   
   // Click Events that update the 'upcoming list'
   $.each(["add", "up", "down"], function() {
@@ -130,8 +132,14 @@ function mainControls(data) {
     $("#force").hide();
   }
   
-  if (data.playing && data.rateable) $("#rate_current").show();
-  else                               $("#rate_current").hide();
+  // Update the rating elements
+  if (data.playing && data.rateable) {
+    $("#rate_current").removeClass("hidden");
+    $(".rate_star").removeClass("star-rating-on");
+  }
+  else {
+    $("#rate_current").addClass("hidden");
+  }
 }
 
 /*

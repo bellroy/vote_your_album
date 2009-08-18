@@ -4,7 +4,8 @@
     %meta{ "http-equiv" => "Content-Type", :content => "text/html; charset=utf-8" }
     %title Vote Your Album! - Trike
     
-    %link{ :rel => "stylesheet", :href => "stylesheets/jquery-ui.css", :type => "text/css", :charset => "utf-8" }
+    %link{ :rel => "stylesheet", :href => "stylesheets/jquery.ui.css", :type => "text/css", :charset => "utf-8" }
+    %link{ :rel => "stylesheet", :href => "stylesheets/jquery.rating.css", :type => "text/css", :charset => "utf-8" }
     %link{ :rel => "stylesheet", :href => "stylesheets/main.css", :type => "text/css", :charset => "utf-8" }
 
     %script{ :src => "http://www.google.com/jsapi", :type => "text/javascript" }
@@ -12,6 +13,7 @@
       google.load("jquery", "1");
       google.load("jqueryui", 1);
     %script{ :src => "javascripts/jquery.form.js", :type => "text/javascript" }
+    %script{ :src => "javascripts/jquery.rating.js", :type => "text/javascript" }
     %script{ :src => "javascripts/application.js", :type => "text/javascript" }
 
   %body
@@ -26,10 +28,10 @@
                 %img{ :src => "/images/#{action}.png", :title => title }
             #slider
           .middle
-            %span#current
-            %span#rate_current
-              - (1..5).each do |value|
-                %a.rate{ :href => "#", :title => "Rate with #{value}", :ref => value }= value
+            #rate_current
+              - (1..5).each do |i|
+                %input.rate_star{ :name => "rate", :type => "radio", :value => i }
+            #current
           .right
             %a#play{ :href => "#" } Start Playback
             %a#force{ :href => "#" }

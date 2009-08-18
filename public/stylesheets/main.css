@@ -33,6 +33,9 @@ a img {
 .right {
   float: right;
 }
+.hidden {
+  visibility: hidden;
+}
 
 .header .title {
 	height: 80px;
@@ -62,11 +65,13 @@ a img {
   float: left;
   width: 60%;
   text-align: center;
-  padding-top: 35px;
+  padding-top: 14px;
   color: #777;
 }
-.main_controls .middle span {
-  margin: 0 5px;
+.main_controls .middle #rate_current {
+  width: 85px;
+  height: 21px;
+  margin: 0 auto;
 }
 .main_controls .right {
   padding-top: 33px;
