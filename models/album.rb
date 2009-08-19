@@ -43,7 +43,7 @@ class Album
     
     { :most_listened => :play_count, :most_popular => :score, :top_rated => :rating }.each do |method, criteria|
       define_method method do
-        all("nominations.status.not" => nil).select { |a| a.send(criteria) > 0 }.sort_by { |a| a.send(criteria) }.reverse
+        all("nominations.status.not" => nil).uniq.select { |a| a.send(criteria) > 0 }.sort_by { |a| a.send(criteria) }.reverse
       end
     end
         

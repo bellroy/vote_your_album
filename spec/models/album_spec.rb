@@ -178,7 +178,7 @@ describe Album do
         @album1 = Album.new(:id => 1); @album1.stub!(criteria).and_return 1
         @album2 = Album.new(:id => 2); @album2.stub!(criteria).and_return 4
         @album3 = Album.new(:id => 3); @album3.stub!(criteria).and_return 0
-        Album.stub!(:all).and_return @list = [@album1, @album2, @album3]
+        Album.stub!(:all).and_return @list = [@album1, @album2, @album3, @album1]
       end
 
       it "should grab the albums (with a hack to preload the nominations)" do
@@ -192,6 +192,10 @@ describe Album do
 
       it "should then sort the list by the #{criteria} value" do
         Album.send(method).first.should == @album2
+      end
+      
+      it "should remove duplicates" do
+        Album.send(method).size.should == 2
       end
     end
   end
