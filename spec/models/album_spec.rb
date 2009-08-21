@@ -16,41 +16,39 @@ describe Album do
   describe "score" do
     before do
       @album = Album.new
-      @album.stub!(:nominations).and_return [Nomination.new(:score => 3), Nomination.new(:score => -1)]
+      @album.stub_chain(:nominations, :votes, :sum).and_return 0
     end
     
     it "should return the summed up score of all nominations" do
-      @album.score.should == 2
+      @album.nominations.votes.should_receive(:sum).with(:value).and_return 3
+      @album.score.should == 3
     end
     
-    it "should return 0 if we dont have a nomination" do
-      @album.stub!(:nominations).and_return []
+    it "should return 0 if we dont have any nominations" do
+      @album.nominations.votes.should_receive(:sum).with(:value).and_return nil
       @album.score.should == 0
     end
   end
   
   describe "rating" do
     before do
-      @nom1 = Nomination.new; @nom1.stub!(:ratings).and_return [Vote.new(:value => 1), Vote.new(:value => 2)]
-      @nom2 = Nomination.new; @nom2.stub!(:ratings).and_return [Vote.new(:value => 5)]
-      @nom3 = Nomination.new; @nom3.stub!(:ratings).and_return []
-      
       @album = Album.new
-      @album.stub!(:nominations).and_return []
+      @album.stub_chain(:nominations, :ratings, :avg).and_return 0.0
+    end
+    
+    it "should return the summed up score of all nominations" do
+      @album.nominations.ratings.should_receive(:avg).with(:value).and_return 3.4
+      @album.rating.should == 3.4
     end
     
     it "should return 0 if we dont have any nominations" do
-      @album.rating.should == 0
+      @album.nominations.ratings.should_receive(:avg).with(:value).and_return nil
+      @album.rating.should == 0.0
     end
     
-    it "should return 0 if we only have nomination without ratings" do
-      @album.stub!(:nominations).and_return [@nom3]
-      @album.rating.should == 0
-    end
-    
-    it "should return the rounded value of the rating average" do
-      @album.stub!(:nominations).and_return [@nom1, @nom2, @nom3]
-      @album.rating.should == (8.to_f / 3 * 10).round / 10.0
+    it "should round the result to one decimal digit" do
+      @album.nominations.ratings.should_receive(:avg).with(:value).and_return 3.4444
+      @album.rating.should == 3.4
     end
   end
   
@@ -181,8 +179,8 @@ describe Album do
         Album.stub!(:all).and_return @list = [@album1, @album2, @album3, @album1]
       end
 
-      it "should grab the albums (with a hack to preload the nominations)" do
-        Album.should_receive(:all).with("nominations.status.not" => nil).and_return @list
+      it "should grab the albums (with nominations)" do
+        Album.should_receive(:all).with(:links => [:nominations]).and_return @list
         Album.send method
       end
 

@@ -1,4 +1,4 @@
-%w[rubygems sinatra json haml librmpd dm-core].each { |lib| require lib }
+%w[rubygems sinatra json haml librmpd dm-core dm-aggregates].each { |lib| require lib }
 %w[models/album models/song models/nomination models/vote].each { |model| require model }
 require 'lib/mpd_proxy'
 

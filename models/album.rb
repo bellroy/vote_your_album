@@ -13,13 +13,9 @@ class Album
   default_scope(:default).update :order => [:artist, :name]
   
   def play_count; nominations.played.size end
-  def score; nominations.inject(0) { |sum, n| sum + n.score } end
-  def rating
-    ratings = nominations.map { |n| n.ratings }.flatten
-    return 0 if ratings.empty?
-    (ratings.inject(0.0) { |sum, r| sum + r.value } / ratings.size * 10).round / 10.0
-  end
-  
+  def score; nominations.votes.sum(:value) || 0 end
+  def rating; ((nominations.ratings.avg(:value) || 0.0) * 10).round / 10.0 end
+    
   def to_s; "#{artist} - #{name}" end
   
   class << self
@@ -43,7 +39,7 @@ class Album
     
     { :most_listened => :play_count, :most_popular => :score, :top_rated => :rating }.each do |method, criteria|
       define_method method do
-        all("nominations.status.not" => nil).uniq.select { |a| a.send(criteria) > 0 }.sort_by { |a| a.send(criteria) }.reverse
+        all(:links => [:nominations]).uniq.select { |a| a.send(criteria) > 0 }.sort_by { |a| a.send(criteria) }.reverse
       end
     end
         
