@@ -109,20 +109,34 @@ describe Nomination do
     end
   end
   
+  describe "down votes necessary" do
+    before do
+      @nomination = Nomination.new
+      @nomination.stub!(:down_votes).and_return []
+    end
+    
+    it "should return the default value if we dont have any down votes yet" do
+      @nomination.down_votes_necessary.should == 3
+    end
+    
+    it "should use the provided default value" do
+      @nomination.down_votes_necessary(5).should == 5
+    end
+    
+    it "should subtract the sum of the down votes if we have down votes" do
+      @nomination.stub!(:down_votes).and_return [Vote.new(:value => 1), Vote.new(:value => 3)]
+      @nomination.down_votes_necessary.should == -1
+    end
+  end
+  
   describe "force" do
     before do
-      @nomination = Nomination.new(:nominated_by => "me", :down_votes_left => 3)
+      @nomination = Nomination.new(:nominated_by => "me")
       @nomination.down_votes.stub!(:create).and_return true
-      @nomination.stub! :update_attributes
     end
     
     it "should create an associated force vote with the ip" do
       @nomination.down_votes.should_receive(:create).with :value => 1, :ip => "me", :type => "force"
-      @nomination.force "me"
-    end
-    
-    it "should update the force score attribute" do
-      @nomination.should_receive(:update_attributes).with :down_votes_left => 2
       @nomination.force "me"
     end
     
@@ -132,13 +146,13 @@ describe Nomination do
     end
     
     it "should not play the next album if we have a 'force score' of 1 or more" do
-      @nomination.stub!(:down_votes_left).and_return 1
+      @nomination.stub!(:down_votes_necessary).and_return 1
       MpdProxy.should_not_receive :execute
       @nomination.force "me"
     end
     
     it "should play the next album if we have a 'force score' of 0 or less" do
-      @nomination.stub!(:down_votes_left).and_return 0
+      @nomination.stub!(:down_votes_necessary).and_return 0
       MpdProxy.should_receive(:execute).with :clear
       @nomination.force "me"
     end

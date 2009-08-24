@@ -121,8 +121,8 @@ function mainControls(data) {
     $("#current").html(data.current_album);
     
     $("#force").show();
-    $("#force").attr("title", "Necessary Votes to force next album: " + data.down_votes_left);
-    $("#force .necessary").html(data.down_votes_left);
+    $("#force").attr("title", "Necessary Votes to force next album: " + data.down_votes_necessary);
+    $("#force .necessary").html(data.down_votes_necessary);
     if (data.forceable) $("#force").removeClass("disabled");
     else                $("#force").addClass("disabled");
   }

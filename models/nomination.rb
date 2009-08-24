@@ -1,12 +1,11 @@
 class Nomination
   include DataMapper::Resource
   
-  ELIMINATION_SCORE = -3
-  INITIAL_FORCE_SCORE = 3
+  DEFAULT_ELIMINATION_SCORE = -3
+  DEFAULT_FORCE_SCORE = 3
   
   property :id, Serial
   property :score, Integer, :default => 0
-  property :down_votes_left, Integer, :default => INITIAL_FORCE_SCORE
   property :status, String, :length => 20
   property :nominated_by, String
   property :played_at, DateTime
@@ -25,10 +24,10 @@ class Nomination
   # Vote methods
   # ----------------------------------------------------------------------
   def vote(value, ip)
-    return if votes.map { |v| v.ip }.include?(ip)
+    return unless can_be_voted_for_by?(ip)
     
     self.votes.create(:value => value, :ip => ip, :type => "vote") && self.score = score + value
-    self.status = "deleted" if score <= ELIMINATION_SCORE
+    self.status = "deleted" if score <= DEFAULT_ELIMINATION_SCORE
     save
   end
   def can_be_voted_for_by?(ip); !votes.map { |v| v.ip }.include?(ip) end
@@ -37,11 +36,12 @@ class Nomination
 
   # Force methods
   # ----------------------------------------------------------------------
+  def down_votes_necessary(default = DEFAULT_FORCE_SCORE); default - down_votes.inject(0) { |sum, v| sum + v.value } end
   def force(ip)
-    return if down_votes.map { |v| v.ip }.include?(ip)
+    return unless can_be_forced_by?(ip)
     
-    self.down_votes.create(:value => 1, :ip => ip, :type => "force") && self.update_attributes(:down_votes_left => down_votes_left - 1)
-    MpdProxy.execute(:clear) if down_votes_left <= 0
+    self.down_votes.create :value => 1, :ip => ip, :type => "force"
+    MpdProxy.execute(:clear) if down_votes_necessary <= 0
   end
   def can_be_forced_by?(ip); !down_votes.map { |v| v.ip }.include?(ip) end
 
