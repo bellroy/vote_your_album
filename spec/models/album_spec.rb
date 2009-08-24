@@ -16,38 +16,55 @@ describe Album do
   describe "score" do
     before do
       @album = Album.new
-      @album.stub_chain(:nominations, :votes, :sum).and_return 0
+      @album.stub_chain(:votes, :sum).and_return 0
     end
     
-    it "should return the summed up score of all nominations" do
-      @album.nominations.votes.should_receive(:sum).with(:value).and_return 3
+    it "should return the summed up score of all votes (with a value < 0)" do
+      @album.votes.should_receive(:sum).with(:value).and_return 3
       @album.score.should == 3
     end
     
-    it "should return 0 if we dont have any nominations" do
-      @album.nominations.votes.should_receive(:sum).with(:value).and_return nil
+    it "should return 0 if we dont have any votes" do
+      @album.votes.should_receive(:sum).with(:value).and_return nil
       @album.score.should == 0
+    end
+  end
+  
+  describe "negative score" do
+    before do
+      @album = Album.new
+      @album.stub_chain(:negative_votes, :sum).and_return 0
+    end
+    
+    it "should return the negative summed up score of all votes (with a value < 0)" do
+      @album.negative_votes.should_receive(:sum).with(:value).and_return 4
+      @album.negative_score.should == -4
+    end
+    
+    it "should negative_votes 0 if we dont have any negative votes" do
+      @album.negative_votes.should_receive(:sum).with(:value).and_return nil
+      @album.negative_score.should == 0
     end
   end
   
   describe "rating" do
     before do
       @album = Album.new
-      @album.stub_chain(:nominations, :ratings, :avg).and_return 0.0
+      @album.stub_chain(:ratings, :avg).and_return 0.0
     end
     
-    it "should return the summed up score of all nominations" do
-      @album.nominations.ratings.should_receive(:avg).with(:value).and_return 3.4
+    it "should return the summed up score of all ratings" do
+      @album.ratings.should_receive(:avg).with(:value).and_return 3.4
       @album.rating.should == 3.4
     end
     
-    it "should return 0 if we dont have any nominations" do
-      @album.nominations.ratings.should_receive(:avg).with(:value).and_return nil
+    it "should return 0 if we dont have any ratings" do
+      @album.ratings.should_receive(:avg).with(:value).and_return nil
       @album.rating.should == 0.0
     end
     
     it "should round the result to one decimal digit" do
-      @album.nominations.ratings.should_receive(:avg).with(:value).and_return 3.4444
+      @album.ratings.should_receive(:avg).with(:value).and_return 3.4444
       @album.rating.should == 3.4
     end
   end

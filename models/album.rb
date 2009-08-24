@@ -9,12 +9,16 @@ class Album
   
   has n, :songs
   has n, :nominations
+  has n, :votes, :through => :nominations, :type => "vote", :value.gt => 0
+  has n, :negative_votes, :through => :nominations, :type => "vote", :value.lt => 0
+  has n, :ratings, :through => :nominations, :class_name => "Vote", :type => "rating"
   
   default_scope(:default).update :order => [:artist, :name]
   
   def play_count; nominations.played.size end
-  def score; nominations.votes.sum(:value) || 0 end
-  def rating; ((nominations.ratings.avg(:value) || 0.0) * 10).round / 10.0 end
+  def score; votes.sum(:value) || 0 end
+  def negative_score; (negative_votes.sum(:value) || 0) * -1 end
+  def rating; ((ratings.avg(:value) || 0.0) * 10).round / 10.0 end
     
   def to_s; "#{artist} - #{name}" end
   
