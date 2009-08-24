@@ -133,13 +133,13 @@ describe Nomination do
     
     it "should not play the next album if we have a 'force score' of 1 or more" do
       @nomination.stub!(:down_votes_left).and_return 1
-      MpdProxy.should_not_receive :play_next
+      MpdProxy.should_not_receive :execute
       @nomination.force "me"
     end
     
     it "should play the next album if we have a 'force score' of 0 or less" do
       @nomination.stub!(:down_votes_left).and_return 0
-      MpdProxy.should_receive :play_next
+      MpdProxy.should_receive(:execute).with :clear
       @nomination.force "me"
     end
   end
