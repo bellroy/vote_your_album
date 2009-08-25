@@ -42,12 +42,10 @@ get "/embed" do
   haml :index, :layout => :embed
 end
 get "/list/:type" do |list_type|
-  @albums = Album.send(list_type); @value_method = Album.value_method_for(list_type)
-  haml :_list, :layout => false
+  Album.send(list_type).map { |a| a.to_hash Album.value_method_for(list_type) }.to_json
 end
 get "/search" do
-  @albums = Album.search(params[:q])
-  haml :_list, :layout => false
+  Album.search(params[:q]).map { |a| a.to_hash }.to_json
 end
 get "/upcoming" do
   render_upcoming

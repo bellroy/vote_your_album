@@ -79,6 +79,32 @@ describe Album do
     end
   end
   
+  describe "to hash" do
+    before do
+      @album = Album.new(:id => 123, :artist => "artist", :name => "album")
+      @album.stub! :value_method
+    end
+    
+    it "should return the album's attributes in a hash" do
+      @album.to_hash.should == { :id => 123, :artist => "artist", :name => "album", :value => nil }
+    end
+    
+    it "should not call a 'value method' if we dont have one" do
+      @album.should_not_receive :value_method
+      @album.to_hash[:value].should be_nil
+    end
+    
+    it "should have nil as the 'value' if we have a nil value method" do
+      @album.should_not_receive :value_method
+      @album.to_hash(nil)[:value].should be_nil
+    end
+    
+    it "should call the 'value method' and return the result if we have a good param" do
+      @album.should_receive(:value_method).and_return "value"
+      @album.to_hash(:value_method)[:value].should == "value"
+    end
+  end
+  
   describe "update" do
     before do
       @song = MPD::Song.new

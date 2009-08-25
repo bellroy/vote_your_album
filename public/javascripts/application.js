@@ -60,10 +60,13 @@ $(function() {
   });
   
   // Search
-  $("#search").ajaxForm({ success: function(list) {
-    highlightTab(".all");
-    $("#list").html(list);
-  } });
+  $("#search").ajaxForm({
+    dataType: "json",
+    success: function(list) {
+      highlightTab(".all");
+      updateList(list);
+    }
+  });
   $("#clear").click(function() {
     $("#search").clearForm();
     getList("all");
@@ -84,9 +87,9 @@ $(function() {
 /*
  * Requests an update of the available albums and updates the list
  */
-function getList(type) { $.get("/list/" + type, function(list) {
+function getList(type) { $.getJSON("/list/" + type, function(list) {
   highlightTab("." + type);
-  $("#list").html(list);
+  updateList(list);
   return false;
 }); }
 function highlightTab(link) {
@@ -108,6 +111,27 @@ function getUpcoming() {
 function getStatus() {
   $.getJSON("/status", mainControls);
 	setTimeout("getStatus();", 10000);
+}
+
+/*
+ * Takes the list of albums and renders the list dynamically.
+ */
+function updateList(list) {
+  var ul = $("#list");
+  ul.html("");
+  
+  var i = 0;
+  $.each(list, function() {
+    ul.append($("#list_template").html());
+    var li = ul.children("li:last");
+    
+    li.addClass(i++ % 2 == 0 ? "even" : "odd");
+    li.attr("ref", this.id);
+    li.children(".left").children(".artist").html(this.artist);
+    li.children(".left").children(".name").html(this.name);
+    li.children(".right").children(".add").attr("ref", this.id);
+    if (this.value != null) li.children(".left").children(".value").html("(" + this.value + ")");
+  });
 }
 
 /*

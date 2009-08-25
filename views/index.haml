@@ -7,6 +7,17 @@
     %button#clear{ :type => "button" } Clear
        
   %ul#list
+  #list_template.template
+    %li{ :class => "album" }
+      .left
+        %span.artist
+        %span -
+        %span.name
+        %span.value
+      .right
+        %a.add{ :href => "#" }
+          %img{ :src => "/images/add.png", :title => "Add Album to Upcoming Albums" }
+      .clear
   
   %ul#tabs
     %li

@@ -35,16 +35,26 @@ describe "vote your album:" do
       get "/list/some_list"
     end
     
-    it "should return the list" do
+    it "should return the list as a JSON array (of hashes)" do
       get "/list/all"
-      last_response.body.should match(%q{<span class='artist'>artist</span>})
-      last_response.body.should match(%q{<span class='name'>name</span>})
+      last_response.body.should match(/\"id\":1/)
+      last_response.body.should match(/\"artist\":\"artist\"/)
+      last_response.body.should match(/\"name\":\"name\"/)
     end
     
     it "should call the 'value' method on the album(s) if we get one" do
       Album.stub!(:value_method_for).and_return :something
-      @album.should_receive :something
+      @album.should_receive(:something).and_return "value"
+      
       get "/list/all"
+      last_response.body.should match(/\"value\":\"value\"/)
+    end
+    
+    it "should have a 'nil' value on the album(s) if we get one" do
+      Album.stub!(:value_method_for).and_return nil
+      
+      get "/list/all"
+      last_response.body.should match(/\"value\":null/)
     end
   end
   
@@ -58,10 +68,11 @@ describe "vote your album:" do
       get "/search", :q => "query"
     end
     
-    it "should return the list" do
+    it "should return the list as a JSON array (of hashes)" do
       get "/search", :q => "query"
-      last_response.body.should match(%q{<span class='artist'>artist</span>})
-      last_response.body.should match(%q{<span class='name'>name</span>})
+      last_response.body.should match(/\"id\":1/)
+      last_response.body.should match(/\"artist\":\"artist\"/)
+      last_response.body.should match(/\"name\":\"name\"/)
     end
   end
   

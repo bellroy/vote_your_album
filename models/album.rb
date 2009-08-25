@@ -21,6 +21,7 @@ class Album
   def rating; ((ratings.avg(:value) || 0.0) * 10).round / 10.0 end
     
   def to_s; "#{artist} - #{name}" end
+  def to_hash(value_method = nil); { :id => id, :artist => artist, :name => name, :value => (value_method ? send(value_method) : nil) } end
   
   class << self
     def update
