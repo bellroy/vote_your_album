@@ -2,7 +2,6 @@ class Nomination
   include DataMapper::Resource
   
   DEFAULT_ELIMINATION_SCORE = -3
-  DEFAULT_FORCE_SCORE = 3
   
   property :id, Serial
   property :score, Integer, :default => 0
@@ -38,7 +37,7 @@ class Nomination
 
   # Force methods
   # ----------------------------------------------------------------------
-  def down_votes_necessary(default = DEFAULT_FORCE_SCORE); default - down_votes.inject(0) { |sum, v| sum + v.value } end
+  def down_votes_necessary; [votes.size, 1].max - down_votes.inject(0) { |sum, v| sum + v.value } end
   def force(ip)
     return unless can_be_forced_by?(ip)
     

@@ -123,20 +123,26 @@ describe Nomination do
   describe "down votes necessary" do
     before do
       @nomination = Nomination.new
+      @nomination.stub!(:votes).and_return []
       @nomination.stub!(:down_votes).and_return []
     end
     
-    it "should return the default value if we dont have any down votes yet" do
-      @nomination.down_votes_necessary.should == 3
+    it "should use 1 as the default value if dont have any 'up'-votes" do
+      @nomination.down_votes_necessary.should == 1
     end
     
-    it "should use the provided default value" do
-      @nomination.down_votes_necessary(5).should == 5
+    it "should use the number of 'up'-votes if we got some" do
+      @nomination.stub!(:votes).and_return [Vote.new, Vote.new, Vote.new, Vote.new]
+      @nomination.down_votes_necessary.should == 4
+    end
+    
+    it "should return the default value if we dont have any down votes yet" do
+      @nomination.down_votes_necessary.should == 1
     end
     
     it "should subtract the sum of the down votes if we have down votes" do
       @nomination.stub!(:down_votes).and_return [Vote.new(:value => 1), Vote.new(:value => 3)]
-      @nomination.down_votes_necessary.should == -1
+      @nomination.down_votes_necessary.should == -3
     end
   end
   
