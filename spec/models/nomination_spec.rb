@@ -35,12 +35,18 @@ describe Nomination do
     before do
       @nomination = Nomination.new(:score => 0)
       @nomination.votes.stub!(:create).and_return true
+      @nomination.negative_votes.stub!(:create).and_return true
       @nomination.stub! :save
     end
     
     it "should create an associated vote with the given value and ip" do
       @nomination.votes.should_receive(:create).with :value => 1, :ip => "me", :type => "vote"
       @nomination.vote 1, "me"
+    end
+    
+    it "should create an associated negative vote with the given (negative) value and ip" do
+      @nomination.negative_votes.should_receive(:create).with :value => -1, :ip => "me", :type => "vote"
+      @nomination.vote -1, "me"
     end
     
     it "should update the score attribute" do
@@ -88,6 +94,11 @@ describe Nomination do
     
     it "should return false if the string is in the 'voted by' list" do
       @nomination.stub!(:votes).and_return [Vote.new(:ip => "me")]
+      @nomination.can_be_voted_for_by?("me").should be_false
+    end
+    
+    it "should return false if the string is in the 'negative voted by' list" do
+      @nomination.stub!(:negative_votes).and_return [Vote.new(:ip => "me")]
       @nomination.can_be_voted_for_by?("me").should be_false
     end
   end

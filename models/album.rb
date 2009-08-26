@@ -1,7 +1,7 @@
 class Album
   include DataMapper::Resource
   
-  VALUE_METHODS = { "most_listened" => :play_count, "most_popular" => :score, "top_rated" => :rating }
+  VALUE_METHODS = { "most_listened" => :play_count, "top_rated" => :rating, "most_popular" => :score, "least_popular" => :negative_score }
   
   property :id, Serial
   property :artist, String, :length => 200
@@ -10,7 +10,7 @@ class Album
   has n, :songs
   has n, :nominations
   has n, :votes, :through => :nominations, :type => "vote", :value.gt => 0
-  has n, :negative_votes, :through => :nominations, :type => "vote", :value.lt => 0
+  has n, :negative_votes, :through => :nominations, :class_name => "Vote", :type => "vote", :value.lt => 0
   has n, :ratings, :through => :nominations, :class_name => "Vote", :type => "rating"
   
   default_scope(:default).update :order => [:artist, :name]
@@ -42,7 +42,7 @@ class Album
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
     
-    { :most_listened => :play_count, :most_popular => :score, :top_rated => :rating }.each do |method, criteria|
+    { :most_listened => :play_count, :top_rated => :rating, :most_popular => :score, :least_popular => :negative_score }.each do |method, criteria|
       define_method method do
         all(:links => [:nominations]).uniq.select { |a| a.send(criteria) > 0 }.sort_by { |a| a.send(criteria) }.reverse
       end

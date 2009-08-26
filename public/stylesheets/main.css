@@ -191,5 +191,5 @@ input[type = text] {
   font-weight: normal;
 }
 #tabs li a:hover {
-  font-weight: bold;
+  text-decoration: underline;
 }

@@ -213,7 +213,7 @@ describe Album do
     end
   end
   
-  { :most_listened => :play_count, :most_popular => :score, :top_rated => :rating }.each do |method, criteria|
+  { :most_listened => :play_count, :top_rated => :rating, :most_popular => :score, :least_popular => :negative_score }.each do |method, criteria|
     describe method do
       before do
         @album1 = Album.new(:id => 1); @album1.stub!(criteria).and_return 1
@@ -242,8 +242,8 @@ describe Album do
   end
   
   describe "value method for" do
-    { "most_listened" => :play_count, "most_popular" => :score, "top_rated" => :rating,
-      "all" => nil, "bla" => nil }.each do |scope, method|
+    { "most_listened" => :play_count, "most_popular" => :score, "least_popular" => :negative_score,
+      "top_rated" => :rating, "all" => nil, "bla" => nil }.each do |scope, method|
       it "should return the method name '#{method}' for the scope '#{scope}'" do
         Album.value_method_for(scope).should == method
       end

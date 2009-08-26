@@ -12,7 +12,8 @@ class Nomination
   property :created_at, DateTime
     
   belongs_to :album
-  has n, :votes, :type => "vote"
+  has n, :votes, :type => "vote", :value.gt => 0
+  has n, :negative_votes, :class_name => "Vote", :type => "vote", :value.lt => 0
   has n, :down_votes, :class_name => "Vote", :type => "force"
   has n, :ratings, :class_name => "Vote", :type => "rating"
   
@@ -26,11 +27,12 @@ class Nomination
   def vote(value, ip)
     return unless can_be_voted_for_by?(ip)
     
-    self.votes.create(:value => value, :ip => ip, :type => "vote") && self.score = score + value
+    self.score = score + value
+    self.send(value > 0 ? :votes : :negative_votes).create :value => value, :ip => ip, :type => "vote"
     self.status = "deleted" if score <= DEFAULT_ELIMINATION_SCORE
     save
   end
-  def can_be_voted_for_by?(ip); !votes.map { |v| v.ip }.include?(ip) end
+  def can_be_voted_for_by?(ip); !(votes + negative_votes).map { |v| v.ip }.include?(ip) end
   
   def remove(ip); self.update_attributes(:status => "deleted") if owned_by?(ip) end
 

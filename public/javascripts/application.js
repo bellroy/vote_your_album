@@ -73,7 +73,7 @@ $(function() {
   });
   
   // Lists
-  $.each(["all", "most_listened", "top_rated", "most_popular"], function() {
+  $.each(["all", "most_listened", "top_rated", "most_popular", "least_popular"], function() {
     var type = this;
     $("." + type).click(function() { getList(type); });
   });
