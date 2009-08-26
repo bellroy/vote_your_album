@@ -23,17 +23,6 @@ $(function() {
     }
   });
   
-  // Drag definitions
-  var drag_options = {
-    handle: ".left",
-    helper: "clone",
-    opacity: 0.4
-  }
-  $("#list").live("mouseover", function() {
-    $("#list .album").draggable($.extend(drag_options, {
-      scope: "adding"
-    }));
-  });
   $("#upcoming").live("mouseover", function() {
     $("#upcoming .album.deleteable").draggable($.extend(drag_options, {
       scope: "removing"
@@ -84,6 +73,13 @@ $(function() {
   getStatus();
 });
 
+// Drag definitions
+var drag_options = {
+  handle: ".left",
+  helper: "clone",
+  opacity: 0.4
+}
+
 /*
  * Requests an update of the available albums and updates the list
  */
@@ -118,6 +114,7 @@ function getStatus() {
  */
 function updateList(list) {
   var ul = $("#list");
+  ul.children().draggable("disable");
   ul.html("");
   
   var i = 0;
@@ -139,6 +136,9 @@ function updateList(list) {
     
     ul.append(li);
   });
+  ul.children().draggable($.extend(drag_options, {
+    scope: "adding"
+  }));
 }
 
 /*
