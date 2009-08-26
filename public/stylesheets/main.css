@@ -193,3 +193,11 @@ input[type = text] {
 #tabs li a:hover {
   text-decoration: underline;
 }
+
+.news {
+  clear: both;
+  padding-top: 20px;
+}
+.news ul {
+  margin: 5px 0 0 0;
+}
