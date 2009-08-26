@@ -143,6 +143,7 @@ describe Nomination do
   describe "force" do
     before do
       @nomination = Nomination.new(:nominated_by => "me")
+      @nomination.stub!(:negative_votes).and_return [Vote.new(:ip => "me")]
       @nomination.down_votes.stub!(:create).and_return true
     end
     
@@ -172,14 +173,27 @@ describe Nomination do
   describe "can be forced by?" do
     before do
       @nomination = Nomination.new
+      @nomination.stub!(:negative_votes).and_return [Vote.new(:ip => "me")]
     end
     
-    it "should return true if the force votes dont contain a vote by the given 'user'" do
+    it "should return true if the force votes dont contain a vote by the given 'user' and if the user has put a negative vote on the nomination" do
       @nomination.can_be_forced_by?("me").should be_true
     end
     
     it "should return false if the string is in the 'down votes' list" do
       @nomination.stub!(:down_votes).and_return [Vote.new(:ip => "me")]
+      @nomination.can_be_forced_by?("me").should be_false
+    end
+    
+    it "should return false if the string is not in the 'negative voted by' list" do
+      @nomination.stub!(:negative_votes).and_return []
+      @nomination.can_be_forced_by?("me").should be_false
+    end
+    
+    it "should return false if we have a force vote but not a negative vote from the user" do
+      @nomination.stub!(:down_votes).and_return [Vote.new(:ip => "me")]
+      @nomination.stub!(:negative_votes).and_return []
+      
       @nomination.can_be_forced_by?("me").should be_false
     end
   end

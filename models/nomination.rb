@@ -45,7 +45,7 @@ class Nomination
     self.down_votes.create :value => 1, :ip => ip, :type => "force"
     MpdProxy.execute(:clear) if down_votes_necessary <= 0
   end
-  def can_be_forced_by?(ip); !down_votes.map { |v| v.ip }.include?(ip) end
+  def can_be_forced_by?(ip); !down_votes.map { |v| v.ip }.include?(ip) && negative_votes.map { |v| v.ip }.include?(ip) end
 
   # Rate methods
   # ----------------------------------------------------------------------
