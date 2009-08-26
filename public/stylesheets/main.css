@@ -36,9 +36,6 @@ a img {
 .hidden {
   visibility: hidden;
 }
-.template {
-  display: none;
-}
 
 .header .title {
 	height: 80px;
@@ -132,6 +129,7 @@ a img {
 }
 .album_list.list li .left .value {
   font-weight: bold;
+  margin-left: 5px;
 }
 .album_list.list li img {
   height: 15px;

@@ -122,15 +122,22 @@ function updateList(list) {
   
   var i = 0;
   $.each(list, function() {
-    ul.append($("#list_template").html());
-    var li = ul.children("li:last");
+    var li = '<li class="album ' + (i++ % 2 == 0 ? "even" : "odd") + '" ref="' + this.id + '">';
+    li += '<div class="left">';
+    li +=   '<span class="artist">' + this.artist + '</span>';
+    li +=   '<span> - </span>';
+    li +=   '<span class="album">' + this.name + '</span>';
+    if (this.value != null) li += '<span class="value">(' + this.value + ')</span>';
+    li += '</div>';
+    li += '<div class="right">';
+    li +=   '<a href="#" class="add" ref="' + this.id + '">';
+    li +=     '<img src="/images/add.png" title="Add Album to Upcoming Albums" />';
+    li +=   '</a>';
+    li += '</div>';
+    li += '<div class="clear"></div>';
+    li += '</li>';
     
-    li.addClass(i++ % 2 == 0 ? "even" : "odd");
-    li.attr("ref", this.id);
-    li.children(".left").children(".artist").html(this.artist);
-    li.children(".left").children(".name").html(this.name);
-    li.children(".right").children(".add").attr("ref", this.id);
-    if (this.value != null) li.children(".left").children(".value").html("(" + this.value + ")");
+    ul.append(li);
   });
 }
 
