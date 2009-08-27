@@ -36,6 +36,9 @@ a img {
 .hidden {
   visibility: hidden;
 }
+.display-none {
+  display: none;
+}
 
 .header .title {
 	height: 80px;
