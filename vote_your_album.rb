@@ -57,7 +57,7 @@ end
 
 post "/add/:id" do |album_id|
   album = Album.get(album_id.to_i)
-  album.nominations.create(:status => "active", :created_at => Time.now, :nominated_by => request.ip) if album
+  album.nominate(request.ip) if album
   render_upcoming
 end
 post "/up/:id" do |nomination_id|

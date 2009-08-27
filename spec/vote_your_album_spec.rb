@@ -176,22 +176,20 @@ describe "vote your album:" do
   describe "POST '/add/:id'" do
     before do
       Album.stub!(:get).and_return @album = Album.new(:id => 123, :artist => "artist", :name =>  "album")
-      @album.nominations.stub! :create
+      @album.stub! :nominate
       
       Nomination.stub!(:active).and_return [Nomination.new(:album => @album)]
     end
     
-    it "should add the Album to the Library's next list if we know the album" do
-      Time.stub!(:now).and_return time = mock("Now", :tv_sec => 1)
+    it "should nominate the album if we can find one" do
       Album.should_receive(:get).with(123).and_return @album
-      
-      @album.nominations.should_receive(:create).with :status => "active", :created_at => time, :nominated_by => "127.0.0.1"
+      @album.should_receive(:nominate).with "127.0.0.1"
       post "/add/123"
     end
     
     it "should do nothing when we can't find the album in the list" do
       Album.should_receive(:get).with(321).and_return nil
-      Nomination.should_not_receive :create
+      @album.should_not_receive :nominate
       post "/add/321"
     end
     

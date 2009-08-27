@@ -69,6 +69,25 @@ describe Album do
     end
   end
   
+  describe "nominate" do
+    before do
+      @album = Album.new
+      @album.nominations.stub!(:create).and_return @nomination = Nomination.new
+      @nomination.stub! :vote
+    end
+    
+    it "should create a nomination for that album" do
+      Time.stub!(:now).and_return time = mock("Now", :tv_sec => 1)
+      @album.nominations.should_receive(:create).with :status => "active", :created_at => time, :nominated_by => "me"
+      @album.nominate "me"
+    end
+    
+    it "should also add a up vote immediately for the given user" do
+      @nomination.should_receive(:vote).with 1, "me"
+      @album.nominate "me"
+    end
+  end
+  
   describe "to s" do
     before do
       @album = Album.new(:id => 123, :artist => "artist", :name => "album")
