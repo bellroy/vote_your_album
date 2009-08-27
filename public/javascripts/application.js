@@ -51,6 +51,7 @@ $(function() {
   // Search
   $("#search").ajaxForm({
     dataType: "json",
+    beforeSend: function() { $(".list .overlay").show(); },
     success: function(list) {
       highlightTab(".all");
       updateList(list);
@@ -83,11 +84,14 @@ var drag_options = {
 /*
  * Requests an update of the available albums and updates the list
  */
-function getList(type) { $.getJSON("/list/" + type, function(list) {
-  highlightTab("." + type);
-  updateList(list);
-  return false;
-}); }
+function getList(type) {
+  $(".list .overlay").show();
+  $.getJSON("/list/" + type, function(list) {
+    highlightTab("." + type);
+    updateList(list);
+    return false;
+  });
+}
 function highlightTab(link) {
   $("#tabs li").removeClass("selected");
   $(link).parent().addClass("selected");
@@ -136,9 +140,11 @@ function updateList(list) {
     
     ul.append(li);
   });
+  
   ul.children().draggable($.extend(drag_options, {
     scope: "adding"
   }));
+  $(".list .overlay").hide();
 }
 
 /*

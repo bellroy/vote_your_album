@@ -110,6 +110,19 @@ a img {
 .album_list ul.over {
   border-style: dashed;
 }
+.album_list .overlay {
+  display: none;
+  background-color: #fff;
+  position: absolute;
+  width: 450px;
+  height: 500px;
+  top: 73px;
+  left: 1px;
+  opacity: 0.8;
+}
+.album_list .overlay .spinner {
+  margin: 200px 175px;
+}
 .album_list li {
   padding: 4px 5px;
   width: 425px;

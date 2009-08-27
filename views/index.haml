@@ -7,7 +7,9 @@
     %button#clear{ :type => "button" } Clear
        
   %ul#list
-  
+  .overlay
+    %img.spinner{ :src => "/images/spinner.gif" }
+    
   %ul#tabs
     %li
       %a.all{ :href => "#", :title => "Show all albums" } All
