@@ -1,0 +1,2 @@
+#!/bin/bash
+irb -r vote_your_album.rb
