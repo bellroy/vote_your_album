@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# grab the requested envrionment if we have a second argument
+env="development"
+if [ "$2" ]
+then
+  env=$2
+fi
+
+# delegate the requested command to the thin server
+# we use the -d option to daemonize the process
+if [ "$1" ]
+then
+  case "$1" in
+    start)
+      thin start -d -p 4567 -e $env -R config.ru
+      ;;
+    stop)
+      thin stop
+      ;;
+    restart)
+      thin restart
+      ;;
+    +)
+      echo "Please provide either 'start', 'stop' or 'restart' as the first argument"
+      ;;
+  esac
+else
+  echo "Please provide either 'start', 'stop' or 'restart' as the first argument."
+  echo "Optional second argument is the envrionment: 'development' (default), 'production' or 'test'"
+fi
