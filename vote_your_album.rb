@@ -2,7 +2,7 @@
 %w[models/album models/song models/nomination models/vote].each { |model| require model }
 require 'lib/mpd_proxy'
 
-require 'config'
+require 'lib/config'
 
 # -----------------------------------------------------------------------------------
 # Helpers
