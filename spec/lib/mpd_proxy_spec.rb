@@ -40,7 +40,6 @@ describe MpdProxy do
     before do
       MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
       MpdProxy.setup "server", 1234
-      
       @mpd.stub! :action
     end
     
@@ -52,6 +51,23 @@ describe MpdProxy do
     it "should return the result of the MPD method call" do
       @mpd.stub!(:action).and_return "result!"
       MpdProxy.execute(:action).should == "result!"
+    end
+  end
+  
+  describe "find songs for" do
+    before do
+      MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
+      MpdProxy.setup "server", 1234
+      @mpd.stub!(:find).and_return "songs"
+    end
+    
+    it "should ask the mpd object for the songs" do
+      @mpd.should_receive(:find).with "album", "hits"
+      MpdProxy.find_songs_for "hits"
+    end
+    
+    it "should return the result of the find" do
+      MpdProxy.find_songs_for("hits").should == "songs"
     end
   end
   

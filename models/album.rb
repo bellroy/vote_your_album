@@ -27,14 +27,13 @@ class Album
   
   class << self
     def update
-      songs = MpdProxy.execute(:songs)
       MpdProxy.execute(:albums).each do |album|
         next if first(:name => album)
         
         new_album = Album.new(:name => album)        
-        songs.select { |song| song.album == album }.each { |song|
-          new_album.songs.build :track => song.track, :artist => song.artist, :title => song.title, :file => song.file }
-        new_album.artist = new_album.songs.map { |song| song.artist }.compact.sort_by { |artist| artist.length }.first || ""
+        songs = MpdProxy.find_songs_for(album)
+        songs.each { |song| new_album.songs.build :track => song.track, :artist => song.artist, :title => song.title, :file => song.file }
+        new_album.artist = get_artist_from(songs)        
         new_album.save
       end
     end
@@ -51,5 +50,21 @@ class Album
     end
         
     def value_method_for(scope); VALUE_METHODS[scope] end
+  
+  private
+    
+    def get_artist_from(songs)
+      artists = songs.map { |song| song.artist }.compact
+      shortest = artists.sort_by { |artist| artist.length }.first
+      
+      case
+        when shortest.nil?
+          ""
+        when artists.select { |artist| artist =~ /\A#{Regexp.escape(shortest)}/ }.size >= (songs.size / 2.0)
+          shortest
+        else
+          "VA"
+      end
+    end
   end
 end

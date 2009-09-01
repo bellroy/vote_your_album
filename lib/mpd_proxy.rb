@@ -13,6 +13,7 @@ class MpdProxy
     end
     
     def execute(action); @mpd.send action end
+    def find_songs_for(album); @mpd.find "album", album end
     
     def volume; @volume end 
     def volume=(value); @volume = value end
