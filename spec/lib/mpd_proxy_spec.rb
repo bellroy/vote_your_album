@@ -34,6 +34,11 @@ describe MpdProxy do
       @mpd.should_receive(:register_callback).with MpdProxy.method(:volume=), MPD::VOLUME_CALLBACK
       MpdProxy.setup "server", 1234
     end
+    
+    it "should register a callback for the elapsed time" do
+      @mpd.should_receive(:register_callback).with MpdProxy.method(:time=), MPD::TIME_CALLBACK
+      MpdProxy.setup "server", 1234
+    end
   end
   
   describe "execute" do
@@ -103,7 +108,7 @@ describe MpdProxy do
       MpdProxy.stub! :play_next
     end
     
-    it "should return the volume of the class variable" do
+    it "should return the value of the class variable" do
       MpdProxy.class_eval do
         @current_song = "song"
       end
@@ -140,6 +145,28 @@ describe MpdProxy do
     it "should play the next album if we get nil" do
       MpdProxy.should_receive :play_next
       MpdProxy.current_song = nil
+    end
+  end
+  
+  describe "time accessor" do
+    { 0 => "-0:00", 1 => "-0:01", 60 => "-1:00", 123 => "-2:03" }.each do |seconds, time|
+      it "should return the formatted value of the saved remaining seconds: #{seconds}" do
+        MpdProxy.class_eval do
+          @time = seconds
+        end
+
+        MpdProxy.time.should == time
+      end
+    end
+    
+    it "should set the time variable to the calculated time remaining" do
+      MpdProxy.send :time=, 12, 43
+      MpdProxy.time.should == "-0:31"
+    end
+    
+    it "should set a 0 value if we get an error" do
+      MpdProxy.send :time=, 0, 0
+      MpdProxy.time.should == "-0:00"
     end
   end
   

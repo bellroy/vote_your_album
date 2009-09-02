@@ -48,10 +48,11 @@ a img {
 }
 .main_controls {
   border-bottom: 2px solid #333;
-  height: 60px;
+  height: 80px;
 }
 .main_controls .left {
   width: 20%;
+  margin-top: 20px;
 }
 .main_controls .left form {
   display: inline;
@@ -71,13 +72,16 @@ a img {
   padding-top: 14px;
   color: #777;
 }
+.main_controls .middle div {
+  padding-top: 2px;
+}
 .main_controls .middle #rate_current {
   width: 85px;
   height: 21px;
   margin: 0 auto;
 }
 .main_controls .right {
-  padding-top: 33px;
+  margin-top: 53px;
   width: 20%;
   text-align: right;
 }

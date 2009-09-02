@@ -17,8 +17,10 @@ def json_status
   current = Nomination.current
   
   status = { :playing => MpdProxy.playing?, :volume => MpdProxy.volume }
-  status = status.merge(:current_album => current.album.to_s, :rateable => current.can_be_rated_by?(request.ip),
-    :down_votes_necessary => current.down_votes_necessary, :forceable => current.can_be_forced_by?(request.ip)) if MpdProxy.playing?
+  status = status.merge(:current_album => current.album.to_s, :current_song => MpdProxy.current_song,
+    :time => MpdProxy.time, :down_votes_necessary => current.down_votes_necessary,
+    :rateable => current.can_be_rated_by?(request.ip), :forceable => current.can_be_forced_by?(request.ip)
+  ) if MpdProxy.playing?
   status.to_json
 end
 

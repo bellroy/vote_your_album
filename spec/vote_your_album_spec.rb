@@ -141,6 +141,11 @@ describe "vote your album:" do
     describe "currently playing an album" do
       before do
         MpdProxy.stub!(:playing?).and_return true
+        MpdProxy.stub!(:time).and_return "time"
+        
+        song = MPD::Song.new
+        { "artist" => "me", "title" => "song" }.each { |k, v| song[k] = v }
+        MpdProxy.stub!(:current_song).and_return song
         
         @album = Album.new(:artist => "c", :name =>  "three")
         Nomination.stub!(:current).and_return @nomination = Nomination.new(:album => @album)
@@ -150,6 +155,17 @@ describe "vote your album:" do
       it "should include the name of the current album" do
         get "/status"
         last_response.body.should match(/\"current_album\":\"c - three\"/)
+      end
+      
+      it "should include the information of the current song" do
+        get "/status"
+        last_response.body.should match(/\"artist\":\"me\"/)
+        last_response.body.should match(/\"title\":\"song\"/)
+      end
+      
+      it "should include the time remaining for the song" do
+        get "/status"
+        last_response.body.should match(/\"time\":\"time\"/)
       end
       
       it "should include the number of necessary (remaining) forces" do
@@ -295,7 +311,7 @@ describe "vote your album:" do
         MpdProxy.stub! :execute
       end
       
-      it " should execute the provided action on the Library class" do
+      it "should execute the provided action on the Library class" do
         MpdProxy.should_receive(:execute).with action
         post "/control/#{action}"
       end

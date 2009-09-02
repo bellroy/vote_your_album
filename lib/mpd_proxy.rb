@@ -2,12 +2,14 @@ class MpdProxy
   @mpd = nil
   @volume = 0
   @current_song = nil
+  @time = 0
   
   class << self
     def setup(server, port, callbacks = false)
       @mpd = MPD.new(server, port)
       @mpd.register_callback method(:current_song=), MPD::CURRENT_SONG_CALLBACK
       @mpd.register_callback method(:volume=), MPD::VOLUME_CALLBACK
+      @mpd.register_callback method(:time=), MPD::TIME_CALLBACK
       @mpd.connect callbacks
     rescue SocketError
     end
@@ -25,6 +27,9 @@ class MpdProxy
       @current_song = song
       play_next unless song
     end
+    
+    def time; "-#{@time / 60}:#{"%02d" % (@time % 60)}" end
+    def time=(elapsed, total); @time = total - elapsed end
     
     def play_next
       return unless nomination = Nomination.active.first
