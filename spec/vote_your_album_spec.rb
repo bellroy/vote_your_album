@@ -116,6 +116,47 @@ describe "vote your album:" do
     end
   end
   
+  describe "GET '/songs/:album'" do
+    before do
+      @album = Album.new(:artist => "artist", :name => "name")
+      @album.stub!(:songs).and_return []
+      Album.stub!(:get).and_return @album
+    end
+    
+    it "should fetch the album with the given ID" do
+      Album.should_receive(:get).with(123).and_return @album
+      get "/songs/123"
+    end
+    
+    it "should get the songs of that album" do
+      @album.should_receive(:songs).and_return []
+      get "/songs/123"
+    end
+    
+    it "should render the fetched songs" do
+      @album.stub!(:songs).and_return [Song.new(:artist => "me", :title => "hit", :track => 1)]
+      
+      get "/songs/123"
+      last_response.body.should match(%{me - hit})
+    end
+    
+    describe "album not found" do
+      before do
+        Album.stub!(:get).and_return nil
+      end
+      
+      it "should not try to get the songs" do
+        @album.should_not_receive :songs
+        get "/songs/123"
+      end
+      
+      it "should return an empty response" do
+        get "/songs/123"
+        last_response.body.should == ""
+      end
+    end
+  end
+  
   describe "GET '/status'" do    
     it "should return the volume" do
       MpdProxy.stub!(:volume).and_return 32

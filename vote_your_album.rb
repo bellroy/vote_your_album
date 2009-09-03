@@ -52,6 +52,11 @@ end
 get "/upcoming" do
   render_upcoming
 end
+get "/songs/:album" do |album_id|
+  album = Album.get(album_id.to_i)
+  @songs = (album ? album.songs : [])
+  haml :_songs, :layout => false
+end
 
 get "/status" do
   json_status

@@ -62,6 +62,20 @@ $(function() {
     getList("all");
   });
   
+  // Album songs
+  $(".toggle_songs").live("click", function() {
+    var id = $(this).attr("ref");
+    var li = $(".list .album[ref = " + id + "]");
+    
+    if (!li.hasClass("loaded")) {
+      $.get("/songs/" + id, function(songs) { li.children(".songs").html(songs); });
+      li.addClass("loaded");
+    }
+    
+    li.toggleClass("expanded");
+    return false;
+  });
+  
   // Lists
   $.each(["all", "most_listened", "top_rated", "most_popular", "least_popular"], function() {
     var type = this;
@@ -125,6 +139,7 @@ function updateList(list) {
   $.each(list, function() {
     var li = '<li class="album ' + (i++ % 2 == 0 ? "even" : "odd") + '" ref="' + this.id + '">';
     li += '<div class="left">';
+    li +=   '<a href="#" class="toggle_songs" ref="' + this.id + '"></a>';
     li +=   '<span class="artist">' + this.artist + '</span>';
     li +=   '<span> - </span>';
     li +=   '<span class="album">' + this.name + '</span>';
@@ -135,6 +150,7 @@ function updateList(list) {
     li +=     '<img src="/images/add.png" title="Add Album to Upcoming Albums" />';
     li +=   '</a>';
     li += '</div>';
+    li += '<div class="songs clear"></div>';
     li += '<div class="clear"></div>';
     li += '</li>';
     

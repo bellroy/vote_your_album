@@ -158,6 +158,28 @@ a img {
   height: 18px;
   margin-top: 3px;
 }
+.album_list li .toggle_songs {
+  display: block;
+  float: left;
+  margin: 4px 4px 0 0;
+  padding: 0;
+  background: url(/images/toggle.png) no-repeat 0 0;
+  height: 11px;
+  width: 13px;
+}
+.album_list li.expanded .toggle_songs {
+  background-position: 0 -11px;
+}
+.album_list li .songs {
+  padding: 3px 0 0 15px;
+  display: none;
+}
+.album_list li .songs .song {
+  padding: 2px 0;
+}
+.album_list li.expanded .songs {
+  display: block;
+}
 .album_list li .score {
   display: block;
   float: left;
