@@ -20,7 +20,12 @@ class Album
   def negative_score; (negative_votes.sum(:value) || 0) * -1 end
   def rating; ((ratings.avg(:value) || 0.0) * 10).round / 10.0 end
   
-  def nominate(ip); self.nominations.create(:status => "active", :created_at => Time.now, :nominated_by => ip).vote 1, ip end
+  def nominate(ip)
+    nomination = nominations.create(:status => "active", :created_at => Time.now, :nominated_by => ip)
+    nomination.vote 1, ip
+    songs.each { |song| nomination.songs << song }
+    nomination.save
+  end
     
   def to_s; "#{artist} - #{name}" end
   def to_hash(value_method = nil); { :id => id, :artist => artist, :name => name, :value => (value_method ? send(value_method) : nil) } end

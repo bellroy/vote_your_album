@@ -1,8 +1,11 @@
 - @nominations.each_with_index do |nomination, i|
-  %li{ :class => "album #{i % 2 == 0 ? "even" : "odd"} #{nomination.owned_by?(request.ip) ? "deleteable" : ""}", :ref => nomination.id }
+  %li{ :class => "album loaded #{i % 2 == 0 ? "even" : "odd"} #{nomination.owned_by?(request.ip) ? "deleteable" : ""}", :ref => nomination.id }
     .left
       %span{ :class => "score #{score_class(nomination.score)}", :title => "Score: #{nomination.score}" }= nomination.score
-      %span.artist= nomination.artist
+      %a.toggle_songs{ :href => "#" }
+      %span.artist
+        = nomination.owned_by?(request.ip) ? "*" : ""
+        = nomination.artist
       %span -
       %span.name= nomination.name
     .right
@@ -11,4 +14,6 @@
           %img{ :src => "/images/plus.png", :title => "Vote this Album up" }
         %a.down{ :href => "#", :ref => nomination.id }
           %img{ :src => "/images/minus.png", :title => "Vote this Album down" }
+    %div{ :class => "songs clear" }
+      = haml :_songs, :layout => false, :locals => { :songs => nomination.songs }
     .clear

@@ -64,11 +64,10 @@ $(function() {
   
   // Album songs
   $(".toggle_songs").live("click", function() {
-    var id = $(this).attr("ref");
-    var li = $(".list .album[ref = " + id + "]");
+    var li = $(this).parents(".album");
     
     if (!li.hasClass("loaded")) {
-      $.get("/songs/" + id, function(songs) { li.children(".songs").html(songs); });
+      $.get("/songs/" + $(this).attr("ref"), function(songs) { li.children(".songs").html(songs); });
       li.addClass("loaded");
     }
     

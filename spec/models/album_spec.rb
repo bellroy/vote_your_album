@@ -72,8 +72,11 @@ describe Album do
   describe "nominate" do
     before do
       @album = Album.new
+      @album.stub!(:songs).and_return []
+      
       @album.nominations.stub!(:create).and_return @nomination = Nomination.new
       @nomination.stub! :vote
+      @nomination.stub! :save
     end
     
     it "should create a nomination for that album" do
@@ -84,6 +87,17 @@ describe Album do
     
     it "should also add a up vote immediately for the given user" do
       @nomination.should_receive(:vote).with 1, "me"
+      @album.nominate "me"
+    end
+    
+    it "should add the songs of the album to the nomination" do
+      @album.stub!(:songs).and_return [song = Song.new(:track => 1)]
+      @album.nominate "me"
+      @nomination.songs.should include(song)
+    end
+    
+    it "should save the nomination again, to persist the songs" do
+      @nomination.should_receive :save
       @album.nominate "me"
     end
   end

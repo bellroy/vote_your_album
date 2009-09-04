@@ -11,6 +11,7 @@ class Nomination
   property :created_at, DateTime
     
   belongs_to :album
+  has n, :songs, :through => Resource
   has n, :votes, :type => "vote", :value.gt => 0
   has n, :negative_votes, :class_name => "Vote", :type => "vote", :value.lt => 0
   has n, :down_votes, :class_name => "Vote", :type => "force"

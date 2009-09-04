@@ -105,14 +105,14 @@ describe "vote your album:" do
     
     it "should not have a deleteable class if we arent the 'owner'" do
       get "/upcoming"
-      last_response.body.should match(%{li class='album even '})
+      last_response.body.should match(%{li class='album loaded even '})
     end
     
     it "should have a deleteable class if we are the 'owner'" do
       @nomination.nominated_by = "127.0.0.1"
       
       get "/upcoming"
-      last_response.body.should match(%{li class='album even deleteable'})
+      last_response.body.should match(%{li class='album loaded even deleteable'})
     end
   end
   

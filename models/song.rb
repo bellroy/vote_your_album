@@ -8,6 +8,7 @@ class Song
   property :file, String, :length => 500
   
   belongs_to :album
+  has n, :nominations, :through => Resource
   
   default_scope(:default).update :order => [:track]
 end

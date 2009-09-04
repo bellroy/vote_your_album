@@ -54,8 +54,7 @@ get "/upcoming" do
 end
 get "/songs/:album" do |album_id|
   album = Album.get(album_id.to_i)
-  @songs = (album ? album.songs : [])
-  haml :_songs, :layout => false
+  haml :_songs, :layout => false, :locals => { :songs => (album ? album.songs : []) }
 end
 
 get "/status" do
