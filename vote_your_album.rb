@@ -26,7 +26,7 @@ end
 
 def render_upcoming
   @nominations = Nomination.active
-  haml :_upcoming, :layout => false
+  haml :upcoming, :layout => false
 end
 
 helpers do
@@ -54,7 +54,7 @@ get "/upcoming" do
 end
 get "/songs/:album" do |album_id|
   album = Album.get(album_id.to_i)
-  haml :_songs, :layout => false, :locals => { :songs => (album ? album.songs : []) }
+  haml :songs, :layout => false, :locals => { :songs => (album ? album.songs : []) }
 end
 
 get "/status" do
