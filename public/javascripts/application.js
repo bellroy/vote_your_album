@@ -114,7 +114,10 @@ function highlightTab(link) {
  * Requests an update of the upcoming albums and updates the list
  */
 function getUpcoming() {
-  $.get("/upcoming", function(list) { $("#upcoming").html(list); });
+  var params = "";
+  $(".upcoming li.expanded").each(function() { params += "&expanded[]=" + $(this).attr("ref"); });
+  
+  $.get("/upcoming?" + params, function(list) { $("#upcoming").html(list); });
   setTimeout("getUpcoming();", 5000);
 }
 

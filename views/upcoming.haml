@@ -1,6 +1,6 @@
 - @nominations.each_with_index do |nomination, i|
   - is_owner = nomination.owned_by?(request.ip)
-  %li{ :class => "album loaded #{i % 2 == 0 ? "even" : "odd"} #{is_owner ? "deleteable" : ""}", :ref => nomination.id }
+  %li{ :class => album_class(i, is_owner, expanded.include?(nomination.id.to_s)), :ref => nomination.id }
     .left
       %span{ :class => "score #{score_class(nomination.score)}", :title => "Score: #{nomination.score}" }= nomination.score
       %a.toggle_songs{ :href => "#" }

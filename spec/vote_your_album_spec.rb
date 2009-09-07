@@ -84,7 +84,6 @@ describe "vote your album:" do
     
     it "should return the list" do
       get "/upcoming"
-      last_response.body.should match(%q{<span class='score positive' title='Score: 2'>2</span>})
       last_response.body.should match(%q{<span class='artist'>artist</span>})
       last_response.body.should match(%q{<span class='name'>name</span>})
     end
@@ -103,16 +102,10 @@ describe "vote your album:" do
       last_response.body.should_not match(%{a class='down'})
     end
     
-    it "should not have a deleteable class if we arent the 'owner'" do
+    it "should add a '*' before the artist if we have nominated the album" do
+      @nomination.stub!(:owned_by?).and_return true
       get "/upcoming"
-      last_response.body.should match(%{li class='album loaded even '})
-    end
-    
-    it "should have a deleteable class if we are the 'owner'" do
-      @nomination.nominated_by = "127.0.0.1"
-      
-      get "/upcoming"
-      last_response.body.should match(%{li class='album loaded even deleteable'})
+      last_response.body.should match(/\*\ artist/)
     end
   end
   

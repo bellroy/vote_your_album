@@ -24,13 +24,19 @@ def json_status
   status.to_json
 end
 
-def render_upcoming
+def render_upcoming(expanded = [])
   @nominations = Nomination.active
-  haml :upcoming, :layout => false
+  haml :upcoming, :layout => false, :locals => { :expanded => expanded }
 end
 
 helpers do
   def score_class(score); score > 0 ? "positive" : (score < 0 ? "negative" : "") end
+  def album_class(i, owner, expanded)
+    classes = ["album", "loaded", (i % 2 == 0 ? "even" : "odd")]
+    classes << ["deleteable"] if owner
+    classes << ["expanded"] if expanded
+    classes.join " "
+  end
 end
 
 
@@ -50,7 +56,7 @@ get "/search" do
   Album.search(params[:q]).map { |a| a.to_hash }.to_json
 end
 get "/upcoming" do
-  render_upcoming
+  render_upcoming params[:expanded] || []
 end
 get "/songs/:album" do |album_id|
   album = Album.get(album_id.to_i)
