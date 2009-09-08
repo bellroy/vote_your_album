@@ -179,17 +179,14 @@ describe MpdProxy do
       @mpd.stub! :add
       @mpd.stub! :play
       
-      @album = Album.new(:name => "my name")
-      @album.stub!(:update_attributes).and_return true
-      
-      @next = Nomination.new(:album => @album, :created_at => Time.now)
+      @next = Nomination.new
       @next.stub! :update_attributes
       Nomination.stub!(:active).and_return [@next]
     end
     
     it "should do nothing if we dont have an upcoming album" do
       Nomination.stub!(:active).and_return []
-      @album.should_not_receive :update_attributes
+      @next.should_not_receive :update_attributes
       MpdProxy.play_next
     end
     
@@ -204,8 +201,8 @@ describe MpdProxy do
       MpdProxy.play_next
     end
     
-    it "should add all songs of the album" do
-      @album.stub!(:songs).and_return [song = Song.new(:file => "path")]
+    it "should add all songs associated with the nomination" do
+      @next.stub!(:songs).and_return [song = Song.new(:file => "path")]
       @mpd.should_receive(:add).with "path"
       MpdProxy.play_next
     end
