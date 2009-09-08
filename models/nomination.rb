@@ -22,6 +22,20 @@ class Nomination
   
   def owned_by?(ip); nominated_by == ip end
   
+  # Song management methods
+  # ----------------------------------------------------------------------
+  def add(song_id)
+    song = album.songs.get(song_id)
+    return unless song && !songs.include?(song)
+    
+    self.songs << song
+    save
+  end
+  def delete(song_id)
+    song = NominationSong.first(:nomination_id => id, :song_id => song_id)
+    song.destroy if song
+  end
+  
   # Vote methods
   # ----------------------------------------------------------------------
   def vote(value, ip)

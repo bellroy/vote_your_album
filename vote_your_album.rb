@@ -84,8 +84,8 @@ end
 post "/add_song/:nomination_id/:id" do |nomination_id, song_id|
   execute_on_nomination(nomination_id) { |nomination| nomination.add song_id.to_i }
 end
-post "/remove_song/:nomination_id/:id" do |nomination_id, song_id|
-  execute_on_nomination(nomination_id) { |nomination| nomination.remove song_id.to_i }
+post "/delete_song/:nomination_id/:id" do |nomination_id, song_id|
+  execute_on_nomination(nomination_id) { |nomination| nomination.delete song_id.to_i }
 end
 post "/force" do
   Nomination.current.force request.ip

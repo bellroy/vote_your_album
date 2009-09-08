@@ -17,7 +17,7 @@
       - if is_owner
         - nomination.album.songs.each do |song|
           .song
-            %input{ :type => "checkbox", :ref => song.id, :checked => (nomination.songs.include?(song) ? "checked" : "") }
+            %input{ :type => "checkbox", :ref => song.id, :checked => nomination.songs.include?(song) }
             = "(#{song.track}) #{song.artist} - #{song.title}"
       - else
         = haml :songs, :layout => false, :locals => { :songs => nomination.songs }

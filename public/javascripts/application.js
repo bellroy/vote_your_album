@@ -75,6 +75,12 @@ $(function() {
     return false;
   });
   
+  // Nomination songs
+  $(".song input").live("click", function() {
+    var nomination = $(this).parents(".album").attr("ref");
+    $.post("/" + ($(this).attr("checked") ? "add" : "delete") + "_song/" + nomination + "/" + $(this).attr("ref"));
+  });
+  
   // Lists
   $.each(["all", "most_listened", "top_rated", "most_popular", "least_popular"], function() {
     var type = this;
@@ -118,7 +124,7 @@ function getUpcoming() {
   $(".upcoming li.expanded").each(function() { params += "&expanded[]=" + $(this).attr("ref"); });
   
   $.get("/upcoming?" + params, function(list) { $("#upcoming").html(list); });
-  setTimeout("getUpcoming();", 5000);
+  setTimeout("getUpcoming();", 8000);
 }
 
 /*

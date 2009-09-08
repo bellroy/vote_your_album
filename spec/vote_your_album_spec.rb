@@ -137,14 +137,14 @@ describe "vote your album:" do
       
       it "should not check the box if the song is not in the nomination's song list" do
         get "/upcoming"
-        last_response.body.should match(%{checked=''})
+        last_response.body.should_not match(%{checked})
       end
       
       it "should check the box if the song is in the nomination's song list" do
         @nomination.stub!(:songs).and_return [@song]
         
         get "/upcoming"
-        last_response.body.should match(%{checked='checked'})
+        last_response.body.should match(%{checked})
       end
     end
   end
@@ -345,7 +345,7 @@ describe "vote your album:" do
     end
   end
   
-  [:add, :remove].each do |action|
+  [:add, :delete].each do |action|
     describe "POST '/#{action}_song/:nomination_id/:id'" do
       before do
         Nomination.stub!(:get).and_return @nomination = Nomination.new(:id => 123)

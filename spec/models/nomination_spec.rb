@@ -31,6 +31,69 @@ describe Nomination do
     end
   end
   
+  describe "add" do
+    before do
+      @album = Album.new
+      @nomination = Nomination.new(:album => @album)
+      @nomination.songs.stub! :<<
+      @nomination.stub! :save
+      
+      @album.songs.stub!(:get).and_return @song = Song.new
+    end
+    
+    it "should try to find the song in the album's songs" do
+      @album.songs.should_receive(:get).with 123
+      @nomination.add 123
+    end
+    
+    it "should add the song to the nominations songs" do
+      @nomination.songs.should_receive(:<<).with @song
+      @nomination.add 123
+    end
+    
+    it "should save the nomination in the end" do
+      @nomination.should_receive :save
+      @nomination.add 123
+    end
+    
+    it "should not add the song if we cant find it" do
+      @album.songs.stub!(:get).and_return nil
+      @nomination.songs.should_not_receive :<<
+      @nomination.add 123
+    end
+    
+    it "should not add the album if it's already in the nomination's song list" do
+      @nomination.stub!(:songs).and_return [@song]
+      @nomination.songs.should_not_receive :<<
+      @nomination.add 123
+    end
+  end
+  
+  describe "delete" do
+    before do
+      @nomination = Nomination.new(:id => 2)
+      
+      NominationSong.stub!(:first).and_return @join = NominationSong.new
+      @join.stub! :destroy
+    end
+    
+    it "should try to find the associated song" do
+      NominationSong.stub!(:first).with(:nomination_id => 2, :song_id => 123).and_return @join
+      @nomination.delete 123
+    end
+    
+    it "should remove the song from the nomination's songs" do
+      @join.should_receive :destroy
+      @nomination.delete 123
+    end
+    
+    it "should not remove the song if we cant find it" do
+      NominationSong.stub!(:first).and_return nil
+      @join.should_not_receive :destroy
+      @nomination.delete 123
+    end
+  end
+  
   describe "vote" do
     before do
       @nomination = Nomination.new(:score => 0)
