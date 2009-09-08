@@ -102,10 +102,50 @@ describe "vote your album:" do
       last_response.body.should_not match(%{a class='down'})
     end
     
-    it "should add a '*' before the artist if we have nominated the album" do
-      @nomination.stub!(:owned_by?).and_return true
+    it "should display the songs of the nomination" do
+      @nomination.stub!(:songs).and_return [Song.new(:artist => "visible", :title => "something")]
+      
       get "/upcoming"
-      last_response.body.should match(/\*\ artist/)
+      last_response.body.should match(%{visible - something})
+    end
+    
+    describe "we nominated the album" do
+      before do
+        @nomination.stub!(:owned_by?).and_return true
+        
+        @song = Song.new(:id => 123, :artist => "visible", :title => "better")
+        @album.stub!(:songs).and_return [@song]
+      end
+      
+      it "should add a '*' before the artist if we have nominated the album" do
+        get "/upcoming"
+        last_response.body.should match(/\*\ artist/)
+      end
+      
+      it "should display the songs of the album not of the nomination" do
+        @nomination.stub!(:songs).and_return [Song.new(:artist => "hidden", :title => "something")]
+        
+        get "/upcoming"
+        last_response.body.should match(%{visible - better})
+        last_response.body.should_not match(%{hidden - something})
+      end
+      
+      it "should display a checkbox in front of each song" do
+        get "/upcoming"
+        last_response.body.should match(%{ref='123' type='checkbox'})
+      end
+      
+      it "should not check the box if the song is not in the nomination's song list" do
+        get "/upcoming"
+        last_response.body.should match(%{checked=''})
+      end
+      
+      it "should check the box if the song is in the nomination's song list" do
+        @nomination.stub!(:songs).and_return [@song]
+        
+        get "/upcoming"
+        last_response.body.should match(%{checked='checked'})
+      end
     end
   end
   
@@ -302,6 +342,37 @@ describe "vote your album:" do
     it "should return the new list" do
       post "/remove/321"
       last_response.body.should match(%q{<span class='score})
+    end
+  end
+  
+  [:add, :remove].each do |action|
+    describe "POST '/#{action}_song/:nomination_id/:id'" do
+      before do
+        Nomination.stub!(:get).and_return @nomination = Nomination.new(:id => 123)
+        @nomination.stub! action
+      end
+
+      it "should try to find the nomination and the song" do
+        Nomination.should_receive(:get).with(123).and_return @nomination
+        post "/#{action}_song/123/321"
+      end
+
+      it "should not try to #{action} the song if we couldnt find a nomination" do
+        Nomination.stub!(:get).and_return nil
+        @nomination.should_not_receive action
+        post "/#{action}_song/123/321"
+      end
+
+      it "should try to #{action} the song to the nomination" do
+        @nomination.should_receive(action).with 321
+        post "/#{action}_song/123/321"
+      end
+
+      it "should render nothing" do
+        post "/#{action}_song/123/321"
+        last_response.body.should == ""
+        last_response.status.should == 200
+      end
     end
   end
   

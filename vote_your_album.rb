@@ -7,10 +7,10 @@ require 'lib/config'
 # -----------------------------------------------------------------------------------
 # Helpers
 # -----------------------------------------------------------------------------------
-def execute_on_nomination(id, &block)
+def execute_on_nomination(id, do_render = true, &block)
   nomination = Nomination.get(id.to_i)
   yield(nomination) if nomination
-  render_upcoming
+  do_render ? render_upcoming : ""
 end
 
 def json_status
@@ -80,6 +80,12 @@ post "/down/:id" do |nomination_id|
 end
 post "/remove/:id" do |nomination_id|
   execute_on_nomination(nomination_id) { |nomination| nomination.remove request.ip }
+end
+post "/add_song/:nomination_id/:id" do |nomination_id, song_id|
+  execute_on_nomination(nomination_id) { |nomination| nomination.add song_id.to_i }
+end
+post "/remove_song/:nomination_id/:id" do |nomination_id, song_id|
+  execute_on_nomination(nomination_id) { |nomination| nomination.remove song_id.to_i }
 end
 post "/force" do
   Nomination.current.force request.ip

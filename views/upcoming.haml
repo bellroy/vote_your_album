@@ -14,5 +14,11 @@
         %a.down{ :href => "#", :ref => nomination.id }
           %img{ :src => "/images/minus.png", :title => "Vote this Album down" }
     %div{ :class => "songs clear" }
-      = haml :songs, :layout => false, :locals => { :songs => nomination.songs }
+      - if is_owner
+        - nomination.album.songs.each do |song|
+          .song
+            %input{ :type => "checkbox", :ref => song.id, :checked => (nomination.songs.include?(song) ? "checked" : "") }
+            = "(#{song.track}) #{song.artist} - #{song.title}"
+      - else
+        = haml :songs, :layout => false, :locals => { :songs => nomination.songs }
     .clear
