@@ -19,7 +19,13 @@ describe Nomination do
   
   describe "owned by?" do
     before do
-      @nomination = Nomination.new(:nominated_by => "me")
+      @user = User.new(:ip => "me")
+      @nomination = Nomination.new(:user => @user)
+    end
+    
+    it "should return fals if we dont have a user" do
+      @nomination.user = nil
+      @nomination.should_not be_owned_by("me")
     end
     
     it "should return true if we have nominated the album" do
@@ -37,60 +43,74 @@ describe Nomination do
       @nomination = Nomination.new(:album => @album)
       @nomination.songs.stub! :<<
       @nomination.stub! :save
+      @nomination.stub!(:owned_by?).and_return true
       
       @album.songs.stub!(:get).and_return @song = Song.new
     end
     
+    it "should do nothing if we arent the owner" do
+      @nomination.stub!(:owned_by?).and_return false
+      @album.songs.should_not_receive :get
+      @nomination.add 123, "me"
+    end
+    
     it "should try to find the song in the album's songs" do
       @album.songs.should_receive(:get).with 123
-      @nomination.add 123
+      @nomination.add 123, "me"
     end
     
     it "should add the song to the nominations songs" do
       @nomination.songs.should_receive(:<<).with @song
-      @nomination.add 123
+      @nomination.add 123, "me"
     end
     
     it "should save the nomination in the end" do
       @nomination.should_receive :save
-      @nomination.add 123
+      @nomination.add 123, "me"
     end
     
     it "should not add the song if we cant find it" do
       @album.songs.stub!(:get).and_return nil
       @nomination.songs.should_not_receive :<<
-      @nomination.add 123
+      @nomination.add 123, "me"
     end
     
     it "should not add the album if it's already in the nomination's song list" do
       @nomination.stub!(:songs).and_return [@song]
       @nomination.songs.should_not_receive :<<
-      @nomination.add 123
+      @nomination.add 123, "me"
     end
   end
   
   describe "delete" do
     before do
       @nomination = Nomination.new(:id => 2)
+      @nomination.stub!(:owned_by?).and_return true
       
       NominationSong.stub!(:first).and_return @join = NominationSong.new
       @join.stub! :destroy
     end
     
+    it "should do nothing if we arent the owner" do
+      @nomination.stub!(:owned_by?).and_return false
+      NominationSong.should_not_receive :first
+      @nomination.delete 123, "me"
+    end
+    
     it "should try to find the associated song" do
       NominationSong.stub!(:first).with(:nomination_id => 2, :song_id => 123).and_return @join
-      @nomination.delete 123
+      @nomination.delete 123, "me"
     end
     
     it "should remove the song from the nomination's songs" do
       @join.should_receive :destroy
-      @nomination.delete 123
+      @nomination.delete 123, "me"
     end
     
     it "should not remove the song if we cant find it" do
       NominationSong.stub!(:first).and_return nil
       @join.should_not_receive :destroy
-      @nomination.delete 123
+      @nomination.delete 123, "me"
     end
   end
   
@@ -100,15 +120,17 @@ describe Nomination do
       @nomination.votes.stub!(:create).and_return true
       @nomination.negative_votes.stub!(:create).and_return true
       @nomination.stub! :save
+      
+      User.stub!(:get_or_create_by).and_return @user = User.new
     end
     
     it "should create an associated vote with the given value and ip" do
-      @nomination.votes.should_receive(:create).with :value => 1, :ip => "me", :type => "vote"
+      @nomination.votes.should_receive(:create).with :user => @user, :value => 1, :type => "vote"
       @nomination.vote 1, "me"
     end
     
     it "should create an associated negative vote with the given (negative) value and ip" do
-      @nomination.negative_votes.should_receive(:create).with :value => -1, :ip => "me", :type => "vote"
+      @nomination.negative_votes.should_receive(:create).with :user => @user, :value => -1, :type => "vote"
       @nomination.vote -1, "me"
     end
     
@@ -132,7 +154,7 @@ describe Nomination do
         @nomination.stub! :update_attributes
       end
       
-      it "should not change the status to 'deleted' swhen the threshold isnt reached" do
+      it "should not change the status to 'deleted' when the threshold isnt reached" do
         @nomination.should_not_receive(:status=).with "deleted"
         @nomination.stub!(:score).and_return -2
         @nomination.vote -2, "me"
@@ -149,30 +171,33 @@ describe Nomination do
   describe "can be voted for by?" do
     before do
       @nomination = Nomination.new
+      User.stub!(:get_or_create_by).and_return @user = User.new
     end
     
     it "should return true if the votes dont contain a vote by the given 'user'" do
-      @nomination.can_be_voted_for_by?("me").should be_true
+      @nomination.can_be_voted_for_by?(@user).should be_true
     end
     
     it "should return false if the string is in the 'voted by' list" do
-      @nomination.stub!(:votes).and_return [Vote.new(:ip => "me")]
-      @nomination.can_be_voted_for_by?("me").should be_false
+      @nomination.stub!(:votes).and_return [Vote.new(:user => @user)]
+      @nomination.can_be_voted_for_by?(@user).should be_false
     end
     
     it "should return false if the string is in the 'negative voted by' list" do
-      @nomination.stub!(:negative_votes).and_return [Vote.new(:ip => "me")]
-      @nomination.can_be_voted_for_by?("me").should be_false
+      @nomination.stub!(:negative_votes).and_return [Vote.new(:user => @user)]
+      @nomination.can_be_voted_for_by?(@user).should be_false
     end
   end
   
   describe "remove" do
     before do
-      @nomination = Nomination.new(:nominated_by => "me")
+      @nomination = Nomination.new
+      @nomination.stub!(:owned_by?).and_return true
       @nomination.stub! :update_attributes
     end
     
     it "should do nothing if we havent nominated the album" do
+      @nomination.stub!(:owned_by?).and_return false
       @nomination.should_not_receive :update_attributes
       @nomination.remove "other"
     end
@@ -211,13 +236,15 @@ describe Nomination do
   
   describe "force" do
     before do
-      @nomination = Nomination.new(:nominated_by => "me")
-      @nomination.stub!(:negative_votes).and_return [Vote.new(:ip => "me")]
+      User.stub!(:get_or_create_by).and_return @user = User.new
+      
+      @nomination = Nomination.new
+      @nomination.stub!(:negative_votes).and_return [Vote.new(:user => @user)]
       @nomination.down_votes.stub!(:create).and_return true
     end
     
     it "should create an associated force vote with the ip" do
-      @nomination.down_votes.should_receive(:create).with :value => 1, :ip => "me", :type => "force"
+      @nomination.down_votes.should_receive(:create).with :user => @user, :value => 1, :type => "force"
       @nomination.force "me"
     end
     
@@ -241,8 +268,10 @@ describe Nomination do
   
   describe "can be forced by?" do
     before do
+      User.stub!(:get_or_create_by).and_return @user = User.new
+      
       @nomination = Nomination.new
-      @nomination.stub!(:negative_votes).and_return [Vote.new(:ip => "me")]
+      @nomination.stub!(:negative_votes).and_return [Vote.new(:user => @user)]
     end
     
     it "should return true if the force votes dont contain a vote by the given 'user' and if the user has put a negative vote on the nomination" do
@@ -250,7 +279,7 @@ describe Nomination do
     end
     
     it "should return false if the string is in the 'down votes' list" do
-      @nomination.stub!(:down_votes).and_return [Vote.new(:ip => "me")]
+      @nomination.stub!(:down_votes).and_return [Vote.new(:user => @user)]
       @nomination.can_be_forced_by?("me").should be_false
     end
     
@@ -260,7 +289,7 @@ describe Nomination do
     end
     
     it "should return false if we have a force vote but not a negative vote from the user" do
-      @nomination.stub!(:down_votes).and_return [Vote.new(:ip => "me")]
+      @nomination.stub!(:down_votes).and_return [Vote.new(:user => @user)]
       @nomination.stub!(:negative_votes).and_return []
       
       @nomination.can_be_forced_by?("me").should be_false
@@ -269,19 +298,21 @@ describe Nomination do
   
   describe "rate" do
     before do
-      @nomination = Nomination.new(:nominated_by => "me")
+      @nomination = Nomination.new
       @nomination.ratings.stub!(:create).and_return true
       @nomination.stub! :update_attributes
+      
+      User.stub!(:get_or_create_by).and_return @user = User.new
     end
     
     it "should create an associated rating with the ip" do
-      @nomination.ratings.should_receive(:create).with :value => 4, :ip => "me", :type => "rating"
+      @nomination.ratings.should_receive(:create).with :user => @user, :value => 4, :type => "rating"
       @nomination.rate 4, "me"
     end
 
     { -1 => 1, 0 => 1, 6 => 5 }.each do |param, value|
       it "should change the param #{param} to #{value}" do
-        @nomination.ratings.should_receive(:create).with :value => value, :ip => "me", :type => "rating"
+        @nomination.ratings.should_receive(:create).with :user => @user, :value => value, :type => "rating"
         @nomination.rate param, "me"
       end
     end
@@ -295,14 +326,15 @@ describe Nomination do
   describe "can be rated by?" do
     before do
       @nomination = Nomination.new
+      User.stub!(:get_or_create_by).and_return @user = User.new
     end
     
     it "should return true if the force votes dont contain a vote by the given 'user'" do
       @nomination.can_be_rated_by?("me").should be_true
     end
     
-    it "should return false if the string is in the 'forced by' list" do
-      @nomination.stub!(:ratings).and_return [Vote.new(:ip => "me")]
+    it "should return false if the user is in the 'forced by' list" do
+      @nomination.stub!(:ratings).and_return [Vote.new(:user => @user)]
       @nomination.can_be_rated_by?("me").should be_false
     end
   end

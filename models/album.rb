@@ -21,8 +21,9 @@ class Album
   def rating; ((ratings.avg(:value) || 0.0) * 10).round / 10.0 end
   
   def nominate(ip)
-    nomination = nominations.create(:status => "active", :created_at => Time.now, :nominated_by => ip)
+    nomination = nominations.create(:status => "active", :created_at => Time.now, :user => User.get_or_create_by(ip))
     nomination.vote 1, ip
+    
     songs.each { |song| nomination.songs << song }
     nomination.save
   end

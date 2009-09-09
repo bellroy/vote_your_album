@@ -364,7 +364,7 @@ describe "vote your album:" do
       end
 
       it "should try to #{action} the song to the nomination" do
-        @nomination.should_receive(action).with 321
+        @nomination.should_receive(action).with 321, "127.0.0.1"
         post "/#{action}_song/123/321"
       end
 

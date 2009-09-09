@@ -89,11 +89,13 @@ describe Album do
       @album.nominations.stub!(:create).and_return @nomination = Nomination.new
       @nomination.stub! :vote
       @nomination.stub! :save
+      
+      User.stub!(:get_or_create_by).and_return @user = User.new
     end
     
     it "should create a nomination for that album" do
       Time.stub!(:now).and_return time = mock("Now", :tv_sec => 1)
-      @album.nominations.should_receive(:create).with :status => "active", :created_at => time, :nominated_by => "me"
+      @album.nominations.should_receive(:create).with :status => "active", :created_at => time, :user => @user
       @album.nominate "me"
     end
     
@@ -263,9 +265,9 @@ describe Album do
   { :most_listened => :play_count, :top_rated => :rating, :most_popular => :score, :least_popular => :negative_score }.each do |method, criteria|
     describe method do
       before do
-        @album1 = Album.new(:id => 1); @album1.stub!(criteria).and_return 1
+        @album1 = Album.new(:id => 1); @album1.stub!(criteria).and_return 2
         @album2 = Album.new(:id => 2); @album2.stub!(criteria).and_return 4
-        @album3 = Album.new(:id => 3); @album3.stub!(criteria).and_return 0
+        @album3 = Album.new(:id => 3); @album3.stub!(criteria).and_return 1
         Album.stub!(:all).and_return @list = [@album1, @album2, @album3, @album1]
       end
 
@@ -274,7 +276,7 @@ describe Album do
         Album.send method
       end
 
-      it "should remove all albums with a #{criteria} equal to" do
+      it "should remove all albums with a #{criteria} equal or smaller than 1" do
         Album.send(method).should_not include(@album3)
       end
 

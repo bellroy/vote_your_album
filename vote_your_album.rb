@@ -1,5 +1,5 @@
 %w[rubygems sinatra json haml librmpd dm-core dm-aggregates].each { |lib| require lib }
-%w[models/album models/song models/nomination models/vote].each { |model| require model }
+%w[album song nomination vote user].each { |model| require "models/#{model}" }
 require 'lib/mpd_proxy'
 
 require 'lib/config'
@@ -82,10 +82,10 @@ post "/remove/:id" do |nomination_id|
   execute_on_nomination(nomination_id) { |nomination| nomination.remove request.ip }
 end
 post "/add_song/:nomination_id/:id" do |nomination_id, song_id|
-  execute_on_nomination(nomination_id) { |nomination| nomination.add song_id.to_i }
+  execute_on_nomination(nomination_id) { |nomination| nomination.add song_id.to_i, request.ip }
 end
 post "/delete_song/:nomination_id/:id" do |nomination_id, song_id|
-  execute_on_nomination(nomination_id) { |nomination| nomination.delete song_id.to_i }
+  execute_on_nomination(nomination_id) { |nomination| nomination.delete song_id.to_i, request.ip }
 end
 post "/force" do
   Nomination.current.force request.ip
