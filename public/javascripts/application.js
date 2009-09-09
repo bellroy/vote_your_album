@@ -11,10 +11,7 @@ $(function() {
   $("#upcoming").droppable({
     scope: "adding",
     hoverClass: "over",
-    drop: function(event, ui) {
-      if (ui.draggable.attr("ref") != "474" || confirm("Do you really hate us that much???"))
-        $.post("/add/" + ui.draggable.attr("ref"), function(list) { $("#upcoming").html(list); });
-    }
+    drop: function(event, ui) { $.post("/add/" + ui.draggable.attr("ref"), function(list) { $("#upcoming").html(list); }); }
   });
   $("#list").droppable({
     scope: "removing",
