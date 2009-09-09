@@ -16,8 +16,8 @@ class Album
   default_scope(:default).update :order => [:artist, :name]
   
   def play_count; nominations.played.size end
-  def score; votes.sum(:value) || 0 end
-  def negative_score; (negative_votes.sum(:value) || 0) * -1 end
+  def score; (votes.sum(:value) || 0).to_f / [nominations.size, 1].max end
+  def negative_score; ((negative_votes.sum(:value) || 0) * -1).to_f / [nominations.size, 1].max end
   def rating; ((ratings.avg(:value) || 0.0) * 10).round / 10.0 end
   
   def nominate(ip)
@@ -50,7 +50,7 @@ class Album
     
     { :most_listened => :play_count, :top_rated => :rating, :most_popular => :score, :least_popular => :negative_score }.each do |method, criteria|
       define_method method do
-        all(:links => [:nominations]).uniq.select { |a| a.send(criteria) > 0 }.sort_by { |a| a.send(criteria) }.reverse
+        all(:links => [:nominations]).uniq.select { |a| a.send(criteria) > 1 }.sort_by { |a| a.send(criteria) }.reverse
       end
     end
         

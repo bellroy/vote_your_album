@@ -17,15 +17,21 @@ describe Album do
     before do
       @album = Album.new
       @album.stub_chain(:votes, :sum).and_return 0
+      @album.stub!(:nominations).and_return [1, 2]
     end
     
-    it "should return the summed up score of all votes (with a value < 0)" do
+    it "should return the summed up score of all votes (with a value > 0) divided by the # of nominations" do
       @album.votes.should_receive(:sum).with(:value).and_return 3
-      @album.score.should == 3
+      @album.score.should == 3.0 / 2
     end
     
     it "should return 0 if we dont have any votes" do
       @album.votes.should_receive(:sum).with(:value).and_return nil
+      @album.score.should == 0
+    end
+    
+    it "should return 0 if we dont have any nominations" do
+      @album.stub!(:nominations).and_return []
       @album.score.should == 0
     end
   end
@@ -34,16 +40,22 @@ describe Album do
     before do
       @album = Album.new
       @album.stub_chain(:negative_votes, :sum).and_return 0
+      @album.stub!(:nominations).and_return [1, 2, 3]
     end
     
-    it "should return the negative summed up score of all votes (with a value < 0)" do
-      @album.negative_votes.should_receive(:sum).with(:value).and_return 4
-      @album.negative_score.should == -4
+    it "should return the negative summed up score of all votes (with a value < 0) divided by the # of nominations" do
+      @album.negative_votes.should_receive(:sum).with(:value).and_return -4
+      @album.negative_score.should == 4.0 / 3
     end
     
     it "should negative_votes 0 if we dont have any negative votes" do
       @album.negative_votes.should_receive(:sum).with(:value).and_return nil
       @album.negative_score.should == 0
+    end
+    
+    it "should return 0 if we dont have any nominations" do
+      @album.stub!(:nominations).and_return []
+      @album.score.should == 0
     end
   end
   
