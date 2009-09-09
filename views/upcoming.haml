@@ -7,6 +7,8 @@
       %span.artist= "#{is_owner ? "* " : ""}#{nomination.artist}"
       %span -
       %span.name= nomination.name
+      - if nomination.user && nomination.user.has_name?
+        %span.user= "from #{nomination.user.name}"
     .right
       - if nomination.can_be_voted_for_by?(request.ip)
         %a.up{ :href => "#", :ref => nomination.id }

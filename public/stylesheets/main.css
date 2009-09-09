@@ -196,6 +196,10 @@ a img {
 .album_list li .name {
 	font-style: italic;
 }
+.album_list li .user {
+  color: #888;
+  font-size: 0.7em;
+}
 #top {
   width: 450px;
   height: 19px;
