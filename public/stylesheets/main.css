@@ -81,9 +81,16 @@ a img {
   margin: 0 auto;
 }
 .main_controls .right {
-  margin-top: 53px;
+  margin-top: 16px;
   width: 20%;
   text-align: right;
+}
+.main_controls .right #change_name {
+  margin: 6px 0 16px 0;
+}
+.main_controls .right #change_name input {
+  width: 80px;
+  margin-left: 10px;
 }
 .main_controls .right a {
   margin: 0 4px;

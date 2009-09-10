@@ -7,6 +7,9 @@ $(function() {
     stop: function() { $.post("/volume/" + $(this).slider("option", "value")); }
   });
   
+  // Name form
+  $("#change_name").ajaxForm();
+  
   // Drop container definitions
   $("#upcoming").droppable({
     scope: "adding",
