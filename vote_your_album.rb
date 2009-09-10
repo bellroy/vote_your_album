@@ -30,6 +30,9 @@ def render_upcoming(expanded = [])
 end
 
 helpers do
+  include Rack::Utils
+  alias_method :h, :escape_html
+  
   def score_class(score); score > 0 ? "positive" : (score < 0 ? "negative" : "") end
   def album_class(i, owner, expanded)
     classes = ["album", "loaded", (i % 2 == 0 ? "even" : "odd")]

@@ -109,6 +109,29 @@ describe "vote your album:" do
       last_response.body.should match(%{visible - something})
     end
     
+    it "should display a '?' for the user if we dont have a user" do
+      get "/upcoming"
+      last_response.body.should match(%{by ?})
+    end
+    
+    it "should display a question mark if we have a user without name" do
+      @nomination.stub!(:user).and_return User.new
+      get "/upcoming"
+      last_response.body.should match(%{by ?})
+    end
+    
+    it "should display the name of the user if we have one" do
+      @nomination.stub!(:user).and_return User.new(:name => "me")
+      get "/upcoming"
+      last_response.body.should match(%{by me})
+    end
+    
+    it "should escape the name" do
+      @nomination.stub!(:user).and_return User.new(:name => "<script>something</script>")
+      get "/upcoming"
+      last_response.body.should match(%{by &lt;script&gt;something&lt;/script&gt;})
+    end
+    
     describe "we nominated the album" do
       before do
         @nomination.stub!(:owned_by?).and_return true
