@@ -178,12 +178,12 @@ describe Nomination do
       @nomination.can_be_voted_for_by?(@user).should be_true
     end
     
-    it "should return false if the string is in the 'voted by' list" do
+    it "should return false if the user is in the 'voted by' list" do
       @nomination.stub!(:votes).and_return [Vote.new(:user => @user)]
       @nomination.can_be_voted_for_by?(@user).should be_false
     end
     
-    it "should return false if the string is in the 'negative voted by' list" do
+    it "should return false if the user is in the 'negative voted by' list" do
       @nomination.stub!(:negative_votes).and_return [Vote.new(:user => @user)]
       @nomination.can_be_voted_for_by?(@user).should be_false
     end
@@ -211,26 +211,21 @@ describe Nomination do
   describe "down votes necessary" do
     before do
       @nomination = Nomination.new
-      @nomination.stub!(:votes).and_return []
-      @nomination.stub!(:down_votes).and_return []
+      @nomination.stub!(:score).and_return 0
     end
     
-    it "should use 1 as the default value if dont have any 'up'-votes" do
-      @nomination.down_votes_necessary.should == 1
+    it "should use 2 as the default value if we have a score of 0" do
+      @nomination.down_votes_necessary.should == 2
     end
     
-    it "should use the number of 'up'-votes if we got some" do
-      @nomination.stub!(:votes).and_return [Vote.new, Vote.new, Vote.new, Vote.new]
+    it "should use the score + 2 as the base value" do
+      @nomination.stub!(:score).and_return 2
       @nomination.down_votes_necessary.should == 4
     end
     
-    it "should return the default value if we dont have any down votes yet" do
+    it "should use 1 if the score + 2 is zero or less" do
+      @nomination.stub!(:score).and_return -2
       @nomination.down_votes_necessary.should == 1
-    end
-    
-    it "should subtract the sum of the down votes if we have down votes" do
-      @nomination.stub!(:down_votes).and_return [Vote.new(:value => 1), Vote.new(:value => 3)]
-      @nomination.down_votes_necessary.should == -3
     end
   end
   
@@ -268,30 +263,16 @@ describe Nomination do
   
   describe "can be forced by?" do
     before do
-      User.stub!(:get_or_create_by).and_return @user = User.new
-      
       @nomination = Nomination.new
-      @nomination.stub!(:negative_votes).and_return [Vote.new(:user => @user)]
+      User.stub!(:get_or_create_by).and_return @user = User.new
     end
     
-    it "should return true if the force votes dont contain a vote by the given 'user' and if the user has put a negative vote on the nomination" do
+    it "should return true if the force votes dont contain a vote by the given user" do
       @nomination.can_be_forced_by?("me").should be_true
     end
     
-    it "should return false if the string is in the 'down votes' list" do
+    it "should return false if the user is in the 'down votes' list" do
       @nomination.stub!(:down_votes).and_return [Vote.new(:user => @user)]
-      @nomination.can_be_forced_by?("me").should be_false
-    end
-    
-    it "should return false if the string is not in the 'negative voted by' list" do
-      @nomination.stub!(:negative_votes).and_return []
-      @nomination.can_be_forced_by?("me").should be_false
-    end
-    
-    it "should return false if we have a force vote but not a negative vote from the user" do
-      @nomination.stub!(:down_votes).and_return [Vote.new(:user => @user)]
-      @nomination.stub!(:negative_votes).and_return []
-      
       @nomination.can_be_forced_by?("me").should be_false
     end
   end
@@ -329,11 +310,11 @@ describe Nomination do
       User.stub!(:get_or_create_by).and_return @user = User.new
     end
     
-    it "should return true if the force votes dont contain a vote by the given 'user'" do
+    it "should return true if the rate votes dont contain a vote by the given user" do
       @nomination.can_be_rated_by?("me").should be_true
     end
     
-    it "should return false if the user is in the 'forced by' list" do
+    it "should return false if the user is in the 'rated by' list" do
       @nomination.stub!(:ratings).and_return [Vote.new(:user => @user)]
       @nomination.can_be_rated_by?("me").should be_false
     end

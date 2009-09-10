@@ -56,17 +56,14 @@ class Nomination
 
   # Force methods
   # ----------------------------------------------------------------------
-  def down_votes_necessary; [votes.size, 1].max - down_votes.inject(0) { |sum, v| sum + v.value } end
+  def down_votes_necessary; [score + 2, 1].max - down_votes.inject(0) { |sum, v| sum + v.value } end
   def force(ip)
     return unless can_be_forced_by?(ip)
     
     self.down_votes.create :user => User.get_or_create_by(ip), :value => 1, :type => "force"
     MpdProxy.execute(:clear) if down_votes_necessary <= 0
   end
-  def can_be_forced_by?(ip)
-    user = User.get_or_create_by(ip)
-    !down_votes.map { |v| v.user }.include?(user) && negative_votes.map { |v| v.user }.include?(user)
-  end
+  def can_be_forced_by?(ip); !down_votes.map { |v| v.user }.include?(User.get_or_create_by(ip)) end
 
   # Rate methods
   # ----------------------------------------------------------------------
