@@ -18,7 +18,7 @@ class Album
   def play_count; nominations.played.size end
   def score; (votes.sum(:value) || 0).to_f / [nominations.size, 1].max end
   def negative_score; ((negative_votes.sum(:value) || 0) * -1).to_f / [nominations.size, 1].max end
-  def rating; ((ratings.avg(:value) || 0.0) * 10).round / 10.0 end
+  def rating; ratings.avg(:value) || 0 end
   
   def nominate(ip)
     nomination = nominations.create(:status => "active", :created_at => Time.now, :user => User.get_or_create_by(ip))
@@ -29,7 +29,9 @@ class Album
   end
     
   def to_s; "#{artist} - #{name}" end
-  def to_hash(value_method = nil); { :id => id, :artist => artist, :name => name, :value => (value_method ? send(value_method) : nil) } end
+  def to_hash(value_method = nil)
+    { :id => id, :artist => artist, :name => name, :value => (value_method ? ((send(value_method).to_f * 10).round / 10.0) : nil) }
+  end
   
   class << self
     def update
