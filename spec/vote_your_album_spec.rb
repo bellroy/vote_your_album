@@ -44,10 +44,10 @@ describe "vote your album:" do
     
     it "should call the 'value' method on the album(s) if we get one" do
       Album.stub!(:value_method_for).and_return :something
-      @album.should_receive(:something).and_return "value"
+      @album.should_receive(:something).and_return 3
       
       get "/list/all"
-      last_response.body.should match(/\"value\":\"value\"/)
+      last_response.body.should match(/\"value\":3/)
     end
     
     it "should have a 'nil' value on the album(s) if we get one" do
@@ -140,9 +140,14 @@ describe "vote your album:" do
         @album.stub!(:songs).and_return [@song]
       end
       
-      it "should add a '*' before the artist if we have nominated the album" do
+      it "should add a '*' after the album name if we have nominated the album" do
         get "/upcoming"
-        last_response.body.should match(/\*\ artist/)
+        last_response.body.should match(/.+\*/)
+      end
+      
+      it "should not add the name of the nominator at the end" do
+        get "/upcoming"
+        last_response.body.should_not match(/by/)
       end
       
       it "should display the songs of the album not of the nomination" do
