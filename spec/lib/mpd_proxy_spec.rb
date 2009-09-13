@@ -149,24 +149,22 @@ describe MpdProxy do
   end
   
   describe "time accessor" do
-    { 0 => "-0:00", 1 => "-0:01", 60 => "-1:00", 123 => "-2:03" }.each do |seconds, time|
-      it "should return the formatted value of the saved remaining seconds: #{seconds}" do
-        MpdProxy.class_eval do
-          @time = seconds
-        end
-
-        MpdProxy.time.should == time
+    it "should return the saved time (seconds)" do
+      MpdProxy.class_eval do
+        @time = 123
       end
+
+      MpdProxy.time.should == 123
     end
     
     it "should set the time variable to the calculated time remaining" do
       MpdProxy.send :time=, 12, 43
-      MpdProxy.time.should == "-0:31"
+      MpdProxy.time.should == 31
     end
     
     it "should set a 0 value if we get an error" do
       MpdProxy.send :time=, 0, 0
-      MpdProxy.time.should == "-0:00"
+      MpdProxy.time.should == 0
     end
   end
   

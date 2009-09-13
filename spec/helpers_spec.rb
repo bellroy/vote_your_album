@@ -26,7 +26,7 @@ describe "vote your album helpers:" do
     end
   end
   
-  describe "album class" do
+  describe "album attributes" do
     before do
       @album = Album.new(:artist => "artist", :name => "name")
       Nomination.stub!(:active).and_return [@nomination = Nomination.new(:id => 1, :album => @album, :score => 2)]
@@ -46,6 +46,32 @@ describe "vote your album helpers:" do
     it "should add an expanded class to the album if we had it expanded previously" do
       get "/upcoming?&expanded[]=1"
       last_response.body.should match(%{li class='album loaded even expanded'})
+    end
+    
+    it "should not show a title if we have a positive score" do
+      get "/upcoming"
+      last_response.body.should_not match(/TTL/)
+    end
+    
+    it "should show the TTL as the title if we have one" do
+      @nomination.stub!(:ttl).and_return 123
+      get "/upcoming"
+      last_response.body.should match (%{TTL: -2:03})
+    end
+  end
+  
+  describe "to min" do
+    before do
+      MpdProxy.stub!(:playing?).and_return true
+      Nomination.stub!(:current).and_return @nomination = Nomination.new
+    end
+    
+    { 0 => "-0:00", 1 => "-0:01", 60 => "-1:00", 123 => "-2:03" }.each do |seconds, time|
+      it "should return the formatted value of the saved remaining seconds: #{seconds}" do
+        MpdProxy.stub!(:time).and_return seconds
+        post "/play"
+        last_response.body.should match(/\"time\":\"#{time}\"/)
+      end
     end
   end
 end

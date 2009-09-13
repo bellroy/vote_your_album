@@ -243,7 +243,7 @@ describe "vote your album:" do
     describe "currently playing an album" do
       before do
         MpdProxy.stub!(:playing?).and_return true
-        MpdProxy.stub!(:time).and_return "time"
+        MpdProxy.stub!(:time).and_return 123
         
         song = MPD::Song.new
         { "artist" => "me", "title" => "song" }.each { |k, v| song[k] = v }
@@ -267,7 +267,7 @@ describe "vote your album:" do
       
       it "should include the time remaining for the song" do
         get "/status"
-        last_response.body.should match(/\"time\":\"time\"/)
+        last_response.body.should match(/\"time\":\"-2:03\"/)
       end
       
       it "should include the number of necessary (remaining) forces" do
