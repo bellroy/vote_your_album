@@ -267,7 +267,7 @@ describe "vote your album:" do
       
       it "should include the time remaining for the song" do
         get "/status"
-        last_response.body.should match(/\"time\":\"-2:03\"/)
+        last_response.body.should match(/\"time\":\"-02:03\"/)
       end
       
       it "should include the number of necessary (remaining) forces" do

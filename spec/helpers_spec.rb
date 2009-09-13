@@ -56,17 +56,18 @@ describe "vote your album helpers:" do
     it "should show the TTL as the title if we have one" do
       @nomination.stub!(:ttl).and_return 123
       get "/upcoming"
-      last_response.body.should match (%{TTL: -2:03})
+      last_response.body.should match(%{TTL: -02:03})
     end
   end
   
-  describe "to min" do
+  describe "to time" do
     before do
       MpdProxy.stub!(:playing?).and_return true
       Nomination.stub!(:current).and_return @nomination = Nomination.new
     end
     
-    { 0 => "-0:00", 1 => "-0:01", 60 => "-1:00", 123 => "-2:03" }.each do |seconds, time|
+    { 0 => "-00:00", 1 => "-00:01", 60 => "-01:00", 123 => "-02:03", 3599 => "-59:59",
+      3600 => "-01:00:00", 3661 => "-01:01:01", 7199 => "-01:59:59" }.each do |seconds, time|
       it "should return the formatted value of the saved remaining seconds: #{seconds}" do
         MpdProxy.stub!(:time).and_return seconds
         post "/play"
