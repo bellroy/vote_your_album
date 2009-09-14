@@ -27,6 +27,10 @@ class Album
     songs.each { |song| nomination.songs << song }
     nomination.save
   end
+
+  def never_nominated?
+    nominations.empty?
+  end
     
   def to_s; "#{artist} - #{name}" end
   def to_hash(value_method = nil); { :id => id, :artist => artist, :name => name, :value => (value_method ? send(value_method) : nil) } end
@@ -49,6 +53,14 @@ class Album
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
     
+    # FIXME Why doesn't datamapper's automatic eager loading kick in?
+    # Adding a :links parameter to #all does an inner join, which defeats
+    # the purpose of looking for albums without any nominations, so that
+    # won't work...
+    def never_nominated
+      all.uniq.select { |a| a.never_nominated? }
+    end
+
     VALUE_METHODS.each do |method, criteria|
       define_method method do
         all(:links => [:nominations]).uniq.select { |a| a.send(criteria) > 1 }.sort_by { |a| a.send(criteria) }.reverse

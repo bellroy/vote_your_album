@@ -261,6 +261,45 @@ describe Album do
       Album.search("query").should == @list
     end
   end
+
+  describe "never nominated" do
+    before do
+      @album = Album.new(:id => 1)
+    end
+
+    it "should return true if the album has never been nominated" do
+      @album.should_receive(:nominations).and_return([])
+      @album.should be_never_nominated
+    end
+
+    it "should return false if the album has at least one nomination" do
+      @album.should_receive(:nominations).and_return([Nomination.new(:status => "active")])
+      @album.should_not be_never_nominated
+    end
+  end
+
+  describe "all never nominated" do
+    before do
+      @album1 = Album.new(:id => 1); @album1.stub!(:never_nominated?).and_return false
+      @album2 = Album.new(:id => 2); @album2.stub!(:never_nominated?).and_return true
+      @album3 = Album.new(:id => 3); @album3.stub!(:never_nominated?).and_return true
+      @all = [@album1, @album2, @album3, @album1]
+      Album.stub!(:all).and_return @all
+    end
+
+    it "should grab all albums (with nominations)" do
+      Album.should_receive(:all).and_return @all
+      Album.never_nominated
+    end
+
+    it "should only include albums which have never been nominated" do
+      Album.never_nominated.should_not include(@album1)
+    end
+
+    it "should not include duplicate entries" do
+      Album.never_nominated.size.should == 2
+    end
+  end
   
   { :most_listened => :play_count, :top_rated => :rating, :most_popular => :score, :least_popular => :negative_score }.each do |method, criteria|
     describe method do
