@@ -49,7 +49,7 @@ class Album
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
     
-    { :most_listened => :play_count, :top_rated => :rating, :most_popular => :score, :least_popular => :negative_score }.each do |method, criteria|
+    VALUE_METHODS.each do |method, criteria|
       define_method method do
         all(:links => [:nominations]).uniq.select { |a| a.send(criteria) > 1 }.sort_by { |a| a.send(criteria) }.reverse
       end
