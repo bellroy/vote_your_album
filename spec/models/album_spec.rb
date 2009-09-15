@@ -76,6 +76,21 @@ describe Album do
     end
   end
   
+  describe "nominated?" do
+    before do
+      @album = Album.new(:id => 1)
+    end
+    
+    it "should return false if we dont have any nominations" do
+      @album.should_not be_nominated
+    end
+    
+    it "should return true if we have at least one nomination" do
+      @album.stub!(:nominations).and_return [Nomination.new]
+      @album.should be_nominated
+    end
+  end
+  
   describe "nominate" do
     before do
       @album = Album.new
@@ -262,44 +277,6 @@ describe Album do
     end
   end
 
-  describe "never nominated" do
-    before do
-      @album = Album.new(:id => 1)
-    end
-
-    it "should return true if the album has never been nominated" do
-      @album.should_receive(:nominations).and_return([])
-      @album.should be_never_nominated
-    end
-
-    it "should return false if the album has at least one nomination" do
-      @album.should_receive(:nominations).and_return([Nomination.new(:status => "active")])
-      @album.should_not be_never_nominated
-    end
-  end
-
-  describe "all never nominated" do
-    before do
-      @album1 = Album.new(:id => 1); @album1.stub!(:never_nominated?).and_return false
-      @album2 = Album.new(:id => 2); @album2.stub!(:never_nominated?).and_return true
-      @album3 = Album.new(:id => 3); @album3.stub!(:never_nominated?).and_return true
-      @all = [@album1, @album2, @album3, @album1]
-      Album.stub!(:all).and_return @all
-    end
-
-    it "should grab all albums (with nominations)" do
-      Album.should_receive(:all).and_return @all
-      Album.never_nominated
-    end
-
-    it "should only include albums which have never been nominated" do
-      Album.never_nominated.should_not include(@album1)
-    end
-
-    it "should not include duplicate entries" do
-      Album.never_nominated.size.should == 2
-    end
-  end
   
   { :most_listened => :play_count, :top_rated => :rating, :most_popular => :score, :least_popular => :negative_score }.each do |method, criteria|
     describe method do
@@ -307,11 +284,11 @@ describe Album do
         @album1 = Album.new(:id => 1); @album1.stub!(criteria).and_return 2
         @album2 = Album.new(:id => 2); @album2.stub!(criteria).and_return 4
         @album3 = Album.new(:id => 3); @album3.stub!(criteria).and_return 1
-        Album.stub!(:all).and_return @list = [@album1, @album2, @album3, @album1]
+        Album.stub!(:nominated).and_return @list = [@album1, @album2, @album3]
       end
 
       it "should grab the albums (with nominations)" do
-        Album.should_receive(:all).with(:links => [:nominations]).and_return @list
+        Album.should_receive(:nominated).and_return @list
         Album.send method
       end
 
@@ -322,13 +299,43 @@ describe Album do
       it "should then sort the list by the #{criteria} value" do
         Album.send(method).first.should == @album2
       end
-      
-      it "should remove duplicates" do
-        Album.send(method).size.should == 2
-      end
     end
   end
   
+  describe "nominated" do
+    before do
+      @album1 = Album.new(:id => 1); @album1.stub!(:nominated?).and_return false
+      @album2 = Album.new(:id => 2); @album2.stub!(:nominated?).and_return true
+      Album.stub!(:all).and_return @all = [@album1, @album2]
+    end
+
+    it "should grab all albums" do
+      Album.should_receive(:all).and_return @all
+      Album.nominated
+    end
+
+    it "should only include albums which have been nominated at least once" do
+      Album.nominated.should == [@album2]
+    end
+  end
+  
+  describe "never nominated" do
+    before do
+      @album1 = Album.new(:id => 1); @album1.stub!(:nominated?).and_return false
+      @album2 = Album.new(:id => 2); @album2.stub!(:nominated?).and_return true
+      Album.stub!(:all).and_return @all = [@album1, @album2]
+    end
+
+    it "should grab all albums" do
+      Album.should_receive(:all).and_return @all
+      Album.never_nominated
+    end
+
+    it "should only include albums which have never been nominated" do
+      Album.never_nominated.should == [@album1]
+    end
+  end
+
   describe "value method for" do
     { "most_listened" => :play_count, "most_popular" => :score, "least_popular" => :negative_score,
       "top_rated" => :rating, "all" => nil, "bla" => nil }.each do |scope, method|

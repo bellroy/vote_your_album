@@ -19,6 +19,7 @@ class Album
   def score; (votes.sum(:value) || 0).to_f / [nominations.size, 1].max end
   def negative_score; ((negative_votes.sum(:value) || 0) * -1).to_f / [nominations.size, 1].max end
   def rating; ratings.avg(:value) || 0 end
+  def nominated?; !nominations.empty? end
   
   def nominate(ip)
     nomination = nominations.create(:status => "active", :created_at => Time.now, :user => User.get_or_create_by(ip))
@@ -26,10 +27,6 @@ class Album
     
     songs.each { |song| nomination.songs << song }
     nomination.save
-  end
-
-  def never_nominated?
-    nominations.empty?
   end
     
   def to_s; "#{artist} - #{name}" end
@@ -55,19 +52,13 @@ class Album
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
     
-    # FIXME Why doesn't datamapper's automatic eager loading kick in?
-    # Adding a :links parameter to #all does an inner join, which defeats
-    # the purpose of looking for albums without any nominations, so that
-    # won't work...
-    def never_nominated
-      all.uniq.select { |a| a.never_nominated? }
-    end
-
     VALUE_METHODS.each do |method, criteria|
       define_method method do
-        all(:links => [:nominations]).uniq.select { |a| a.send(criteria) > 1 }.sort_by { |a| a.send(criteria) }.reverse
+        nominated.select { |a| a.send(criteria) > 1 }.sort_by { |a| a.send(criteria) }.reverse
       end
     end
+    def nominated; all.select { |a| a.nominated? } end
+    def never_nominated; all.reject { |a| a.nominated? } end
         
     def value_method_for(scope); VALUE_METHODS[scope] end
   
