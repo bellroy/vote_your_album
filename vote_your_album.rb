@@ -18,7 +18,7 @@ def json_status
   
   status = { :playing => MpdProxy.playing?, :volume => MpdProxy.volume }
   status = status.merge(:current_album => current.album.to_s, :current_song => MpdProxy.current_song,
-    :time => MpdProxy.time, :down_votes_necessary => current.down_votes_necessary,
+    :time => to_time(MpdProxy.time), :down_votes_necessary => current.down_votes_necessary,
     :rateable => current.can_be_rated_by?(request.ip), :forceable => current.can_be_forced_by?(request.ip)
   ) if MpdProxy.playing?
   status.to_json
@@ -34,11 +34,24 @@ helpers do
   alias_method :h, :escape_html
   
   def score_class(score); score > 0 ? "positive" : (score < 0 ? "negative" : "") end
-  def album_class(i, owner, expanded)
+  def album_attributes(nomination, i, is_owner, expanded)
+    attr = { :ref => nomination.id }
+    
     classes = ["album", "loaded", (i % 2 == 0 ? "even" : "odd")]
-    classes << ["deleteable"] if owner
-    classes << ["expanded"] if expanded
-    classes.join " "
+    classes << ["deleteable"] if is_owner
+    classes << ["expanded"] if expanded.include?(nomination.id.to_s)
+    attr.update :class => classes.join(" ")
+    
+    attr.update(:title => "TTL: #{to_time(nomination.ttl)}") if nomination.ttl
+    attr
+  end
+  
+  def to_time(seconds)
+    time = []
+    time << "%02d" % (seconds / 3600) if seconds >= 3600
+    time << "%02d" % ((seconds % 3600) / 60)
+    time << "%02d" % (seconds % 60)
+    "-" + time.join(":")
   end
 end
 

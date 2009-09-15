@@ -44,10 +44,10 @@ describe "vote your album:" do
     
     it "should call the 'value' method on the album(s) if we get one" do
       Album.stub!(:value_method_for).and_return :something
-      @album.should_receive(:something).and_return "value"
+      @album.should_receive(:something).and_return 3
       
       get "/list/all"
-      last_response.body.should match(/\"value\":\"value\"/)
+      last_response.body.should match(/\"value\":3/)
     end
     
     it "should have a 'nil' value on the album(s) if we get one" do
@@ -140,9 +140,14 @@ describe "vote your album:" do
         @album.stub!(:songs).and_return [@song]
       end
       
-      it "should add a '*' before the artist if we have nominated the album" do
+      it "should add a '*' after the album name if we have nominated the album" do
         get "/upcoming"
-        last_response.body.should match(/\*\ artist/)
+        last_response.body.should match(/.+\*/)
+      end
+      
+      it "should not add the name of the nominator at the end" do
+        get "/upcoming"
+        last_response.body.should_not match(/by/)
       end
       
       it "should display the songs of the album not of the nomination" do
@@ -238,7 +243,7 @@ describe "vote your album:" do
     describe "currently playing an album" do
       before do
         MpdProxy.stub!(:playing?).and_return true
-        MpdProxy.stub!(:time).and_return "time"
+        MpdProxy.stub!(:time).and_return 123
         
         song = MPD::Song.new
         { "artist" => "me", "title" => "song" }.each { |k, v| song[k] = v }
@@ -262,7 +267,7 @@ describe "vote your album:" do
       
       it "should include the time remaining for the song" do
         get "/status"
-        last_response.body.should match(/\"time\":\"time\"/)
+        last_response.body.should match(/\"time\":\"-02:03\"/)
       end
       
       it "should include the number of necessary (remaining) forces" do

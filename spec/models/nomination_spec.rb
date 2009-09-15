@@ -17,6 +17,21 @@ describe Nomination do
     end
   end
   
+  describe "ttl" do
+    before do
+      @nomination = Nomination.new
+    end
+    
+    it "should return nil if we dont have a expires at time" do
+      @nomination.ttl.should be_nil
+    end
+    
+    it "should return the difference between now and the expires at time in seconds" do
+      @nomination.expires_at = Time.now + 121
+      @nomination.ttl.should == 121
+    end
+  end
+  
   describe "owned by?" do
     before do
       @user = User.new(:ip => "me")
@@ -164,6 +179,42 @@ describe Nomination do
         @nomination.should_receive(:status=).with "deleted"
         @nomination.stub!(:score).and_return -3
         @nomination.vote -3, "me"
+      end
+    end
+    
+    describe "expires at" do
+      describe "with a negative score" do
+        before do
+          @nomination.stub!(:score).and_return -1
+        end
+        
+        it "should be set if we have a negative score and its nil" do
+          @nomination.vote -2, "me"
+          @nomination.ttl.should_not be_nil
+        end
+
+        it "should not be set if we already have set it before" do
+          @nomination.stub!(:ttl).and_return "not nil"
+          @nomination.should_not_receive :expires_at=
+          @nomination.vote -2, "me"
+        end
+      end
+      
+      describe "with a positive or neutral score" do
+        before do
+          @nomination.stub!(:score).and_return 1
+        end
+        
+        it "should be reset if it is currently set" do
+          @nomination.expires_at = Time.now
+          @nomination.vote 2, "me"
+          @nomination.ttl.should be_nil
+        end
+        
+        it "should do nothing if its not set" do
+          @nomination.should_not_receive :expires_at=
+          @nomination.vote 2, "me"
+        end
       end
     end
   end
@@ -324,6 +375,12 @@ describe Nomination do
     before do
       @nomination = Nomination.new
       Nomination.stub!(:all).and_return [@nomination]
+      Nomination.stub! :clean
+    end
+    
+    it "should clean the list before returning it" do
+      Nomination.should_receive :clean
+      Nomination.active
     end
     
     it "should grab all nominations that are voteable" do
@@ -353,6 +410,27 @@ describe Nomination do
     it "should return the first album flagged as 'played' ordered by 'played_at' attribute" do
       Nomination.should_receive(:played).and_return [@nomination]
       Nomination.current.should == @nomination
+    end
+  end
+  
+  describe "clean" do
+    before do
+      @nomination = Nomination.new
+      @nomination.stub! :update_attributes
+      
+      Nomination.stub!(:all).and_return [@nomination]
+    end
+    
+    it "should not set the status to 'deleted' when we have time left" do
+      @nomination.stub!(:ttl).and_return 123
+      @nomination.should_not_receive :update_attributes
+      Nomination.clean
+    end
+    
+    it "should set the status to 'deleted' when the nomination has expired" do
+      @nomination.stub!(:ttl).and_return 0
+      @nomination.should_receive(:update_attributes).with :status => "deleted"
+      Nomination.clean
     end
   end
 end

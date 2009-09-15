@@ -28,7 +28,7 @@ class MpdProxy
       play_next unless song
     end
     
-    def time; "-#{@time / 60}:#{"%02d" % (@time % 60)}" end
+    def time; @time end
     def time=(elapsed, total); @time = total - elapsed end
     
     def play_next

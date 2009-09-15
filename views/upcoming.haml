@@ -1,13 +1,16 @@
 - @nominations.each_with_index do |nomination, i|
   - is_owner = nomination.owned_by?(request.ip)
-  %li{ :class => album_class(i, is_owner, expanded.include?(nomination.id.to_s)), :ref => nomination.id }
+  %li{album_attributes(nomination, i, is_owner, expanded)}
     .left
       %span{ :class => "score #{score_class(nomination.score)}", :title => "Score: #{nomination.score}" }= nomination.score
       %a.toggle_songs{ :href => "#" }
-      %span.artist= "#{is_owner ? "* " : ""}#{nomination.artist}"
+      %span.artist= nomination.artist
       %span -
       %span.name= nomination.name
-      %span.user= "by " + (nomination.user && nomination.user.has_name? ? h(nomination.user.name) : "?")
+      - if is_owner
+        *
+      - else
+        %span.user= "by " + (nomination.user && nomination.user.has_name? ? h(nomination.user.name) : "?")
     .right
       - if nomination.can_be_voted_for_by?(request.ip)
         %a.up{ :href => "#", :ref => nomination.id }

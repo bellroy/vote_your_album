@@ -74,11 +74,6 @@ describe Album do
       @album.ratings.should_receive(:avg).with(:value).and_return nil
       @album.rating.should == 0.0
     end
-    
-    it "should round the result to one decimal digit" do
-      @album.ratings.should_receive(:avg).with(:value).and_return 3.4444
-      @album.rating.should == 3.4
-    end
   end
   
   describe "nominate" do
@@ -147,8 +142,13 @@ describe Album do
     end
     
     it "should call the 'value method' and return the result if we have a good param" do
-      @album.should_receive(:value_method).and_return "value"
-      @album.to_hash(:value_method)[:value].should == "value"
+      @album.should_receive(:value_method).and_return 2
+      @album.to_hash(:value_method)[:value].should == 2
+    end
+    
+    it "should round the result of the value method to once decimal" do
+      @album.stub!(:value_method).and_return 2.2222
+      @album.to_hash(:value_method)[:value].should == 2.2
     end
   end
   
