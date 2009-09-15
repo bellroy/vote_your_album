@@ -509,12 +509,12 @@ describe "vote your album:" do
     
     it "should do nothing if we cant find the user" do
       User.should_receive(:get_or_create_by).and_return nil
-      @user.should_not_receive :update_attributes
+      @user.should_not_receive :update
       post "/name"
     end
     
     it "should update the name of the user" do
-      @user.should_receive(:update_attributes).with :name => "my name"
+      @user.should_receive(:update).with :name => "my name"
       post "/name", :name => "my name"
     end
     

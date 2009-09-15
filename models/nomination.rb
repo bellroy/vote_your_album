@@ -15,9 +15,9 @@ class Nomination
   belongs_to :user
   has n, :songs, :through => Resource
   has n, :votes, :type => "vote", :value.gt => 0
-  has n, :negative_votes, :class_name => "Vote", :type => "vote", :value.lt => 0
-  has n, :down_votes, :class_name => "Vote", :type => "force"
-  has n, :ratings, :class_name => "Vote", :type => "rating"
+  has n, :negative_votes, :model => "Vote", :type => "vote", :value.lt => 0
+  has n, :down_votes, :model => "Vote", :type => "force"
+  has n, :ratings, :model => "Vote", :type => "rating"
   
   def artist; album.artist end
   def name; album.name end
@@ -62,7 +62,7 @@ class Nomination
   end
   def can_be_voted_for_by?(ip); !(votes + negative_votes).map { |v| v.user }.include?(User.get_or_create_by(ip)) end
   
-  def remove(ip); self.update_attributes(:status => "deleted") if owned_by?(ip) end
+  def remove(ip); self.update(:status => "deleted") if owned_by?(ip) end
 
   # Force methods
   # ----------------------------------------------------------------------
@@ -91,7 +91,7 @@ class Nomination
       all :status => "active", :order => [:score.desc, :created_at]
     end
     def clean
-      all(:status => "active", :score.lt => 0).each { |nom| nom.update_attributes(:status => "deleted") if nom.ttl && nom.ttl <= 0 }
+      all(:status => "active", :score.lt => 0).each { |nom| nom.update(:status => "deleted") if nom.ttl && nom.ttl <= 0 }
     end
     
     def played; all :status => "played", :order => [:played_at.desc] end

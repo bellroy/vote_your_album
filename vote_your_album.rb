@@ -126,5 +126,5 @@ end
 
 post "/name" do
   user = User.get_or_create_by(request.ip)
-  user.update_attributes(:name => params[:name]) if user
+  user.update(:name => params[:name]) if user
 end

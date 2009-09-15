@@ -54,8 +54,8 @@ describe Album do
     end
     
     it "should return 0 if we dont have any nominations" do
-      @album.stub!(:nominations).and_return []
-      @album.score.should == 0
+      @album.stub_chain(:nominations).and_return []
+      @album.negative_score.should == 0
     end
   end
   
@@ -190,7 +190,7 @@ describe Album do
     end
     
     it "should add the found songs to the album" do
-      @album.songs.should_receive(:build).with :track => "1", :artist => "me", :title => "song", :file => "path"
+      @album.songs.should_receive(:new).with :track => "1", :artist => "me", :title => "song", :file => "path"
       Album.update
     end
     

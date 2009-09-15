@@ -10,8 +10,8 @@ class Album
   has n, :songs
   has n, :nominations
   has n, :votes, :through => :nominations, :type => "vote", :value.gt => 0
-  has n, :negative_votes, :through => :nominations, :class_name => "Vote", :type => "vote", :value.lt => 0
-  has n, :ratings, :through => :nominations, :class_name => "Vote", :type => "rating"
+  has n, :negative_votes, :through => :nominations, :model => "Vote", :type => "vote", :value.lt => 0
+  has n, :ratings, :through => :nominations, :model => "Vote", :type => "rating"
   
   default_scope(:default).update :order => [:artist, :name]
   
@@ -44,7 +44,7 @@ class Album
         
         new_album = Album.new(:name => album)        
         songs = MpdProxy.find_songs_for(album)
-        songs.each { |song| new_album.songs.build :track => song.track, :artist => song.artist, :title => song.title, :file => song.file }
+        songs.each { |song| new_album.songs.new :track => song.track, :artist => song.artist, :title => song.title, :file => song.file }
         new_album.artist = get_artist_from(songs)        
         new_album.save
       end

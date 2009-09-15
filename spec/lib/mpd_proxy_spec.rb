@@ -178,13 +178,13 @@ describe MpdProxy do
       @mpd.stub! :play
       
       @next = Nomination.new
-      @next.stub! :update_attributes
+      @next.stub! :update
       Nomination.stub!(:active).and_return [@next]
     end
     
     it "should do nothing if we dont have an upcoming album" do
       Nomination.stub!(:active).and_return []
-      @next.should_not_receive :update_attributes
+      @next.should_not_receive :update
       MpdProxy.play_next
     end
     
@@ -195,7 +195,7 @@ describe MpdProxy do
     
     it "should update the status of the nomination to 'played'" do
       Time.stub!(:now).and_return "time"
-      @next.should_receive(:update_attributes).with :status => "played", :played_at => "time"
+      @next.should_receive(:update).with :status => "played", :played_at => "time"
       MpdProxy.play_next
     end
     

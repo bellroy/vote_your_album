@@ -35,7 +35,7 @@ class MpdProxy
       return unless nomination = Nomination.active.first
       
       @mpd.clear
-      nomination.update_attributes :status => "played", :played_at => Time.now
+      nomination.update :status => "played", :played_at => Time.now
       nomination.songs.each { |song| @mpd.add song.file }
       @mpd.play
     end

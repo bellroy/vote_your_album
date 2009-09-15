@@ -166,7 +166,7 @@ describe Nomination do
     
     describe "eliminate" do
       before do
-        @nomination.stub! :update_attributes
+        @nomination.stub! :update
       end
       
       it "should not change the status to 'deleted' when the threshold isnt reached" do
@@ -244,17 +244,17 @@ describe Nomination do
     before do
       @nomination = Nomination.new
       @nomination.stub!(:owned_by?).and_return true
-      @nomination.stub! :update_attributes
+      @nomination.stub! :update
     end
     
     it "should do nothing if we havent nominated the album" do
       @nomination.stub!(:owned_by?).and_return false
-      @nomination.should_not_receive :update_attributes
+      @nomination.should_not_receive :update
       @nomination.remove "other"
     end
     
     it "should set the status to 'deleted' when we are the 'owner'" do
-      @nomination.should_receive(:update_attributes).with :status => "deleted"
+      @nomination.should_receive(:update).with :status => "deleted"
       @nomination.remove "me"
     end
   end
@@ -332,7 +332,7 @@ describe Nomination do
     before do
       @nomination = Nomination.new
       @nomination.ratings.stub!(:create).and_return true
-      @nomination.stub! :update_attributes
+      @nomination.stub! :update
       
       User.stub!(:get_or_create_by).and_return @user = User.new
     end
@@ -416,20 +416,20 @@ describe Nomination do
   describe "clean" do
     before do
       @nomination = Nomination.new
-      @nomination.stub! :update_attributes
+      @nomination.stub! :update
       
       Nomination.stub!(:all).and_return [@nomination]
     end
     
     it "should not set the status to 'deleted' when we have time left" do
       @nomination.stub!(:ttl).and_return 123
-      @nomination.should_not_receive :update_attributes
+      @nomination.should_not_receive :update
       Nomination.clean
     end
     
     it "should set the status to 'deleted' when the nomination has expired" do
       @nomination.stub!(:ttl).and_return 0
-      @nomination.should_receive(:update_attributes).with :status => "deleted"
+      @nomination.should_receive(:update).with :status => "deleted"
       Nomination.clean
     end
   end
