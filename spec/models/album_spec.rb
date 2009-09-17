@@ -2,80 +2,21 @@ require File.join(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Album do
   
-  describe "play count" do
+  describe "played?" do
     before do
-      @album = Album.new
-      @album.nominations.stub!(:played).and_return [1, 2, 3]
+      @album = Album.new(:id => 1)
     end
     
-    it "should return the number of associated played nominations" do
-      @album.play_count.should == 3
+    it "should return false if we dont have any 'played' nominations" do
+      @album.should_not be_played
+    end
+    
+    it "should return true if we have at least one nomination" do
+      @album.stub_chain(:nominations, :played).and_return [Nomination.new]
+      @album.should be_played
     end
   end
-  
-  describe "score" do
-    before do
-      @album = Album.new
-      @album.stub_chain(:votes, :sum).and_return 0
-      @album.stub!(:nominations).and_return [1, 2]
-    end
     
-    it "should return the summed up score of all votes (with a value > 0) divided by the # of nominations" do
-      @album.votes.should_receive(:sum).with(:value).and_return 3
-      @album.score.should == 3.0 / 2
-    end
-    
-    it "should return 0 if we dont have any votes" do
-      @album.votes.should_receive(:sum).with(:value).and_return nil
-      @album.score.should == 0
-    end
-    
-    it "should return 0 if we dont have any nominations" do
-      @album.stub!(:nominations).and_return []
-      @album.score.should == 0
-    end
-  end
-  
-  describe "negative score" do
-    before do
-      @album = Album.new
-      @album.stub_chain(:negative_votes, :sum).and_return 0
-      @album.stub!(:nominations).and_return [1, 2, 3]
-    end
-    
-    it "should return the negative summed up score of all votes (with a value < 0) divided by the # of nominations" do
-      @album.negative_votes.should_receive(:sum).with(:value).and_return -4
-      @album.negative_score.should == 4.0 / 3
-    end
-    
-    it "should negative_votes 0 if we dont have any negative votes" do
-      @album.negative_votes.should_receive(:sum).with(:value).and_return nil
-      @album.negative_score.should == 0
-    end
-    
-    it "should return 0 if we dont have any nominations" do
-      @album.stub_chain(:nominations).and_return []
-      @album.negative_score.should == 0
-    end
-  end
-  
-  describe "rating" do
-    before do
-      @album = Album.new
-      @album.stub_chain(:ratings, :avg).and_return 0.0
-    end
-    
-    it "should return the summed up score of all ratings" do
-      @album.ratings.should_receive(:avg).with(:value).and_return 3.4
-      @album.rating.should == 3.4
-    end
-    
-    it "should return 0 if we dont have any ratings" do
-      @album.ratings.should_receive(:avg).with(:value).and_return nil
-      @album.rating.should == 0.0
-    end
-  end
-  
   describe "nominated?" do
     before do
       @album = Album.new(:id => 1)
@@ -139,31 +80,10 @@ describe Album do
   describe "to hash" do
     before do
       @album = Album.new(:id => 123, :artist => "artist", :name => "album")
-      @album.stub! :value_method
     end
     
     it "should return the album's attributes in a hash" do
-      @album.to_hash.should == { :id => 123, :artist => "artist", :name => "album", :value => nil }
-    end
-    
-    it "should not call a 'value method' if we dont have one" do
-      @album.should_not_receive :value_method
-      @album.to_hash[:value].should be_nil
-    end
-    
-    it "should have nil as the 'value' if we have a nil value method" do
-      @album.should_not_receive :value_method
-      @album.to_hash(nil)[:value].should be_nil
-    end
-    
-    it "should call the 'value method' and return the result if we have a good param" do
-      @album.should_receive(:value_method).and_return 2
-      @album.to_hash(:value_method)[:value].should == 2
-    end
-    
-    it "should round the result of the value method to once decimal" do
-      @album.stub!(:value_method).and_return 2.2222
-      @album.to_hash(:value_method)[:value].should == 2.2
+      @album.to_hash.should == { :id => 123, :artist => "artist", :name => "album" }
     end
   end
   
@@ -276,31 +196,6 @@ describe Album do
       Album.search("query").should == @list
     end
   end
-
-  
-  { :most_listened => :play_count, :top_rated => :rating, :most_popular => :score, :least_popular => :negative_score }.each do |method, criteria|
-    describe method do
-      before do
-        @album1 = Album.new(:id => 1); @album1.stub!(criteria).and_return 2
-        @album2 = Album.new(:id => 2); @album2.stub!(criteria).and_return 4
-        @album3 = Album.new(:id => 3); @album3.stub!(criteria).and_return 1
-        Album.stub!(:nominated).and_return @list = [@album1, @album2, @album3]
-      end
-
-      it "should grab the albums (with nominations)" do
-        Album.should_receive(:nominated).and_return @list
-        Album.send method
-      end
-
-      it "should remove all albums with a #{criteria} equal or smaller than 1" do
-        Album.send(method).should_not include(@album3)
-      end
-
-      it "should then sort the list by the #{criteria} value" do
-        Album.send(method).first.should == @album2
-      end
-    end
-  end
   
   describe "nominated" do
     before do
@@ -335,13 +230,80 @@ describe Album do
       Album.never_nominated.should == [@album1]
     end
   end
+  
+  describe "played" do
+    before do
+      @album1 = Album.new(:id => 1); @album1.stub!(:played?).and_return false
+      @album2 = Album.new(:id => 2); @album2.stub!(:played?).and_return true
+      Album.stub!(:all).and_return @all = [@album1, @album2]
+    end
 
-  describe "value method for" do
-    { "most_listened" => :play_count, "most_popular" => :score, "least_popular" => :negative_score,
-      "top_rated" => :rating, "all" => nil, "bla" => nil }.each do |scope, method|
-      it "should return the method name '#{method}' for the scope '#{scope}'" do
-        Album.value_method_for(scope).should == method
-      end
+    it "should grab all albums" do
+      Album.should_receive(:all).and_return @all
+      Album.played
+    end
+
+    it "should only include albums which have been played" do
+      Album.played.should == [@album2]
+    end
+  end
+  
+  describe "most listened" do
+    it "should query the database directly for the most listened albums" do
+      Album.should_receive(:execute_sql).with <<-SQL
+SELECT a.*, COUNT(n.id) AS value FROM albums a
+INNER JOIN nominations n ON n.album_id = a.id
+WHERE n.status = 'played'
+GROUP BY a.id
+ORDER BY value DESC
+      SQL
+      
+      Album.most_listened
+    end
+  end
+  
+  describe "top rated" do
+    it "should query the database directly for the top rated albums" do
+      Album.should_receive(:execute_sql).with <<-SQL
+SELECT a.*, AVG(v.value) AS value FROM albums a
+INNER JOIN nominations n ON n.album_id = a.id
+INNER JOIN votes v ON v.nomination_id = n.id
+WHERE v.type = 'rating'
+GROUP BY a.id
+ORDER BY value DESC
+      SQL
+      
+      Album.top_rated
+    end
+  end
+  
+  describe "most popular" do
+    it "should query the database directly for the most popular" do
+      Album.should_receive(:execute_sql).with <<-SQL
+SELECT a.*, SUM(v.value) / COUNT(DISTINCT n.id) AS value FROM albums a
+INNER JOIN nominations n ON n.album_id = a.id
+INNER JOIN votes v ON v.nomination_id = n.id
+WHERE v.type = 'vote' AND v.value > 0
+GROUP BY a.id
+ORDER BY value DESC
+      SQL
+      
+      Album.most_popular
+    end
+  end
+  
+  describe "least popular" do
+    it "should query the database directly for the least popular" do
+      Album.should_receive(:execute_sql).with <<-SQL
+SELECT a.*, SUM(v.value) / COUNT(DISTINCT n.id) AS value FROM albums a
+INNER JOIN nominations n ON n.album_id = a.id
+INNER JOIN votes v ON v.nomination_id = n.id
+WHERE v.type = 'vote' AND v.value < 0
+GROUP BY a.id
+ORDER BY value
+      SQL
+      
+      Album.least_popular
     end
   end
 end

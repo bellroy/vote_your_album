@@ -1,25 +1,17 @@
 class Album
   include DataMapper::Resource
   
-  VALUE_METHODS = { "most_listened" => :play_count, "top_rated" => :rating, "most_popular" => :score, "least_popular" => :negative_score }
-  
   property :id, Serial
   property :artist, String, :length => 200
   property :name, String, :length => 200
   
   has n, :songs
   has n, :nominations
-  has n, :votes, :through => :nominations, :type => "vote", :value.gt => 0
-  has n, :negative_votes, :through => :nominations, :model => "Vote", :type => "vote", :value.lt => 0
-  has n, :ratings, :through => :nominations, :model => "Vote", :type => "rating"
   
   default_scope(:default).update :order => [:artist, :name]
   
-  def play_count; nominations.played.size end
-  def score; (votes.sum(:value) || 0).to_f / [nominations.size, 1].max end
-  def negative_score; ((negative_votes.sum(:value) || 0) * -1).to_f / [nominations.size, 1].max end
-  def rating; ratings.avg(:value) || 0 end
   def nominated?; !nominations.empty? end
+  def played?; !nominations.played.empty? end
   
   def nominate(ip)
     nomination = nominations.create(:status => "active", :created_at => Time.now, :user => User.get_or_create_by(ip))
@@ -30,9 +22,7 @@ class Album
   end
     
   def to_s; "#{artist} - #{name}" end
-  def to_hash(value_method = nil)
-    { :id => id, :artist => artist, :name => name, :value => (value_method ? ((send(value_method).to_f * 10).round / 10.0) : nil) }
-  end
+  def to_hash; { :id => id, :artist => artist, :name => name } end
   
   class << self
     def update
@@ -52,15 +42,49 @@ class Album
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
     
-    VALUE_METHODS.each do |method, criteria|
-      define_method method do
-        nominated.select { |a| a.send(criteria) > 1 }.sort_by { |a| a.send(criteria) }.reverse
-      end
-    end
     def nominated; all.select { |a| a.nominated? } end
     def never_nominated; all.reject { |a| a.nominated? } end
-        
-    def value_method_for(scope); VALUE_METHODS[scope] end
+    def played; all.select { |a| a.played? } end
+    
+    def most_listened
+      execute_sql <<-SQL
+SELECT a.*, COUNT(n.id) AS value FROM albums a
+INNER JOIN nominations n ON n.album_id = a.id
+WHERE n.status = 'played'
+GROUP BY a.id
+ORDER BY value DESC
+      SQL
+    end
+    def top_rated
+      execute_sql <<-SQL
+SELECT a.*, AVG(v.value) AS value FROM albums a
+INNER JOIN nominations n ON n.album_id = a.id
+INNER JOIN votes v ON v.nomination_id = n.id
+WHERE v.type = 'rating'
+GROUP BY a.id
+ORDER BY value DESC
+      SQL
+    end
+    def most_popular
+      execute_sql <<-SQL
+SELECT a.*, SUM(v.value) / COUNT(DISTINCT n.id) AS value FROM albums a
+INNER JOIN nominations n ON n.album_id = a.id
+INNER JOIN votes v ON v.nomination_id = n.id
+WHERE v.type = 'vote' AND v.value > 0
+GROUP BY a.id
+ORDER BY value DESC
+      SQL
+    end
+    def least_popular
+      execute_sql <<-SQL
+SELECT a.*, SUM(v.value) / COUNT(DISTINCT n.id) AS value FROM albums a
+INNER JOIN nominations n ON n.album_id = a.id
+INNER JOIN votes v ON v.nomination_id = n.id
+WHERE v.type = 'vote' AND v.value < 0
+GROUP BY a.id
+ORDER BY value
+      SQL
+    end
   
   private
     
@@ -77,5 +101,7 @@ class Album
           "VA"
       end
     end
+    
+    def execute_sql(sql); repository(:default).adapter.query sql end
   end
 end
