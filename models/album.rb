@@ -46,45 +46,10 @@ class Album
     def never_nominated; all.reject { |a| a.nominated? } end
     def played; all.select { |a| a.played? } end
     
-    def most_listened
-      execute_sql <<-SQL
-SELECT a.*, COUNT(n.id) AS value FROM albums a
-INNER JOIN nominations n ON n.album_id = a.id
-WHERE n.status = 'played'
-GROUP BY a.id
-ORDER BY value DESC
-      SQL
-    end
-    def top_rated
-      execute_sql <<-SQL
-SELECT a.*, AVG(v.value) AS value FROM albums a
-INNER JOIN nominations n ON n.album_id = a.id
-INNER JOIN votes v ON v.nomination_id = n.id
-WHERE v.type = 'rating'
-GROUP BY a.id
-ORDER BY value DESC
-      SQL
-    end
-    def most_popular
-      execute_sql <<-SQL
-SELECT a.*, SUM(v.value) / COUNT(DISTINCT n.id) AS value FROM albums a
-INNER JOIN nominations n ON n.album_id = a.id
-INNER JOIN votes v ON v.nomination_id = n.id
-WHERE v.type = 'vote' AND v.value > 0
-GROUP BY a.id
-ORDER BY value DESC
-      SQL
-    end
-    def least_popular
-      execute_sql <<-SQL
-SELECT a.*, SUM(v.value) / COUNT(DISTINCT n.id) AS value FROM albums a
-INNER JOIN nominations n ON n.album_id = a.id
-INNER JOIN votes v ON v.nomination_id = n.id
-WHERE v.type = 'vote' AND v.value < 0
-GROUP BY a.id
-ORDER BY value
-      SQL
-    end
+    def most_listened; execute_sql "COUNT(n.id)", "n.status = 'played'" end
+    def top_rated; execute_sql "AVG(v.value)", "v.type = 'rating'" end
+    def most_popular; execute_sql "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value > 0" end
+    def least_popular; execute_sql "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value < 0", "ASC" end
   
   private
     
@@ -102,6 +67,15 @@ ORDER BY value
       end
     end
     
-    def execute_sql(sql); repository(:default).adapter.query sql end
+    def execute_sql(value, conditions, sort = "DESC")
+      repository(:default).adapter.query <<-SQL
+SELECT a.*, #{value} AS value FROM albums a
+INNER JOIN nominations n ON n.album_id = a.id
+INNER JOIN votes v ON v.nomination_id = n.id
+WHERE #{conditions}
+GROUP BY a.id
+ORDER BY value #{sort}
+      SQL
+    end
   end
 end

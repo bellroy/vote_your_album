@@ -250,59 +250,28 @@ describe Album do
   
   describe "most listened" do
     it "should query the database directly for the most listened albums" do
-      Album.should_receive(:execute_sql).with <<-SQL
-SELECT a.*, COUNT(n.id) AS value FROM albums a
-INNER JOIN nominations n ON n.album_id = a.id
-WHERE n.status = 'played'
-GROUP BY a.id
-ORDER BY value DESC
-      SQL
-      
+      Album.should_receive(:execute_sql).with "COUNT(n.id)", "n.status = 'played'"
       Album.most_listened
     end
   end
   
   describe "top rated" do
     it "should query the database directly for the top rated albums" do
-      Album.should_receive(:execute_sql).with <<-SQL
-SELECT a.*, AVG(v.value) AS value FROM albums a
-INNER JOIN nominations n ON n.album_id = a.id
-INNER JOIN votes v ON v.nomination_id = n.id
-WHERE v.type = 'rating'
-GROUP BY a.id
-ORDER BY value DESC
-      SQL
-      
+      Album.should_receive(:execute_sql).with "AVG(v.value)", "v.type = 'rating'"
       Album.top_rated
     end
   end
   
   describe "most popular" do
     it "should query the database directly for the most popular" do
-      Album.should_receive(:execute_sql).with <<-SQL
-SELECT a.*, SUM(v.value) / COUNT(DISTINCT n.id) AS value FROM albums a
-INNER JOIN nominations n ON n.album_id = a.id
-INNER JOIN votes v ON v.nomination_id = n.id
-WHERE v.type = 'vote' AND v.value > 0
-GROUP BY a.id
-ORDER BY value DESC
-      SQL
-      
+      Album.should_receive(:execute_sql).with "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value > 0"
       Album.most_popular
     end
   end
   
   describe "least popular" do
     it "should query the database directly for the least popular" do
-      Album.should_receive(:execute_sql).with <<-SQL
-SELECT a.*, SUM(v.value) / COUNT(DISTINCT n.id) AS value FROM albums a
-INNER JOIN nominations n ON n.album_id = a.id
-INNER JOIN votes v ON v.nomination_id = n.id
-WHERE v.type = 'vote' AND v.value < 0
-GROUP BY a.id
-ORDER BY value
-      SQL
-      
+      Album.should_receive(:execute_sql).with "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value < 0", "ASC"
       Album.least_popular
     end
   end
