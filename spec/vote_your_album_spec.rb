@@ -26,6 +26,10 @@ describe "vote your album:" do
   end
   
   describe "GET '/list/:type'" do
+    before(:all) do
+      Struct.new("Album", :id, :artist, :name)
+    end
+    
     before do
       Album.stub!("all").and_return [@album = Album.new(:id => 1, :artist => "artist", :name => "name")]
     end
@@ -42,19 +46,30 @@ describe "vote your album:" do
       last_response.body.should match(/\"name\":\"name\"/)
     end
     
-    it "should call the 'value' method on the album(s) if we get one" do
-      Album.stub!(:value_method_for).and_return :something
-      @album.should_receive(:something).and_return 3
-      
+    it "should work with Struct's as well" do
+      Album.stub!("all").and_return [Struct::Album.new(2, "other", "hits")]
       get "/list/all"
-      last_response.body.should match(/\"value\":3/)
+      last_response.body.should match(/\"id\":2/)
+      last_response.body.should match(/\"artist\":\"other\"/)
+      last_response.body.should match(/\"name\":\"hits\"/)
     end
     
-    it "should have a 'nil' value on the album(s) if we get one" do
-      Album.stub!(:value_method_for).and_return nil
-      
+    it "should return null as the value if we dont have a 'value' method" do
       get "/list/all"
       last_response.body.should match(/\"value\":null/)
+    end
+    
+    it "should insert the value if we respond to it" do
+      @album.stub!(:value).and_return 2.3
+      get "/list/all"
+      last_response.body.should match(/\"value\":2.3/)
+    end
+    
+    it "should round the value to one decimal" do
+      @album.stub!(:value).and_return 2.123
+      get "/list/all"
+      last_response.body.should match(/\"value\":2.1/)
+      last_response.body.should_not match(/\"value\":2.123/)
     end
   end
   

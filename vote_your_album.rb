@@ -66,7 +66,10 @@ get "/embed" do
   haml :index, :layout => :embed
 end
 get "/list/:type" do |list_type|
-  Album.send(list_type).map { |a| a.to_hash Album.value_method_for(list_type) }.to_json
+  Album.send(list_type).map do |a|
+    { :id => a.id, :artist => a.artist, :name => a.name,
+      :value => (a.respond_to?(:value) ? ((a.value.to_f * 10).round / 10.0) : nil) }
+  end.to_json
 end
 get "/search" do
   Album.search(params[:q]).map { |a| a.to_hash }.to_json
