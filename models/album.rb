@@ -46,7 +46,7 @@ class Album
     def never_nominated; all.reject { |a| a.nominated? } end
     def played; all.select { |a| a.played? } end
     
-    def most_listened; execute_sql "COUNT(n.id)", "n.status = 'played'" end
+    def most_listened; execute_sql "COUNT(DISTINCT n.id)", "n.status = 'played'" end
     def top_rated; execute_sql "AVG(v.value)", "v.type = 'rating'" end
     def most_popular; execute_sql "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value > 0" end
     def least_popular; execute_sql "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value < 0", "ASC" end

@@ -250,7 +250,7 @@ describe Album do
   
   describe "most listened" do
     it "should query the database directly for the most listened albums" do
-      Album.should_receive(:execute_sql).with "COUNT(n.id)", "n.status = 'played'"
+      Album.should_receive(:execute_sql).with "COUNT(DISTINCT n.id)", "n.status = 'played'"
       Album.most_listened
     end
   end
