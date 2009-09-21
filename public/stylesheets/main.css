@@ -222,22 +222,25 @@ input[type = text] {
 }
 
 #tabs {
-  height: 23px;
   overflow-y: hidden;
   border: none;
   margin-top: 0;
+  position: absolute;
+  top: 86px;
+  left: -86px;
+  width: 87px;
 }
 #tabs li {
-  float: left;
-  width: auto;
+  width: 75px;
   border: 1px solid #000;
-  border-top: none;
+  border-right: none;
   padding: 1px 5px;
-  margin: 0 3px;
+  margin: 3px 0;
+  text-align: right;
 }
 #tabs li.selected {
   border-style: dashed;
-  border-top: none;
+  border-right: none;
 }
 #tabs li a {
   font-size: 10pt;
