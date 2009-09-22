@@ -125,9 +125,18 @@ describe Album do
     end
     
     it "should add the found songs to the album" do
-      @album.songs.should_receive(:new).with :track => "1", :artist => "me", :title => "song", :file => "path"
+      @album.songs.should_receive(:new).with :track => 1, :artist => "me", :title => "song", :file => "path"
       Album.update
     end
+    
+    ["5", "5/11", "5 of 11"].each do |track|
+      it "should convert the track '#{track}' to a integer value" do
+        @song["track"] = track
+        @album.songs.should_receive(:new).with :track => 5, :artist => "me", :title => "song", :file => "path"
+        Album.update
+      end
+    end
+
     
     it "should get the name of the artist for the album from the songs" do
       @album.should_receive(:artist=).with "me"

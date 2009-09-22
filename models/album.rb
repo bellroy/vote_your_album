@@ -31,7 +31,7 @@ class Album
         
         new_album = Album.new(:name => album)        
         songs = MpdProxy.find_songs_for(album)
-        songs.each { |song| new_album.songs.new :track => song.track, :artist => song.artist, :title => song.title, :file => song.file }
+        songs.each { |song| new_album.songs.new :track => song.track.to_i, :artist => song.artist, :title => song.title, :file => song.file }
         new_album.artist = get_artist_from(songs)        
         new_album.save
       end
