@@ -131,3 +131,6 @@ post "/name" do
   user = User.get_or_create_by(request.ip)
   user.update(:name => params[:name]) if user
 end
+post "/update" do
+  Album.update
+end

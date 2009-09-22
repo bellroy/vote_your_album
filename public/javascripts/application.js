@@ -89,6 +89,10 @@ $(function() {
     var type = this;
     $("." + type).click(function() { getList(type); });
   });
+  $(".update").click(function() {
+    if (confirm("Do you really want to update the Database? This might take some time (and i cant tell you how long right now)...")) $.post("/update");
+    return false;
+  });
   
   // Initial page update to load the lists and the status
   getList("all");

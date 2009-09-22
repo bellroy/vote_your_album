@@ -242,6 +242,10 @@ input[type = text] {
   border-style: dashed;
   border-right: none;
 }
+#tabs li.last {
+  position: absolute;
+  bottom: 15px;
+}
 #tabs li a {
   font-size: 10pt;
   font-weight: normal;

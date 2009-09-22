@@ -538,4 +538,21 @@ describe "vote your album:" do
       last_response.body.should == ""
     end
   end
+  
+  describe "POST '/update'" do
+    before do
+      Album.stub! :update
+    end
+    
+    it "should update the database" do
+      Album.should_receive :update
+      post "/update"
+    end
+    
+    it "should render an empty response body and a status of 200" do
+      post "/update"
+      last_response.body.should == ""
+      last_response.status.should == 200
+    end
+  end
 end
