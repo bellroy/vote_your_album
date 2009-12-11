@@ -5,7 +5,7 @@
     %input#query{ :type => "text", :name => "q", :value => params[:q] }
     %input{ :type => "submit", :value => "Search" }
     %button#clear{ :type => "button" } Clear
-  
+
   %ul#tabs
     %li
       %a.all{ :href => "#", :title => "Show all albums" } All
@@ -21,7 +21,7 @@
       %a.never_nominated{ :href => "#", :title => "Show the albums which have never been nominated" } Never Nom.
     %li.last
       %a.update{ :href => "#", :title => "Update the database" } Update DB
-  
+
   %ul#list
   .overlay
     %img.spinner{ :src => "/images/spinner.gif" }
@@ -30,5 +30,5 @@
   %p
     %b Nominated Albums
   #top
-  
+
   %ul#upcoming
