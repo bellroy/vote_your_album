@@ -15,7 +15,7 @@ end
 
 def json_status
   current = Nomination.current
-  
+
   status = { :playing => MpdProxy.playing?, :volume => MpdProxy.volume }
   status = status.merge(:current_album => current.album.to_s, :current_song => MpdProxy.current_song,
     :time => to_time(MpdProxy.time), :down_votes_necessary => current.down_votes_necessary,
@@ -32,20 +32,20 @@ end
 helpers do
   include Rack::Utils
   alias_method :h, :escape_html
-  
+
   def score_class(score); score > 0 ? "positive" : (score < 0 ? "negative" : "") end
   def album_attributes(nomination, i, is_owner, expanded)
     attr = { :ref => nomination.id }
-    
+
     classes = ["album", "loaded", (i % 2 == 0 ? "even" : "odd")]
     classes << ["deleteable"] if is_owner
     classes << ["expanded"] if expanded.include?(nomination.id.to_s)
     attr.update :class => classes.join(" ")
-    
+
     attr.update(:title => "TTL: #{to_time(nomination.ttl)}") if nomination.ttl
     attr
   end
-  
+
   def to_time(seconds)
     time = []
     time << "%02d" % (seconds / 3600) if seconds >= 3600
@@ -132,5 +132,6 @@ post "/name" do
   user.update(:name => params[:name]) if user
 end
 post "/update" do
+  MpdProxy.execute :update
   Album.update
 end

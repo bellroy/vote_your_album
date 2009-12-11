@@ -3,7 +3,7 @@
   %head
     %meta{ "http-equiv" => "Content-Type", :content => "text/html; charset=utf-8" }
     %title Vote Your Album! - Trike
-    
+
     %link{ :rel => "stylesheet", :href => "stylesheets/jquery.ui.css", :type => "text/css", :charset => "utf-8" }
     %link{ :rel => "stylesheet", :href => "stylesheets/jquery.rating.css", :type => "text/css", :charset => "utf-8" }
     %link{ :rel => "stylesheet", :href => "stylesheets/main.css", :type => "text/css", :charset => "utf-8" }
@@ -15,10 +15,10 @@
     %script{ :src => "javascripts/jquery.form.js", :type => "text/javascript" }
     %script{ :src => "javascripts/jquery.rating.js", :type => "text/javascript" }
     %script{ :src => "javascripts/application.js", :type => "text/javascript" }
-    
+
     %script{ :src => "http://cdn.uservoice.com/javascripts/widgets/tab.js", :type => "text/javascript" }
     %script{ :src => "javascripts/uservoice.js", :type => "text/javascript" }
-  
+
   %body
     #wrap
       .header
@@ -45,13 +45,13 @@
               Force Next (
               %span.necessary
               more )
-            
+
       .content
         = yield
-      
+
       .news
         %b Updates
         %ul
-          %li Added a button to update the database. You must add the music to the mpd library first (e.g. with Theremin)!
-          %li Moved the tabs to the left of the list.
-          %li New tab added: Albums that have never been nominated. (Thanks to David Goodlad)
+          %li
+            The update button now updates the MPD library as well. Don't know how long this takes.
+            %b And it might be necessary to click the button twice in order to see the new songs!
