@@ -32,6 +32,21 @@ describe Album do
     end
   end
 
+  describe "currently nominated?" do
+    before do
+      @album = Album.new(:id => 1)
+    end
+
+    it "should return false if we dont have any nominations" do
+      @album.should_not be_currently_nominated
+    end
+
+    it "should return true if we have a active nomination" do
+      @album.stub!(:active_nominations).and_return [Nomination.new]
+      @album.should be_currently_nominated
+    end
+  end
+
   describe "nominate" do
     before do
       @album = Album.new
@@ -42,6 +57,13 @@ describe Album do
       @nomination.stub! :save
 
       User.stub!(:get_or_create_by).and_return @user = User.new
+    end
+
+    it "should not nominate the album, if we already have a active nomination" do
+      @album.stub!(:currently_nominated?).and_return true
+      @album.nominations.should_not_receive :create
+
+      @album.nominate "me"
     end
 
     it "should create a nomination for that album" do

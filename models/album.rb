@@ -7,13 +7,17 @@ class Album
 
   has n, :songs
   has n, :nominations
+  has n, :active_nominations, :model => "Nomination", :status => "active"
 
   default_scope(:default).update :order => [:artist, :name]
 
   def nominated?; !nominations.empty? end
+  def currently_nominated?; !active_nominations.empty? end
   def played?; !nominations.played.empty? end
 
   def nominate(ip)
+    return if currently_nominated?
+
     nomination = nominations.create(:status => "active", :created_at => Time.now, :user => User.get_or_create_by(ip))
     nomination.vote 1, ip
 
