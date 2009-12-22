@@ -312,6 +312,8 @@ describe "vote your album:" do
       @album.stub! :nominate
 
       Nomination.stub!(:active).and_return [Nomination.new(:album => @album)]
+
+      MpdProxy.stub!(:playing?).and_return true
     end
 
     it "should nominate the album if we can find one" do
@@ -323,6 +325,18 @@ describe "vote your album:" do
     it "should do nothing when we can't find the album in the list" do
       Album.should_receive(:get).with(321).and_return nil
       @album.should_not_receive :nominate
+      post "/add/321"
+    end
+
+    it "should not immediately play the just added album if we already play some music" do
+      MpdProxy.should_not_receive :play_next
+      post "/add/321"
+    end
+
+    it "should immediately play the just album if we arent playing anything right now" do
+      MpdProxy.stub!(:playing?).and_return false
+      MpdProxy.should_receive :play_next
+
       post "/add/321"
     end
 

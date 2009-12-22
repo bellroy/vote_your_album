@@ -89,6 +89,9 @@ end
 post "/add/:id" do |album_id|
   album = Album.get(album_id.to_i)
   album.nominate(request.ip) if album
+
+  MpdProxy.play_next unless MpdProxy.playing?
+
   render_upcoming
 end
 post "/up/:id" do |nomination_id|
