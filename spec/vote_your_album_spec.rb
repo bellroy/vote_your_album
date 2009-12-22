@@ -502,33 +502,10 @@ describe "vote your album:" do
     end
   end
 
-  describe "POST '/play'" do
-    before do
-      MpdProxy.stub! :play_next
-      MpdProxy.stub!(:playing?).and_return false
-      Nomination.stub!(:current).and_return Nomination.new
-    end
-
-    it "should play the next album" do
-      MpdProxy.should_receive :play_next
-      post "/play"
-    end
-
-    it "should not play the next album if we are currently playing something" do
-      MpdProxy.stub!(:playing?).and_return true
-      MpdProxy.should_not_receive :play_next
-      post "/play"
-    end
-
-    it "should return the json status response" do
-      post "/play"
-      last_response.body.should match(/\"volume\":/)
-    end
-  end
-
   describe "POST '/name'" do
     before do
       User.stub!(:get_or_create_by).and_return @user = User.new
+      @user.stub! :update
     end
 
     it "should fetch the user with the given ip" do

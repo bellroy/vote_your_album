@@ -40,7 +40,6 @@
             %form{ :id => "change_name", :action => "/name", :method => "post" }
               %span Who am I?
               %input{ :type => "text", :name => "name", :value => User.get_or_create_by(request.ip).name }
-            %a#play.display-none{ :href => "#" } Start Playback
             %a#force.display-none{ :href => "#" }
               Force Next (
               %span.necessary

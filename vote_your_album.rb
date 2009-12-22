@@ -125,10 +125,6 @@ end
 post "/volume/:value" do |value|
   MpdProxy.change_volume_to value.to_i
 end
-post "/play" do
-  MpdProxy.play_next unless MpdProxy.playing?
-  json_status
-end
 
 post "/name" do
   user = User.get_or_create_by(request.ip)
