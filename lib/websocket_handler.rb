@@ -10,7 +10,7 @@ class WebsocketHandler
 
     if req.ws?
       req.ws_handshake!
-      WebsocketIo.register req
+      WebsocketDispatcher.register req
 
       ws_io = req.ws_io
       ws_io.each { } # no-op
