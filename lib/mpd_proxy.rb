@@ -29,7 +29,10 @@ class MpdProxy
     end
 
     def time; @time end
-    def time=(elapsed, total); @time = total - elapsed end
+    def time=(elapsed, total)
+      @time = total - elapsed
+      WebsocketIo.write({ :time => @time }.to_json)
+    end
 
     def play_next
       return unless nomination = Nomination.active.first
