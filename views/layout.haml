@@ -26,8 +26,7 @@
         .title
         .main_controls
           .left
-            - { "previous" => "Previous Song", "stop" => "Stop Playback",                   |
-                "play" => "Start Playback", "next" => "Next Song" }.each do |action, title| |
+            - { "previous" => "Previous Song", "stop" => "Stop Playback", "play" => "Start Playback", "next" => "Next Song" }.each do |action, title|
               %a.control{ :href => "#", :ref => action }
                 %img{ :src => "/images/#{action}.png", :title => title }
             #slider
