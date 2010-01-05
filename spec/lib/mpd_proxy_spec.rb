@@ -187,8 +187,8 @@ describe MpdProxy do
       MpdProxy.time.should == 0
     end
 
-    it "should broadcast the new time with the websocket dispatcher" do
-      WebsocketDispatcher.should_receive(:write_json).with({ :time => 31 })
+    it "should broadcast the formatted time with the websocket dispatcher" do
+      WebsocketDispatcher.should_receive(:write_json).with({ :time => 31.to_time })
       MpdProxy.send :time=, 12, 43
     end
   end

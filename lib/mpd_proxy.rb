@@ -25,7 +25,6 @@ class MpdProxy
       WebsocketDispatcher.write_json({ :volume => @volume })
     end
 
-
     def playing?; !!current_song end
     def current_song; @current_song end
     def current_song=(song = nil)
@@ -39,7 +38,7 @@ class MpdProxy
     def time=(elapsed, total)
       @time = total - elapsed
 
-      WebsocketDispatcher.write_json({ :time => @time })
+      WebsocketDispatcher.write_json({ :time => @time.to_time })
     end
 
     def play_next
