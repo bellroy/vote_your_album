@@ -207,7 +207,8 @@ function mainControls(data) {
     $("#current").html(data.current_album);
 
     var song = data.current_song
-    $("#song").html("(" + song.track + ") " + song.artist + " - " + song.title + " (" + data.time + ")");
+    $("#song .song").html("(" + song.track + ") " + song.artist + " - " + song.title);
+    $("#song .time").html("(" + data.time + ")");
 
     $("#force").show();
     $("#force").attr("title", "Necessary Votes to force next album: " + data.down_votes_necessary);
@@ -217,7 +218,7 @@ function mainControls(data) {
   }
   else {
     $("#current").html("");
-    $("#song").html("");
+    $("#song .song, #song .time").html("");
     $("#force").hide();
   }
 

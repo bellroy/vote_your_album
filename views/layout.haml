@@ -36,6 +36,8 @@
                 %input.rate_star{ :name => "rate", :type => "radio", :value => i }
             #current
             #song
+              %span.song
+              %span.time
           .right
             %form{ :id => "change_name", :action => "/name", :method => "post" }
               %span Who am I?
