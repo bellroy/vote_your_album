@@ -135,7 +135,3 @@ post "/update" do
   MpdProxy.execute :update
   Album.update
 end
-
-get "/push" do
-  WebsocketIo.write "this is a true push!!!"
-end
