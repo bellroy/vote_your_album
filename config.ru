@@ -10,4 +10,7 @@ set :app_file, File.join(root_dir, 'vote_your_album.rb')
 disable :run
 
 require 'vote_your_album'
+require 'lib/websocket_handler'
+
+use WebsocketHandler
 run Sinatra::Application

@@ -94,10 +94,30 @@ $(function() {
   });
 
   // Initial page update to load the lists and the status
-  getList("all");
-  getUpcoming();
-  getStatus();
+  // getList("all");
+  // getUpcoming();
+  // getStatus();
 });
+
+// Web Socket test
+// if ("WebSocket" in window) {
+//   var ws = new WebSocket("ws://localhost:8080/ws");
+// 
+//   ws.onopen = function() {
+//     console.debug("websocket initialized")
+//   };
+// 
+//   ws.onmessage = function (evt) {
+//     console.debug(evt.data);
+//   };
+// 
+//   ws.onclose = function() {
+//     console.debug("websocket closed");
+//   };
+// }
+// else {
+//   console.debug("no browser support - sorry!");
+// }
 
 // Drag definitions
 var drag_options = {

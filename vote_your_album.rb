@@ -1,6 +1,7 @@
 %w[rubygems sinatra json haml librmpd dm-core dm-aggregates].each { |lib| require lib }
 %w[album song nomination vote user].each { |model| require "models/#{model}" }
 require 'lib/mpd_proxy'
+require 'lib/websocket_io'
 
 require 'lib/config'
 
@@ -133,4 +134,8 @@ end
 post "/update" do
   MpdProxy.execute :update
   Album.update
+end
+
+get "/push" do
+  WebsocketIo.write "this is a true push!!!"
 end
