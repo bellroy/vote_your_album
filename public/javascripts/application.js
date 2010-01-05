@@ -94,30 +94,47 @@ $(function() {
   });
 
   // Initial page update to load the lists and the status
-  // getList("all");
-  // getUpcoming();
-  // getStatus();
+  getList("all");
+  getUpcoming();
+
+  //
+  if ("WebSocket" in window) {
+    var ws = new WebSocket("ws://localhost:8080/ws");
+
+    ws.onopen = function() {
+      console.debug("websocket initialized")
+    };
+
+    ws.onmessage = function (evt) {
+      console.debug(evt.data);
+
+      var json = eval("(" + evt.data + ")");
+      if (_(json).hasKey("volume")) {
+        $("#slider").slider("option", "value", json.volume);
+      }
+      else if (_(json).hasKey("current_song")) {
+        var song = json.current_song;
+        $("#song .song").html("(" + song.track + ") " + song.artist + " - " + song.title);
+      }
+      else if (_(json).hasKey("time")) {
+        $("#song .time").html("(" + json.time + ")");
+      }
+      else {
+        console.debug("no recognized command found: " + json);
+      }
+    };
+
+    ws.onclose = function() {
+      console.debug("websocket closed");
+    };
+  }
+  else {
+
+    // no WS support, get the status the traditional way
+    console.debug("no browser support - sorry!");
+    getStatus();
+  }
 });
-
-// Web Socket test
-if ("WebSocket" in window) {
-  var ws = new WebSocket("ws://localhost:8080/ws");
-
-  ws.onopen = function() {
-    console.debug("websocket initialized")
-  };
-
-  ws.onmessage = function (evt) {
-    console.debug(evt.data);
-  };
-
-  ws.onclose = function() {
-    console.debug("websocket closed");
-  };
-}
-else {
-  console.debug("no browser support - sorry!");
-}
 
 // Drag definitions
 var drag_options = {
