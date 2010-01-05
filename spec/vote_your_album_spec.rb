@@ -234,6 +234,10 @@ describe "vote your album:" do
   end
 
   describe "GET '/status'" do
+    before do
+      MpdProxy.stub!(:playing?).and_return false
+    end
+
     it "should return the volume" do
       MpdProxy.stub!(:volume).and_return 32
 
@@ -470,6 +474,7 @@ describe "vote your album:" do
   [:previous, :stop, :play, :next].each do |action|
     describe "POST '/control/#{action}'" do
       before do
+        MpdProxy.stub!(:playing?).and_return false
         MpdProxy.stub! :execute
       end
 
