@@ -49,5 +49,21 @@ class MpdProxy
       nomination.songs.each { |song| @mpd.add song.file }
       @mpd.play
     end
+
+    def status(ip)
+      current = Nomination.current
+
+      res = { :playing => playing?, :volume => volume }
+      res = res.merge(
+        :current_album => current.album.to_s,
+        :current_song => current_song,
+        :time => time.to_time,
+        :down_votes_necessary => current.down_votes_necessary,
+        :rateable => current.can_be_rated_by?(ip),
+        :forceable => current.can_be_forced_by?(ip)
+      ) if playing?
+
+      res
+    end
   end
 end

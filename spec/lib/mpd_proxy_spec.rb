@@ -235,4 +235,66 @@ describe MpdProxy do
       MpdProxy.play_next
     end
   end
+
+  describe "status" do
+    before do
+      MpdProxy.stub!(:playing?).and_return false
+    end
+
+    it "should return the volume" do
+      MpdProxy.stub!(:volume).and_return 32
+      MpdProxy.status("me")[:volume].should == 32
+    end
+
+    it "should contain the 'playing' flag" do
+      MpdProxy.stub!(:playing?).and_return false
+      MpdProxy.status("me")[:playing].should be_false
+    end
+
+    it "should not include the information about the current album if we are not playing anything" do
+      MpdProxy.stub!(:playing?).and_return false
+      MpdProxy.status("me").should_not have_key(:current_album)
+    end
+
+    describe "currently playing an album" do
+      before do
+        MpdProxy.stub!(:playing?).and_return true
+        MpdProxy.stub!(:time).and_return 123
+
+        @song = MPD::Song.new
+        { "artist" => "me", "title" => "song" }.each { |k, v| @song[k] = v }
+        MpdProxy.stub!(:current_song).and_return @song
+
+        @album = Album.new(:artist => "c", :name =>  "three")
+        Nomination.stub!(:current).and_return @nomination = Nomination.new(:album => @album)
+        @nomination.stub!(:down_votes_necessary).and_return 1
+      end
+
+      it "should include the name of the current album" do
+        MpdProxy.status("me")[:current_album].should == "c - three"
+      end
+
+      it "should include the information of the current song" do
+        MpdProxy.status("me")[:current_song].should == @song
+      end
+
+      it "should include the time remaining for the song" do
+        MpdProxy.status("me")[:time].should == "-02:03"
+      end
+
+      it "should include the number of necessary (remaining) forces" do
+        MpdProxy.status("me")[:down_votes_necessary].should == 1
+      end
+
+      it "should include whether we can force" do
+        @nomination.stub!(:can_be_forced_by?).and_return false
+        MpdProxy.status("me")[:forceable].should be_false
+      end
+
+      it "should have a flag saying if the user can rate this album (nomination)" do
+        @nomination.stub!(:can_be_rated_by?).and_return false
+        MpdProxy.status("me")[:rateable].should be_false
+      end
+    end
+  end
 end
