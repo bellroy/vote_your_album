@@ -3,7 +3,8 @@ require File.join(File.dirname(__FILE__) + '/spec_helper')
 describe "vote your album:" do
 
   before do
-    Album.stub!(:current).and_return nil
+    Album.stub! :current
+    MpdProxy.stub!(:status).and_return "json status"
   end
 
   describe "GET '/'" do
@@ -384,7 +385,7 @@ describe "vote your album:" do
 
     it "should return the json status response" do
       post "/force"
-      last_response.body.should match(/\"volume\":/)
+      last_response.body.should match(/\"json status\"/)
     end
   end
 
@@ -401,7 +402,7 @@ describe "vote your album:" do
 
     it "should return the json status response" do
       post "/rate/1"
-      last_response.body.should match(/\"volume\":/)
+      last_response.body.should match(/\"json status\"/)
     end
   end
 
@@ -419,7 +420,7 @@ describe "vote your album:" do
 
       it "should return the json status response" do
         post "/control/#{action}"
-        last_response.body.should match(/\"volume\":/)
+        last_response.body.should match(/\"json status\"/)
       end
     end
   end
