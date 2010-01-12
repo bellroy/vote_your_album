@@ -61,7 +61,7 @@ class MpdProxy
         :down_votes_necessary => current.down_votes_necessary,
         :rateable => current.can_be_rated_by?(ip),
         :forceable => current.can_be_forced_by?(ip)
-      ) if playing?
+      ) if playing? && current
 
       res
     end

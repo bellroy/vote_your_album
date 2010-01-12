@@ -270,6 +270,11 @@ describe MpdProxy do
         @nomination.stub!(:down_votes_necessary).and_return 1
       end
 
+      it "should no include the information if we cant get the active nomination" do
+        Nomination.stub!(:current).and_return nil
+        MpdProxy.status("me").should_not have_key(:current_album)
+      end
+
       it "should include the name of the current album" do
         MpdProxy.status("me")[:current_album].should == "c - three"
       end
