@@ -97,12 +97,14 @@ $(function() {
   getList("all");
   getUpcoming();
 
-  //
+  // Web Socket handling
   if ("WebSocket" in window) {
+    getStatus(false);
     var ws = new WebSocket("ws://localhost:8080/ws");
 
     ws.onopen = function() {
-      console.debug("websocket initialized")
+      ws_connected = true;
+      console.debug("websocket initialized");
     };
 
     ws.onmessage = function (evt) {
@@ -119,12 +121,19 @@ $(function() {
       else if (_(json).hasKey("time")) {
         $("#song .time").html("(" + json.time + ")");
       }
+      else if (_(json).hasKey("forceable")) {
+        $("#force").attr("title", "Necessary Votes to force next album: " + json.down_votes_necessary);
+        $("#force .necessary").html(json.down_votes_necessary);
+        if (json.forceable) $("#force").removeClass("disabled");
+        else                $("#force").addClass("disabled");
+      }
       else {
-        console.debug("no recognized command found: " + json);
+        console.debug("unrecognized command: " + json);
       }
     };
 
     ws.onclose = function() {
+      ws_connected = false;
       console.debug("websocket closed");
     };
   }
@@ -132,9 +141,12 @@ $(function() {
 
     // no WS support, get the status the traditional way
     console.debug("no browser support - sorry!");
-    getStatus();
+    getStatus(true);
   }
 });
+
+// Flag to indicate whether we have a Web Socket connection
+var ws_connected = false;
 
 // Drag definitions
 var drag_options = {
@@ -173,9 +185,9 @@ function getUpcoming() {
 /*
  * Get the latest status from the server to update the main controls.
  */
-function getStatus() {
+function getStatus(repeat) {
   $.getJSON("/status", mainControls);
-	setTimeout("getStatus();", 10000);
+  if (repeat) setTimeout("getStatus();", 10000);
 }
 
 /*
@@ -257,7 +269,9 @@ function executeAndUpdate(url) {
     type: "POST",
     dataType: "json",
     url: url,
-    success: mainControls
+    success: function() {
+      if (!ws_connected) mainControls();
+    }
   });
   return false;
 }
