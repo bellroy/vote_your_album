@@ -376,6 +376,9 @@ describe "vote your album:" do
     before do
       Nomination.stub!(:current).and_return @nomination = Nomination.new(:id => 123)
       @nomination.stub! :force
+      @nomination.stub!(:down_votes_necessary).and_return 2
+
+      WebsocketDispatcher.stub! :write_json
     end
 
     it "should force the next album" do
@@ -386,6 +389,11 @@ describe "vote your album:" do
     it "should return the json status response" do
       post "/force"
       last_response.body.should match(/\"json status\"/)
+    end
+
+    it "should also try to send out the necessary information via Web Socket" do
+      WebsocketDispatcher.should_receive(:write_json).with({ :down_votes_necessary => 2, :forceable => true })
+      post "/force"
     end
   end
 

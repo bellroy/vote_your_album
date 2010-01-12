@@ -98,7 +98,13 @@ post "/delete_song/:nomination_id/:id" do |nomination_id, song_id|
   execute_on_nomination(nomination_id) { |nomination| nomination.delete song_id.to_i, request.ip }
 end
 post "/force" do
-  Nomination.current.force request.ip
+  current = Nomination.current
+  current.force request.ip
+
+  WebsocketDispatcher.write_json({
+    :down_votes_necessary => current.down_votes_necessary,
+    :forceable => current.can_be_forced_by?(request.ip)
+  })
   json_status
 end
 post "/rate/:value" do |value|
