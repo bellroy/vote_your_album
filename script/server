@@ -13,13 +13,11 @@ if [ "$1" ]
 then
   case "$1" in
     start)
-      thin start -d -p 4567 -e $env -R config.ru
+      rainbows -D -p 4567 -E $env -c lib/rainbows.rb
       ;;
     stop)
-      thin stop
       ;;
     restart)
-      thin restart
       ;;
     +)
       echo "Please provide either 'start', 'stop' or 'restart' as the first argument"

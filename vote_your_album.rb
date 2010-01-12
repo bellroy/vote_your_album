@@ -1,6 +1,9 @@
 %w[rubygems sinatra json haml librmpd dm-core dm-aggregates].each { |lib| require lib }
+require 'lib/ext/fixnum'
+
 %w[album song nomination vote user].each { |model| require "models/#{model}" }
 require 'lib/mpd_proxy'
+require 'lib/websocket_dispatcher'
 
 require 'lib/config'
 
@@ -14,14 +17,7 @@ def execute_on_nomination(id, do_render = true, &block)
 end
 
 def json_status
-  current = Nomination.current
-
-  status = { :playing => MpdProxy.playing?, :volume => MpdProxy.volume }
-  status = status.merge(:current_album => current.album.to_s, :current_song => MpdProxy.current_song,
-    :time => to_time(MpdProxy.time), :down_votes_necessary => current.down_votes_necessary,
-    :rateable => current.can_be_rated_by?(request.ip), :forceable => current.can_be_forced_by?(request.ip)
-  ) if MpdProxy.playing?
-  status.to_json
+  MpdProxy.status(request.ip).to_json
 end
 
 def render_upcoming(expanded = [])
@@ -42,16 +38,8 @@ helpers do
     classes << ["expanded"] if expanded.include?(nomination.id.to_s)
     attr.update :class => classes.join(" ")
 
-    attr.update(:title => "TTL: #{to_time(nomination.ttl)}") if nomination.ttl
+    attr.update(:title => "TTL: #{nomination.ttl.to_time}") if nomination.ttl
     attr
-  end
-
-  def to_time(seconds)
-    time = []
-    time << "%02d" % (seconds / 3600) if seconds >= 3600
-    time << "%02d" % ((seconds % 3600) / 60)
-    time << "%02d" % (seconds % 60)
-    "-" + time.join(":")
   end
 end
 
@@ -110,7 +98,13 @@ post "/delete_song/:nomination_id/:id" do |nomination_id, song_id|
   execute_on_nomination(nomination_id) { |nomination| nomination.delete song_id.to_i, request.ip }
 end
 post "/force" do
-  Nomination.current.force request.ip
+  current = Nomination.current
+  current.force request.ip
+
+  WebsocketDispatcher.write_json({
+    :down_votes_necessary => current.down_votes_necessary,
+    :forceable => current.can_be_forced_by?(request.ip)
+  })
   json_status
 end
 post "/rate/:value" do |value|

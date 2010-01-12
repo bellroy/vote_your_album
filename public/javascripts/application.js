@@ -96,8 +96,57 @@ $(function() {
   // Initial page update to load the lists and the status
   getList("all");
   getUpcoming();
-  getStatus();
+
+  // Web Socket handling
+  if ("WebSocket" in window) {
+    getStatus(false);
+    var ws = new WebSocket("ws://localhost:4567/ws");
+
+    ws.onopen = function() {
+      ws_connected = true;
+      console.debug("websocket initialized");
+    };
+
+    ws.onmessage = function (evt) {
+      console.debug(evt.data);
+
+      var json = eval("(" + evt.data + ")");
+      if (_(json).hasKey("volume")) {
+        $("#slider").slider("option", "value", json.volume);
+      }
+      else if (_(json).hasKey("current_song")) {
+        var song = json.current_song;
+        $("#song .song").html("(" + song.track + ") " + song.artist + " - " + song.title);
+      }
+      else if (_(json).hasKey("time")) {
+        $("#song .time").html("(" + json.time + ")");
+      }
+      else if (_(json).hasKey("forceable")) {
+        $("#force").attr("title", "Necessary Votes to force next album: " + json.down_votes_necessary);
+        $("#force .necessary").html(json.down_votes_necessary);
+        if (json.forceable) $("#force").removeClass("disabled");
+        else                $("#force").addClass("disabled");
+      }
+      else {
+        console.debug("unrecognized command: " + json);
+      }
+    };
+
+    ws.onclose = function() {
+      ws_connected = false;
+      console.debug("websocket closed");
+    };
+  }
+  else {
+
+    // no WS support, get the status the traditional way
+    console.debug("no browser support - sorry!");
+    getStatus(true);
+  }
 });
+
+// Flag to indicate whether we have a Web Socket connection
+var ws_connected = false;
 
 // Drag definitions
 var drag_options = {
@@ -136,9 +185,9 @@ function getUpcoming() {
 /*
  * Get the latest status from the server to update the main controls.
  */
-function getStatus() {
+function getStatus(repeat) {
   $.getJSON("/status", mainControls);
-	setTimeout("getStatus();", 10000);
+  if (repeat) setTimeout("getStatus();", 10000);
 }
 
 /*
@@ -187,7 +236,8 @@ function mainControls(data) {
     $("#current").html(data.current_album);
 
     var song = data.current_song
-    $("#song").html("(" + song.track + ") " + song.artist + " - " + song.title + " (" + data.time + ")");
+    $("#song .song").html("(" + song.track + ") " + song.artist + " - " + song.title);
+    $("#song .time").html("(" + data.time + ")");
 
     $("#force").show();
     $("#force").attr("title", "Necessary Votes to force next album: " + data.down_votes_necessary);
@@ -197,7 +247,7 @@ function mainControls(data) {
   }
   else {
     $("#current").html("");
-    $("#song").html("");
+    $("#song .song, #song .time").html("");
     $("#force").hide();
   }
 
@@ -219,7 +269,9 @@ function executeAndUpdate(url) {
     type: "POST",
     dataType: "json",
     url: url,
-    success: mainControls
+    success: function() {
+      if (!ws_connected) mainControls();
+    }
   });
   return false;
 }

@@ -3,7 +3,8 @@ require File.join(File.dirname(__FILE__) + '/spec_helper')
 describe "vote your album:" do
 
   before do
-    Album.stub!(:current).and_return nil
+    Album.stub! :current
+    MpdProxy.stub!(:status).and_return "json status"
   end
 
   describe "GET '/'" do
@@ -234,75 +235,13 @@ describe "vote your album:" do
   end
 
   describe "GET '/status'" do
-    it "should return the volume" do
-      MpdProxy.stub!(:volume).and_return 32
+    before do
+      MpdProxy.stub!(:status).and_return({ :volume => 32 })
+    end
 
+    it "should return the status (from the mpd proxy) as json" do
       get "/status"
       last_response.body.should match(/\"volume\":32/)
-    end
-
-    it "should contain the 'playing' flag" do
-      MpdProxy.stub!(:playing?).and_return false
-
-      get "/status"
-      last_response.body.should match(/\"playing\":false/)
-    end
-
-    it "should not include the information about the current album if we are not playing anything" do
-      MpdProxy.stub!(:playing?).and_return false
-
-      get "/status"
-      last_response.body.should_not match(/\"current_album\"/)
-    end
-
-    describe "currently playing an album" do
-      before do
-        MpdProxy.stub!(:playing?).and_return true
-        MpdProxy.stub!(:time).and_return 123
-
-        song = MPD::Song.new
-        { "artist" => "me", "title" => "song" }.each { |k, v| song[k] = v }
-        MpdProxy.stub!(:current_song).and_return song
-
-        @album = Album.new(:artist => "c", :name =>  "three")
-        Nomination.stub!(:current).and_return @nomination = Nomination.new(:album => @album)
-        @nomination.stub!(:down_votes_necessary).and_return 1
-      end
-
-      it "should include the name of the current album" do
-        get "/status"
-        last_response.body.should match(/\"current_album\":\"c - three\"/)
-      end
-
-      it "should include the information of the current song" do
-        get "/status"
-        last_response.body.should match(/\"artist\":\"me\"/)
-        last_response.body.should match(/\"title\":\"song\"/)
-      end
-
-      it "should include the time remaining for the song" do
-        get "/status"
-        last_response.body.should match(/\"time\":\"-02:03\"/)
-      end
-
-      it "should include the number of necessary (remaining) forces" do
-        get "/status"
-        last_response.body.should match(/\"down_votes_necessary\":1/)
-      end
-
-      it "should include whether we can force" do
-        @nomination.stub!(:can_be_forced_by?).and_return false
-
-        get "/status"
-        last_response.body.should match(/\"forceable\":false/)
-      end
-
-      it "should have a flag saying if the user can rate this album (nomination)" do
-        @nomination.stub!(:can_be_rated_by?).and_return false
-
-        get "/status"
-        last_response.body.should match(/\"rateable\":false/)
-      end
     end
   end
 
@@ -437,6 +376,9 @@ describe "vote your album:" do
     before do
       Nomination.stub!(:current).and_return @nomination = Nomination.new(:id => 123)
       @nomination.stub! :force
+      @nomination.stub!(:down_votes_necessary).and_return 2
+
+      WebsocketDispatcher.stub! :write_json
     end
 
     it "should force the next album" do
@@ -446,7 +388,12 @@ describe "vote your album:" do
 
     it "should return the json status response" do
       post "/force"
-      last_response.body.should match(/\"volume\":/)
+      last_response.body.should match(/\"json status\"/)
+    end
+
+    it "should also try to send out the necessary information via Web Socket" do
+      WebsocketDispatcher.should_receive(:write_json).with({ :down_votes_necessary => 2, :forceable => true })
+      post "/force"
     end
   end
 
@@ -463,13 +410,14 @@ describe "vote your album:" do
 
     it "should return the json status response" do
       post "/rate/1"
-      last_response.body.should match(/\"volume\":/)
+      last_response.body.should match(/\"json status\"/)
     end
   end
 
   [:previous, :stop, :play, :next].each do |action|
     describe "POST '/control/#{action}'" do
       before do
+        MpdProxy.stub!(:playing?).and_return false
         MpdProxy.stub! :execute
       end
 
@@ -480,7 +428,7 @@ describe "vote your album:" do
 
       it "should return the json status response" do
         post "/control/#{action}"
-        last_response.body.should match(/\"volume\":/)
+        last_response.body.should match(/\"json status\"/)
       end
     end
   end

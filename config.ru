@@ -11,6 +11,8 @@ disable :run
 
 require 'vote_your_album'
 require 'rackamole'
+require 'lib/websocket_handler'
 
 use Rack::Mole, :app_name => "Vote Your Album"
+use WebsocketHandler
 run Sinatra::Application
