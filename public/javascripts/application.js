@@ -100,7 +100,7 @@ $(function() {
   // Web Socket handling
   if ("WebSocket" in window) {
     getStatus(false);
-    var ws = new WebSocket("ws://localhost:8080/ws");
+    var ws = new WebSocket("ws://localhost:4567/ws");
 
     ws.onopen = function() {
       ws_connected = true;
