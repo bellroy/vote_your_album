@@ -73,6 +73,10 @@ class Album
       all.select { |a| a.played? }
     end
 
+    def random
+      [get(rand(count) + 1)]
+    end
+
     def most_listened
       execute_sql "COUNT(DISTINCT n.id)", "n.status = 'played'"
     end
