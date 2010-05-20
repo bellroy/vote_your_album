@@ -32,11 +32,17 @@ class MpdProxy
     def time=(elapsed, total); @time = total - elapsed end
 
     def play_next
-      return unless nomination = Nomination.active.first
-
       @mpd.clear
-      nomination.update :status => "played", :played_at => Time.now
-      nomination.songs.each { |song| @mpd.add song.file }
+
+      if nomination = Nomination.active.first
+        nomination.update :status => "played", :played_at => Time.now
+        songs = nomination.songs
+      else
+        album = Album.get(rand(Album.count) + 1)
+        songs = album.songs
+      end
+
+      songs.each { |song| @mpd.add song.file }
       @mpd.play
     end
   end
