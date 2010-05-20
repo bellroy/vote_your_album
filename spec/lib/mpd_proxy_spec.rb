@@ -185,7 +185,8 @@ describe MpdProxy do
       MpdProxy.play_next
     end
 
-    it "should start playback" do
+    it "should start playback (if we get some songs)" do
+      @album.stub!(:songs).and_return [song = Song.new(:file => "path")]
       @mpd.should_receive :play
       MpdProxy.play_next
     end
@@ -208,11 +209,20 @@ describe MpdProxy do
         @mpd.should_receive(:add).with "path"
         MpdProxy.play_next
       end
+
+      it "should reset the random tracks counter to 1" do
+        MpdProxy.instance_variable_set :@random_tracks, 99
+        MpdProxy.play_next
+        MpdProxy.instance_variable_get(:@random_tracks).should == 1
+      end
     end
 
     describe "without a nomination" do
       before do
+        MpdProxy.instance_variable_set :@random_tracks, 1
+
         Nomination.stub!(:active).and_return []
+        @songs = [Song.new(:file => "path1"), Song.new(:file => "path2"), Song.new(:file => "path3"), Song.new(:file => "path4")]
       end
 
       it "should find a random album" do
@@ -220,9 +230,33 @@ describe MpdProxy do
         MpdProxy.play_next
       end
 
-      it "should add all the songs of the album" do
-        @album.stub!(:songs).and_return [song = Song.new(:file => "path")]
-        @mpd.should_receive(:add).with "path"
+      it "should increase the random tracks count" do
+        MpdProxy.play_next
+        MpdProxy.instance_variable_get(:@random_tracks).should == 2
+      end
+
+      it "should add all the songs of the album if the random tracks count is greater than the number of tracks in the album" do
+        MpdProxy.instance_variable_set :@random_tracks, 5
+
+        @album.stub!(:songs).and_return @songs
+        @songs.map { |s| s.file }.each { |path| @mpd.should_receive(:add).with path }
+        MpdProxy.play_next
+      end
+
+      it "should add random_tracks x tracks of the album to the playlist" do
+        MpdProxy.instance_variable_set :@random_tracks, 2
+
+        @album.stub!(:songs).and_return @songs
+        @mpd.should_receive(:add).twice
+        MpdProxy.play_next
+      end
+
+      it "should not add random tracks if it's after 7PM" do
+        Time.stub_chain(:now, :hour).and_return 19
+
+        Album.should_not_receive :get
+        @mpd.should_not_receive :play
+
         MpdProxy.play_next
       end
     end

@@ -3,6 +3,7 @@ class MpdProxy
   @volume = 0
   @current_song = nil
   @time = 0
+  @random_tracks = 1
 
   class << self
     def setup(server, port, callbacks = false)
@@ -34,16 +35,23 @@ class MpdProxy
     def play_next
       @mpd.clear
 
+      songs = []
       if nomination = Nomination.active.first
         nomination.update :status => "played", :played_at => Time.now
         songs = nomination.songs
-      else
+
+        @random_tracks = 1
+      elsif Time.now.hour < 19
         album = Album.get(rand(Album.count) + 1)
+
         songs = album.songs
+        (songs.size - @random_tracks).times { songs.delete_at(rand(songs.size)) } unless @random_tracks > songs.size
+
+        @random_tracks += 1
       end
 
       songs.each { |song| @mpd.add song.file }
-      @mpd.play
+      @mpd.play unless songs.size == 0
     end
   end
 end
