@@ -262,6 +262,7 @@ describe "vote your album:" do
 
         song = MPD::Song.new
         { "artist" => "me", "title" => "song" }.each { |k, v| song[k] = v }
+        song.stub!(:to_json).and_return "{\"artist\":\"me\",\"title\":\"song\"}"
         MpdProxy.stub!(:current_song).and_return song
 
         @album = Album.new(:artist => "c", :name =>  "three")

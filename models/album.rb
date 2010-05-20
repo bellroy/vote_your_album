@@ -11,9 +11,17 @@ class Album
 
   default_scope(:default).update :order => [:artist, :name]
 
-  def nominated?; !nominations.empty? end
-  def currently_nominated?; !active_nominations.empty? end
-  def played?; !nominations.played.empty? end
+  def nominated?
+    !nominations.empty?
+  end
+
+  def currently_nominated?
+    !active_nominations.empty?
+  end
+
+  def played?
+    !nominations.played.empty?
+  end
 
   def nominate(ip)
     return if currently_nominated?
@@ -25,8 +33,13 @@ class Album
     nomination.save
   end
 
-  def to_s; "#{artist} - #{name}" end
-  def to_hash; { :id => id, :artist => artist, :name => name } end
+  def to_s
+    "#{artist} - #{name}"
+  end
+
+  def to_hash
+    { :id => id, :artist => artist, :name => name }
+  end
 
   class << self
     def update
@@ -37,6 +50,7 @@ class Album
         new_album = Album.new(:name => album)
         songs = MpdProxy.find_songs_for(album)
         songs.each { |song| new_album.songs.new :track => song.track.to_i, :artist => song.artist, :title => song.title, :file => song.file }
+
         new_album.artist = get_artist_from(songs)
         new_album.save
       end
@@ -47,14 +61,33 @@ class Album
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
 
-    def nominated; all.select { |a| a.nominated? } end
-    def never_nominated; all.reject { |a| a.nominated? } end
-    def played; all.select { |a| a.played? } end
+    def nominated
+      all.select { |a| a.nominated? }
+    end
 
-    def most_listened; execute_sql "COUNT(DISTINCT n.id)", "n.status = 'played'" end
-    def top_rated; execute_sql "AVG(v.value)", "v.type = 'rating'" end
-    def most_popular; execute_sql "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value > 0" end
-    def least_popular; execute_sql "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value < 0", "ASC" end
+    def never_nominated
+      all.reject { |a| a.nominated? }
+    end
+
+    def played
+      all.select { |a| a.played? }
+    end
+
+    def most_listened
+      execute_sql "COUNT(DISTINCT n.id)", "n.status = 'played'"
+    end
+
+    def top_rated
+      execute_sql "AVG(v.value)", "v.type = 'rating'"
+    end
+
+    def most_popular
+      execute_sql "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value > 0"
+    end
+
+    def least_popular
+      execute_sql "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value < 0", "ASC"
+    end
 
   private
 

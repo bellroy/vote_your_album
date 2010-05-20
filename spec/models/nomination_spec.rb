@@ -28,7 +28,7 @@ describe Nomination do
     
     it "should return the difference between now and the expires at time in seconds" do
       @nomination.expires_at = Time.now + 121
-      @nomination.ttl.should == 121
+      @nomination.ttl.should == 120
     end
   end
   
