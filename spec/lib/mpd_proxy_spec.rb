@@ -251,7 +251,7 @@ describe MpdProxy do
       end
 
       it "should not add random tracks if it's after 7PM (9AM UTC)" do
-        Time.stub!(:local).and_return time = mock('Time', :hour => 19)
+        Time.stub_chain(:now, :utc, :+).and_return time = mock("Time", :hour => 19)
 
         Album.should_not_receive :get
         @mpd.should_not_receive :play
