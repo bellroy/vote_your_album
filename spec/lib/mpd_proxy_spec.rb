@@ -199,8 +199,7 @@ describe MpdProxy do
       end
 
       it "should update the status of the nomination to 'played'" do
-        Time.stub!(:now).and_return "time"
-        @next.should_receive(:update).with :status => "played", :played_at => "time"
+        @next.should_receive(:update).with hash_including(:status => "played")
         MpdProxy.play_next
       end
 
@@ -251,8 +250,8 @@ describe MpdProxy do
         MpdProxy.play_next
       end
 
-      it "should not add random tracks if it's after 7PM" do
-        Time.stub_chain(:now, :hour).and_return 19
+      it "should not add random tracks if it's after 7PM (9AM UTC)" do
+        Time.stub!(:local).and_return time = mock('Time', :hour => 19)
 
         Album.should_not_receive :get
         @mpd.should_not_receive :play

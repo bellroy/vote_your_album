@@ -35,13 +35,16 @@ class MpdProxy
     def play_next
       @mpd.clear
 
+      time_options = Time.now.to_a[0..7] + [true, "Melbourne"]
+      time = Time.local(*time_options)
+
       songs = []
       if nomination = Nomination.active.first
         nomination.update :status => "played", :played_at => Time.now
         songs = nomination.songs
 
         @random_tracks = 1
-      elsif Time.now.hour < 19
+      elsif time.hour < 19
         album = Album.get(rand(Album.count) + 1)
 
         songs = album.songs
