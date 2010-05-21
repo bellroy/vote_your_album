@@ -41,7 +41,7 @@ class MpdProxy
 
       elsif (Time.now.utc + 36000).hour < 19
         album = Album.get(rand(Album.count) + 1)
-        nomination = album.nominations.new(:status => "played", :played_at => Time.now, :created_at => Time.now)
+        nomination = album.nominations.new(:status => "played", :played_at => Time.now, :created_at => Time.now, :user_id => 0)
 
         songs = album.songs.dup
         (songs.size - @random_tracks).times { songs.delete_at(rand(songs.size)) } unless @random_tracks > songs.size
