@@ -178,6 +178,8 @@ describe MpdProxy do
       @mpd.stub! :play
 
       Album.stub!(:get).and_return @album = Album.new
+      @album.stub_chain(:nominations, :new).and_return @nomination = Nomination.new
+      @nomination.stub! :save
     end
 
     it "should clear the playlist before we add the new stuff" do
@@ -195,6 +197,7 @@ describe MpdProxy do
       before do
         @next = Nomination.new
         @next.stub! :update
+
         Nomination.stub!(:active).and_return [@next]
       end
 
@@ -232,6 +235,19 @@ describe MpdProxy do
       it "should increase the random tracks count" do
         MpdProxy.play_next
         MpdProxy.instance_variable_get(:@random_tracks).should == 2
+      end
+
+      it "should create a new nomination (that will work as the 'current' one)" do
+        @album.nominations.should_receive(:new).with(hash_including(:status => "played"))
+        MpdProxy.play_next
+      end
+
+      it "should assign the songs to the nomination and save it" do
+        MpdProxy.instance_variable_set :@random_tracks, 5
+
+        @album.stub!(:songs).and_return @songs
+        MpdProxy.play_next
+        @nomination.songs.should == @songs
       end
 
       it "should add all the songs of the album if the random tracks count is greater than the number of tracks in the album" do
