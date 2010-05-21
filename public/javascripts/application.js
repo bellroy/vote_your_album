@@ -51,18 +51,18 @@ $(function() {
   });
 
   // Search
-  $("#search").ajaxForm({
-    dataType: "json",
-    beforeSend: function() { $(".list .overlay").show(); },
-    success: function(list) {
-      highlightTab(".all");
-      updateList(list);
-    }
-  });
-  $("#clear").click(function() {
-    $("#search").clearForm();
-    getList("all");
-  });
+  $("#query").delayedObserver(function() {
+    $("#search").ajaxSubmit({
+      dataType: "json",
+      beforeSend: function() {
+        $(".list .overlay").show();
+      },
+      success: function(list) {
+        highlightTab(".all");
+        updateList(list);
+      }
+    });
+  }, 0.3);
 
   // Album songs
   $(".toggle_songs").live("click", function() {
