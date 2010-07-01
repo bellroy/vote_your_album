@@ -2,7 +2,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: Helvetica, Georgia;
-  
+
   width: 68em;
   margin: 1.3em auto 1em auto;
 }
@@ -12,15 +12,27 @@ p {
   padding: 0;
 }
 
+a,
+a:visited {
+  color: #2E6E9E;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
 /* -- Header
  * -------------------------------------------------------- */
 body > header {
   position: relative;
-  height: 6em;
+  height: 6.1em;
   background-color: #ccc;
   padding: 1em;
   -webkit-border-radius: 1.1em;
   -moz-border-radius: 1.1em;
+  border-radius: 1.1em;
 }
 
 body > header article {
@@ -32,6 +44,7 @@ body > header article {
   overflow: hidden;
   -webkit-border-radius: 0.7em;
   -moz-border-radius: 0.7em;
+  border-radius: 0.7em;
 }
 
 body > header article p {
@@ -45,8 +58,16 @@ body > header article footer {
 
 body > header article footer p {
   float: left;
-  width: 10em;
+  width: 9.9em;
   text-align: left;
+}
+
+body > header article footer p.force {
+  text-align: center;
+}
+
+body > header article footer p.force a:hover {
+  color: #000;
 }
 
 body > header article footer p.time {
@@ -59,9 +80,33 @@ body > header aside {
   width: 14em;
   height: 4.8em;
   padding: 0.7em;
-  border: 1px solid #000;
   -webkit-border-radius: 0.7em;
   -moz-border-radius: 0.7em;
+  border-radius: 0.7em;
+}
+
+body > header aside.right {
+  right: 1.1em;
+  top: 1.1em;
+  text-align: right;
+}
+
+body > header .controls {
+  text-align: center;
+  margin-bottom: 0.9em;
+}
+
+body > header .controls img {
+  height: 2em;
+}
+
+body > header .controls .play img,
+body > header .controls .pause img {
+  height: 3em;
+}
+
+body > header .controls .pause {
+  display: none;
 }
 
 body > header #volume {

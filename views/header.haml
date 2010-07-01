@@ -1,5 +1,17 @@
 %section
   %aside.left
+    %section.controls
+      %a.prev{ :href => "/control/prev", :title => "Let's go back a track - it's a ripper" }
+        %img{ :src => "/images/prev.png" }
+      %a.play{ :href => "/control/play", :title => "Start the music biatch" }
+        %img{ :src => "/images/play.png" }
+      %a.pause{ :href => "/control/pause", :title => "Shut the f*** up!" }
+        %img{ :src => "/images/pause.png" }
+      %a.next{ :href => "/control/next", :title => "This track is shit, let's move on" }
+        %img{ :src => "/images/next.png" }
+      %a.end{ :href => "/control/end", :title => "Gosh, I hate this album, must be Joanna Newsom!" }
+        %img{ :src => "/images/end.png" }
+
     #volume
 
   %article
@@ -7,4 +19,13 @@
     %p.track (11/13) The Wombats - Dr Suzanne Mattox PhD
     %footer
       %p.nominator by Dr. Random
+      %p.force
+        %a{ :href => "/control/end", :title => "Gosh, I hate this album, must be Joanna Newsom!" } Force Next (3)
       %p.time -1:23 (4:33)
+
+  %aside.right
+    %p
+      You are
+      %strong Tom
+      = "|"
+      %a{ :href => "/sign_out" } Not You?
