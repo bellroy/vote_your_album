@@ -1,0 +1,30 @@
+%section.music
+  %header
+    %h1 Music
+  %section
+    - 100.times do |i|
+      %article
+        = haml :album_info, :layout => false
+
+%section.upcoming
+  %header
+    %h1 Nominated
+  %section
+    - 20.times do |i|
+      %article
+        = haml :album_info, :layout => false
+        %aside.voting
+          %a{ :href => "/vote/up" }
+            %img{ :src => "/images/plus.png" }
+          %a{ :href => "/vote/down" }
+            %img{ :src => "/images/minus.png" }
+        
+
+%section.news
+  %header
+    %h1 Updates
+  %section
+    - 20.times do |i|
+      %article
+        User x did y
+        %time= "#{i} minutes ago"

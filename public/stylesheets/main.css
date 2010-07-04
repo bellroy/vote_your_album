@@ -1,10 +1,10 @@
 body {
-  margin: 0;
-  padding: 0;
   font-family: Helvetica, Georgia;
-
   width: 68em;
+  height: 100%;
   margin: 1.3em auto 1em auto;
+  padding: 0;
+  background-color: #ddd;
 }
 
 p {
@@ -23,16 +23,27 @@ a:hover {
   text-decoration: underline;
 }
 
-/* -- Header
- * -------------------------------------------------------- */
-body > header {
+h1 {
+  font-size: 1.2em;
+  margin: 0;
+  padding: 0.3em 0;
+}
+
+body > header,
+body > section {
   position: relative;
-  height: 6.1em;
-  background-color: #ccc;
+  background-color: #fff;
   padding: 1em;
   -webkit-border-radius: 1.1em;
   -moz-border-radius: 1.1em;
   border-radius: 1.1em;
+}
+
+/* -- Header
+ * -------------------------------------------------------- */
+body > header {
+  height: 6.1em;
+  margin-bottom: 2em;
 }
 
 body > header article {
@@ -40,7 +51,7 @@ body > header article {
   height: 4.9em;
   padding: 0.7em;
   margin: 0 auto;
-  background-color: #fff;
+  background-color: rgb(230, 230, 230);
   overflow: hidden;
   -webkit-border-radius: 0.7em;
   -moz-border-radius: 0.7em;
@@ -117,4 +128,110 @@ body > header #volume .ui-slider-handle {
   width: 0.9em;
   top: -0.25em;
   margin-left: -0.2em;
+}
+
+/* -- Content
+ * -------------------------------------------------------- */
+body > section {
+  float: left;
+  height: 28em;
+  width: 31em;
+  overflow: hidden;
+}
+
+body > section.right {
+  float: right;
+}
+
+section.music {
+  height: 100%;
+}
+
+section.upcoming,
+section.news {
+  height: 12.5em;
+  float: right;
+}
+
+section.news {
+  margin-top: 1em;
+}
+
+section.music > section,
+section.upcoming > section,
+section.news > section {
+  height: 26em;
+  padding: 0 4px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+section.upcoming > section,
+section.news > section {
+  height: 10.5em;
+}
+
+section.music article,
+section.upcoming article {
+  clear: both;
+  height: 3.1em;
+  padding: 2px 4px;
+  border-bottom: 1px solid #000;
+  line-height: 1.5em;
+  cursor: pointer;
+  cursor: hand;
+}
+
+section.music article:hover,
+section.upcoming article:hover {
+  background-color: #D0E5F5;
+  -webkit-border-top-left-radius: 0.4em;
+  -webkit-border-top-right-radius: 0.4em;
+  -moz-border-radius-topleft: 0.4em;
+  -moz-border-radius-topright: 0.4em;
+  border-top-left-radius: 0.4em;
+  border-top-right-radius: 0.4em;
+}
+
+section.music article .art,
+section.upcoming article .art {
+  float: left;
+  width: 3em;
+  height: 3em;
+  margin-right: 0.6em;
+}
+
+section.music article .info,
+section.upcoming article .info {
+  float: left;
+  width: 27em;
+}
+
+section.upcoming article .voting {
+  float: right;
+  width: 1.1em;
+}
+
+section.upcoming article .voting a {
+  display: block;
+  margin: 0;
+  padding: 0.15em 0;
+}
+
+section.upcoming article .voting img {
+  height: 1.2em;
+}
+
+section.news article {
+  padding: 3px 2px;
+}
+
+section.news article:nth-child(odd) {
+  background-color: rgb(230, 230, 230);
+}
+
+section.news article time {
+  float: right;
+  font-size: 0.7em;
+  margin-top: 0.5em;
 }
