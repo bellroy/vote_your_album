@@ -1,6 +1,10 @@
 %section.music
   %header
     %h1 Music
+    %form#search{ :action => "search", :method => :get }
+      %a.shuffle{ :href => "/music/shuffle", :title => "I don't have much time, just gimme something!" }
+        %img{ :src => "/images/shuffle.png" }
+      %input#query{ :type => "search", :name => "q", :value => params[:q], :placeholder => "Search for albums..." }
   %section
     - 100.times do |i|
       %article
@@ -14,11 +18,11 @@
       %article
         = haml :album_info, :layout => false
         %aside.voting
-          %a{ :href => "/vote/up" }
+          %a{ :href => "/vote/up", :title => "I like that shit! Play it now..." }
             %img{ :src => "/images/plus.png" }
-          %a{ :href => "/vote/down" }
+          %a{ :href => "/vote/down", :title => "Uuuhhhh, don't know about this one - let's get some beer first." }
             %img{ :src => "/images/minus.png" }
-        
+
 
 %section.news
   %header

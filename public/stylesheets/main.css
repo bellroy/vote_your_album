@@ -157,6 +157,26 @@ section.news {
   margin-top: 1em;
 }
 
+section.music #search {
+  position: absolute;
+  top: 0.6em;
+  right: 1em;
+}
+
+section.music #query {
+  width: 18em;
+  margin-left: 2.5em;
+}
+
+section.music #search .shuffle {
+  display: block;
+  float: left;
+}
+
+section.music #search .shuffle img {
+  height: 1.25em;
+}
+
 section.music > section,
 section.upcoming > section,
 section.news > section {
