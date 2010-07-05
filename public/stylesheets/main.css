@@ -1,263 +1,274 @@
 body {
-	margin: 0;
-	padding: 0;
-	font-family: Georgia;
+  font-family: Helvetica, Georgia;
+  width: 68em;
+  height: 100%;
+  margin: 1.3em auto 1em auto;
+  padding: 0;
+  background-color: #ddd;
 }
-#wrap {
-	width: 1000px;
-	margin: 20px auto 10px auto;
+
+p {
+  margin: 0;
+  padding: 0;
 }
-a {
-	font-size: 12pt;
-	font-weight: bold;
-	padding: 2px 0;
-}
+
 a,
 a:visited {
-  color: #333;
+  color: #2E6E9E;
   text-decoration: none;
 }
-a.disabled,
-a.disabled:visited {
-  color: #aaa;
-}
-a img {
-  border: none;
-}
-.clear {
-  clear: both;
-}
-.left {
-  float: left;
-}
-.right {
-  float: right;
-}
-.hidden {
-  visibility: hidden;
-}
-.display-none {
-  display: none;
-}
 
-.header .title {
-	height: 80px;
-	width: 541px;
-	background: url(/images/title.png) no-repeat;
-	margin: 0 auto;
-}
-.main_controls {
-  border-bottom: 2px solid #333;
-  height: 80px;
-}
-.main_controls .left {
-  width: 20%;
-  margin-top: 20px;
-}
-.main_controls .left form {
-  display: inline;
-}
-.main_controls .left #slider {
-	margin-top: 5px;
-	height: 10px;
-}
-.main_controls .left #slider .ui-slider-handle {
-	height: 12px;
-	width: 12px;
-}
-.main_controls .middle {
-  float: left;
-  width: 60%;
-  text-align: center;
-  padding-top: 14px;
-  color: #777;
-}
-.main_controls .middle div {
-  padding-top: 2px;
-}
-.main_controls .middle #rate_current {
-  width: 85px;
-  height: 21px;
-  margin: 0 auto;
-}
-.main_controls .right {
-  margin-top: 16px;
-  width: 20%;
-  text-align: right;
-}
-.main_controls .right #change_name {
-  margin: 10px 0 12px 0;
-}
-.main_controls .right #change_name input {
-  width: 80px;
-  margin-left: 10px;
-}
-.main_controls .right a {
-  margin: 0 4px;
-}
-.main_controls img {
-  margin-top: 3px;
-  height: 25px;
-}
-
-.album_list {
-	float: left;
-	position: relative;
-	margin: 20px 15px 0 15px;
-}
-.album_list p {
-  margin: 5px 0;
-  padding: 0;
-}
-.album_list b {
+a:hover {
+  color: #fff;
   text-decoration: underline;
 }
-.album_list ul {
-	height: 500px;
-	width: 450px;
-	border: 1px solid #000;
-	list-style-type: none;
-	padding: 0;
-	margin-bottom: 0;
-	overflow-y: scroll;
+
+h1 {
+  font-size: 1.2em;
+  margin: 0;
+  padding: 0.3em 0;
 }
-.album_list ul.over {
-  border-style: dashed;
-}
-.album_list .overlay {
-  display: none;
+
+body > header,
+body > section {
+  position: relative;
   background-color: #fff;
-  position: absolute;
-  width: 450px;
-  height: 500px;
-  top: 73px;
-  left: 1px;
-  opacity: 0.8;
+  padding: 1em;
+  -webkit-border-radius: 1.1em;
+  -moz-border-radius: 1.1em;
+  border-radius: 1.1em;
 }
-.album_list .overlay .spinner {
-  margin: 200px 175px;
+
+/* -- Header
+ * -------------------------------------------------------- */
+body > header {
+  height: 6.1em;
+  margin-bottom: 2em;
 }
-.album_list li {
-  padding: 4px 5px;
-  width: 425px;
+
+body > header article {
+  width: 30em;
+  height: 4.9em;
+  padding: 0.7em;
+  margin: 0 auto;
+  background-color: rgb(230, 230, 230);
+  overflow: hidden;
+  -webkit-border-radius: 0.7em;
+  -moz-border-radius: 0.7em;
+  border-radius: 0.7em;
 }
-.album_list li.odd {
-	background-color: #ddd;
+
+body > header article p {
+  text-align: center;
+  padding: 0.1em;
 }
-.album_list li .left {
-  width: 390px;
+
+body > header article footer {
+  margin-top: 1.5em;
 }
-.album_list.upcoming li .left {
-  width: 365px;
-}
-.album_list.list li .left,
-.album_list.upcoming li.deleteable .left {
-  cursor: pointer;
-}
-.album_list.list li .left .value {
-  font-weight: bold;
-  margin-left: 5px;
-}
-.album_list.list li img {
-  height: 15px;
-}
-.album_list.upcoming li img {
-  height: 18px;
-  margin-top: 3px;
-}
-.album_list li .toggle_songs {
-  display: block;
+
+body > header article footer p {
   float: left;
-  margin: 4px 4px 0 0;
-  padding: 0;
-  background: url(/images/toggle.png) no-repeat 0 0;
-  height: 11px;
-  width: 13px;
+  width: 9.9em;
+  text-align: left;
 }
-.album_list li.expanded .toggle_songs {
-  background-position: 0 -11px;
+
+body > header article footer p.force {
+  text-align: center;
 }
-.album_list li .songs {
-  padding: 3px 0 0 15px;
+
+body > header article footer p.force a:hover {
+  color: #000;
+}
+
+body > header article footer p.time {
+  float: right;
+  text-align: right;
+}
+
+body > header aside {
+  position: absolute;
+  width: 14em;
+  height: 4.8em;
+  padding: 0.7em;
+  -webkit-border-radius: 0.7em;
+  -moz-border-radius: 0.7em;
+  border-radius: 0.7em;
+}
+
+body > header aside.right {
+  right: 1.1em;
+  top: 1.1em;
+  text-align: right;
+}
+
+body > header .controls {
+  text-align: center;
+  margin-bottom: 0.9em;
+}
+
+body > header .controls img {
+  height: 2em;
+}
+
+body > header .controls .play img,
+body > header .controls .pause img {
+  height: 3em;
+}
+
+body > header .controls .pause {
   display: none;
 }
-.album_list li .songs .song {
-  padding: 2px 0;
+
+body > header #slider {
+  height: 0.6em;
 }
-.album_list li.expanded .songs {
-  display: block;
+body > header #slider .ui-slider-handle {
+  height: 0.9em;
+  width: 0.9em;
+  top: -0.25em;
+  margin-left: -0.2em;
 }
-.album_list li .score {
-  display: block;
+
+/* -- Content
+ * -------------------------------------------------------- */
+body > section {
   float: left;
-  width: 22px;
-  font-weight: bold;
-  padding-left: 3px;
-}
-.album_list li .score.positive {
-  color: #390;
-}
-.album_list li .score.negative {
-  color: #f30;
-}
-.album_list li .name {
-	font-style: italic;
-}
-.album_list li .user {
-  color: #888;
-  font-size: 0.7em;
-}
-#top {
-  width: 450px;
-  height: 19px;
-  padding-top: 8px;
+  height: 28em;
+  width: 31em;
   overflow: hidden;
 }
-form {
-  margin: 10px 0;
-}
-input[type = text] {
-  width: 260px;
-  border: 1px solid #000;
+
+body > section.right {
+  float: right;
 }
 
-#tabs {
-  overflow-y: hidden;
-  border: none;
-  margin-top: 0;
-  position: absolute;
-  top: 86px;
-  left: -86px;
-  width: 87px;
-}
-#tabs li {
-  width: 75px;
-  border: 1px solid #000;
-  border-right: none;
-  padding: 1px 5px;
-  margin: 3px 0;
-  text-align: right;
-}
-#tabs li.selected {
-  border-style: dashed;
-  border-right: none;
-}
-#tabs li.last {
-  position: absolute;
-  bottom: 15px;
-}
-#tabs li a {
-  font-size: 10pt;
-  font-weight: normal;
-}
-#tabs li a:hover {
-  text-decoration: underline;
+section.music {
+  height: 100%;
 }
 
-.news {
+section.upcoming,
+section.news {
+  height: 12.5em;
+  float: right;
+}
+
+section.news {
+  margin-top: 1em;
+}
+
+section.music .overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 30em;
+  width: 33em;
+  background-color: rgba(208, 229, 245, 0.8);
+  overflow: hidden;
+  -webkit-border-radius: 1.1em;
+  -moz-border-radius: 1.1em;
+  border-radius: 1.1em;
+}
+section.music .overlay .spinner {
+  margin: 12.5em 13em;
+}
+
+section.music #search {
+  position: absolute;
+  top: 0.6em;
+  right: 1em;
+}
+
+section.music #query {
+  width: 18em;
+  margin-left: 2.5em;
+}
+
+section.music #search .shuffle {
+  display: block;
+  float: left;
+}
+
+section.music #search .shuffle img {
+  height: 1.25em;
+}
+
+section.music > section,
+section.upcoming > section,
+section.news > section {
+  height: 26em;
+  padding: 0 4px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+section.upcoming > section,
+section.news > section {
+  height: 10.5em;
+}
+
+section.music article,
+section.upcoming article {
   clear: both;
-  padding-top: 20px;
+  height: 3.1em;
+  padding: 2px 4px;
+  border-bottom: 1px solid #000;
+  line-height: 1.5em;
+  cursor: pointer;
+  cursor: hand;
 }
-.news ul {
-  margin: 5px 0 0 0;
+
+section.music article:hover,
+section.upcoming article:hover {
+  background-color: #D0E5F5;
+  -webkit-border-top-left-radius: 0.4em;
+  -webkit-border-top-right-radius: 0.4em;
+  -moz-border-radius-topleft: 0.4em;
+  -moz-border-radius-topright: 0.4em;
+  border-top-left-radius: 0.4em;
+  border-top-right-radius: 0.4em;
+}
+
+section.music article .art,
+section.upcoming article .art {
+  float: left;
+  width: 3em;
+  height: 3em;
+  margin-right: 0.6em;
+}
+
+section.music article .info,
+section.upcoming article .info {
+  float: left;
+  width: 27em;
+}
+
+section.upcoming article .voting {
+  float: right;
+  width: 1.1em;
+}
+
+section.upcoming article .voting a {
+  display: block;
+  margin: 0;
+  padding: 0.15em 0;
+}
+
+section.upcoming article .voting img {
+  height: 1.2em;
+}
+
+section.news article {
+  padding: 3px 2px;
+}
+
+section.news article:nth-child(odd) {
+  background-color: rgb(230, 230, 230);
+}
+
+section.news article time {
+  float: right;
+  font-size: 0.7em;
+  margin-top: 0.5em;
 }

@@ -1,34 +1,20 @@
-.album_list.list
-  %p
-    %b Library Albums
-  %form#search{ :action => "search", :method => :get }
-    %input#query{ :type => "text", :name => "q", :value => params[:q], :placeholder => "Search for albums..." }
-
-  %ul#tabs
-    %li
-      %a.all{ :href => "#", :title => "Show all albums" } All
-    %li
-      %a.most_listened{ :href => "#", :title => "Show the albums that where listened to the most" } Most List.
-    %li
-      %a.top_rated{ :href => "#", :title => "Show the best rated albums" } Top Rated
-    %li
-      %a.most_popular{ :href => "#", :title => "Show the albums with the best '+' votes per nomination ratio" } Best +/#
-    %li
-      %a.least_popular{ :href => "#", :title => "Show the albums with the worst '-' votes per nomination ratio" } Worst -/#
-    %li
-      %a.never_nominated{ :href => "#", :title => "Show the albums which have never been nominated" } Never Nom.
-    %li
-      %a.random{ :href => "#", :title => "Select a random album" } Random
-    %li.last
-      %a.update{ :href => "#", :title => "Update the database" } Update DB
-
-  %ul#list
+%section.music
+  %header
+    %h1 Music
+    %form#search{ :action => "search", :method => :get }
+      %a.shuffle.random{ :href => "/list/random", :title => "I don't have much time, just gimme something!" }
+        %img{ :src => "/images/shuffle.png" }
+      %input#query{ :type => "search", :name => "q", :value => params[:q], :placeholder => "Search for albums..." }
+  %section#list
   .overlay
     %img.spinner{ :src => "/images/spinner.gif" }
 
-.album_list.upcoming
-  %p
-    %b Nominated Albums
-  #top
+%section.upcoming
+  %header
+    %h1 Nominated
+  %section#top
 
-  %ul#upcoming
+%section.news
+  %header
+    %h1 Updates
+  %section

@@ -18,14 +18,4 @@
   %body
     %header
       = haml :header, :layout => false
-  
-    #wrap
-      .content
-        = yield
-
-      .news
-        %b Updates
-        %ul
-          %li Made the search more betterer :)
-          %li When the playlist runs out of tracks and there a no nominations, a random album will be chosen and an increasing number of tracks will be played (e.g. 1st random album -> 1 track, 2nd random album -> 2 tracks, ...)
-          %li Added button to find a random album.
+    = yield
