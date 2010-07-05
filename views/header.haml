@@ -1,0 +1,30 @@
+%section
+  %aside.left
+    %section.controls
+      %a.control.prev{ :href => "/control/prev", :ref => "previous", :title => "Let's go back a track - it's a ripper" }
+        %img{ :src => "/images/prev.png" }
+      %a.control.play{ :href => "/control/play", :ref => "play", :title => "Start the music biatch" }
+        %img{ :src => "/images/play.png" }
+      %a.control.pause{ :href => "/control/pause", :ref => "stop", :title => "Shut the f*** up!" }
+        %img{ :src => "/images/pause.png" }
+      %a.control.next{ :href => "/control/next", :ref => "next", :title => "This track is shit, let's move on" }
+        %img{ :src => "/images/next.png" }
+    #slider
+
+  %article
+    %p#current
+    %p#song
+    %footer
+      %p.nominator
+      %p.force
+        %a#force.display-none{ :href => "#" }
+          Force Next (
+          %span.necessary
+          )
+      %p.time
+
+  %aside.right
+    %p
+      %form{ :id => "change_name", :action => "/name", :method => "post" }
+        %span Who am I?
+        %input{ :type => "text", :name => "name", :value => User.get_or_create_by(request.ip).name }
