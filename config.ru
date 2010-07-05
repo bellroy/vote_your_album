@@ -10,7 +10,4 @@ set :app_file, File.join(root_dir, 'vote_your_album.rb')
 disable :run
 
 require 'vote_your_album'
-require 'rackamole'
-
-use Rack::Mole, :app_name => "Vote Your Album"
 run Sinatra::Application
