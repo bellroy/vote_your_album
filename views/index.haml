@@ -2,7 +2,7 @@
   %header
     %h1 Music
     %form#search{ :action => "search", :method => :get }
-      %a.shuffle.random{ :href => "/list/random", :title => "I don't have much time, just gimme something!" }
+      %a.shuffle{ :href => "/list/random", :title => "I don't have much time, just gimme something!" }
         %img{ :src => "/images/shuffle.png" }
       %input#query{ :type => "search", :name => "q", :value => params[:q], :placeholder => "Search for albums..." }
   %section#list
@@ -12,7 +12,7 @@
 %section.upcoming
   %header
     %h1 Nominated
-  %section#top
+  %section#list
 
 %section.news
   %header

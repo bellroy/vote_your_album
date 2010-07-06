@@ -38,12 +38,12 @@ helpers do
   alias_method :h, :escape_html
 
   def score_class(score); score > 0 ? "positive" : (score < 0 ? "negative" : "") end
-  def album_attributes(nomination, i, is_owner, expanded)
+
+  def album_attributes(nomination, user)
     attr = { :ref => nomination.id }
 
-    classes = ["album", "loaded", (i % 2 == 0 ? "even" : "odd")]
-    classes << ["deleteable"] if is_owner
-    classes << ["expanded"] if expanded.include?(nomination.id.to_s)
+    classes = ["album"]
+    classes << ["deleteable"] if nomination.owned_by?(user)
     attr.update :class => classes.join(" ")
 
     attr.update(:title => "TTL: #{to_time(nomination.ttl)}") if nomination.ttl
