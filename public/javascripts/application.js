@@ -158,6 +158,7 @@ function updateList(albums) {
  * Update the main controls (at the top of the page) according to the received status
  */
 function mainControls(data) {
+  $("header section.controls").toggleClass("playing", data.playing);
   $("#slider").slider("option", "value", data.volume);
 
   if (data.playing) {

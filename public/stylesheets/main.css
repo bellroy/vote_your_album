@@ -113,6 +113,14 @@ body > header .controls {
   margin-bottom: 0.9em;
 }
 
+body > header .controls.playing .play {
+  display: none;
+}
+
+body > header .controls.playing .pause {
+  display: inline;
+}
+
 body > header .controls img {
   height: 2em;
 }
