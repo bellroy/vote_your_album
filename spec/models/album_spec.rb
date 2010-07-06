@@ -297,13 +297,6 @@ describe Album do
     end
   end
 
-  describe "top rated" do
-    it "should query the database directly for the top rated albums" do
-      Album.should_receive(:execute_sql).with "AVG(v.value)", "v.type = 'rating'"
-      Album.top_rated
-    end
-  end
-
   describe "most popular" do
     it "should query the database directly for the most popular" do
       Album.should_receive(:execute_sql).with "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value > 0"

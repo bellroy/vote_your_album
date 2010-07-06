@@ -22,22 +22,19 @@ def json_status
     :current_song => MpdProxy.current_song,
     :time => to_time(MpdProxy.time),
     :down_votes_necessary => current.down_votes_necessary,
-    :rateable => current.can_be_rated_by?(request.ip),
     :forceable => current.can_be_forced_by?(request.ip)
   ) if MpdProxy.playing?
   status.to_json
 end
 
-def render_upcoming(expanded = [])
+def render_upcoming
   @nominations = Nomination.active
-  haml :upcoming, :layout => false, :locals => { :expanded => expanded }
+  haml :upcoming, :layout => false
 end
 
 helpers do
   include Rack::Utils
   alias_method :h, :escape_html
-
-  def score_class(score); score > 0 ? "positive" : (score < 0 ? "negative" : "") end
 
   def album_attributes(nomination, user)
     attr = { :ref => nomination.id }
@@ -66,24 +63,17 @@ end
 get "/" do
   haml :index
 end
-get "/embed" do
-  haml :index, :layout => :embed
+
+get "/music/:type" do |list_type|
+  Album.send(list_type).map { |a| a.to_hash }.to_json
 end
-get "/list/:type" do |list_type|
-  Album.send(list_type).map do |a|
-    { :id => a.id, :artist => a.artist, :name => a.name,
-      :value => (a.respond_to?(:value) ? ((a.value.to_f * 10).round / 10.0) : nil) }
-  end.to_json
-end
+
 get "/search" do
   Album.search(params[:q]).map { |a| a.to_hash }.to_json
 end
+
 get "/upcoming" do
-  render_upcoming params[:expanded] || []
-end
-get "/songs/:album" do |album_id|
-  album = Album.get(album_id.to_i)
-  haml :songs, :layout => false, :locals => { :songs => (album ? album.songs : []) }
+  render_upcoming
 end
 
 get "/status" do
@@ -98,27 +88,21 @@ post "/add/:id" do |album_id|
 
   render_upcoming
 end
+
 post "/up/:id" do |nomination_id|
   execute_on_nomination(nomination_id) { |nomination| nomination.vote 1, request.ip }
 end
+
 post "/down/:id" do |nomination_id|
   execute_on_nomination(nomination_id) { |nomination| nomination.vote -1, request.ip }
 end
+
 post "/remove/:id" do |nomination_id|
   execute_on_nomination(nomination_id) { |nomination| nomination.remove request.ip }
 end
-post "/add_song/:nomination_id/:id" do |nomination_id, song_id|
-  execute_on_nomination(nomination_id) { |nomination| nomination.add song_id.to_i, request.ip }
-end
-post "/delete_song/:nomination_id/:id" do |nomination_id, song_id|
-  execute_on_nomination(nomination_id) { |nomination| nomination.delete song_id.to_i, request.ip }
-end
+
 post "/force" do
   Nomination.current.force request.ip
-  json_status
-end
-post "/rate/:value" do |value|
-  Nomination.current.rate value.to_i, request.ip
   json_status
 end
 
@@ -126,6 +110,7 @@ post "/control/:action" do |action|
   MpdProxy.execute action.to_sym
   json_status
 end
+
 post "/volume/:value" do |value|
   MpdProxy.change_volume_to value.to_i
 end
@@ -133,8 +118,4 @@ end
 post "/name" do
   user = User.get_or_create_by(request.ip)
   user.update(:name => params[:name]) if user
-end
-post "/update" do
-  MpdProxy.execute :update
-  Album.update
 end

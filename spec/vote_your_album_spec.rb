@@ -9,25 +9,17 @@ describe "vote your album:" do
   describe "GET '/'" do
     it "should render the homepage" do
       get "/"
-      last_response.body.should match(/Vote Your Album!/)
+      last_response.body.should match(/Vote Your Album/)
     end
   end
 
-  # it "should get these tests to stop things from failing!"
-  describe "GET '/embed'" do
-    it "should render the homepage" do
-      get "/embed"
-      last_response.body.should match(/Vote Your Album!/)
-    end
-    it 'should use the embed stylesheet' do
-      get "/embed"
-      last_response.body.should match(/embed.css/)
-    end
-  end
-
-  describe "GET '/list/:type'" do
+  describe "GET '/music/:type'" do
     before(:all) do
-      Struct.new("Album", :id, :artist, :name)
+      Struct.new("Album", :id, :artist, :name) do
+        def to_hash
+          { :id => id, :artist => artist, :name => name }
+        end
+      end
     end
 
     before do
@@ -36,11 +28,11 @@ describe "vote your album:" do
 
     it "should call the given type on the Album class to get the list" do
       Album.should_receive("some_list").and_return []
-      get "/list/some_list"
+      get "/music/some_list"
     end
 
     it "should return the list as a JSON array (of hashes)" do
-      get "/list/all"
+      get "/music/all"
       last_response.body.should match(/\"id\":1/)
       last_response.body.should match(/\"artist\":\"artist\"/)
       last_response.body.should match(/\"name\":\"name\"/)
@@ -48,28 +40,10 @@ describe "vote your album:" do
 
     it "should work with Struct's as well" do
       Album.stub!("all").and_return [Struct::Album.new(2, "other", "hits")]
-      get "/list/all"
+      get "/music/all"
       last_response.body.should match(/\"id\":2/)
       last_response.body.should match(/\"artist\":\"other\"/)
       last_response.body.should match(/\"name\":\"hits\"/)
-    end
-
-    it "should return null as the value if we dont have a 'value' method" do
-      get "/list/all"
-      last_response.body.should match(/\"value\":null/)
-    end
-
-    it "should insert the value if we respond to it" do
-      @album.stub!(:value).and_return 2.3
-      get "/list/all"
-      last_response.body.should match(/\"value\":2.3/)
-    end
-
-    it "should round the value to one decimal" do
-      @album.stub!(:value).and_return 2.123
-      get "/list/all"
-      last_response.body.should match(/\"value\":2.1/)
-      last_response.body.should_not match(/\"value\":2.123/)
     end
   end
 
@@ -99,8 +73,8 @@ describe "vote your album:" do
 
     it "should return the list" do
       get "/upcoming"
-      last_response.body.should match(%q{<span class='artist'>artist</span>})
-      last_response.body.should match(%q{<span class='name'>name</span>})
+      last_response.body.should match(%q{<p>artist</p>})
+      last_response.body.should match(%q{<p>name</p>})
     end
 
     it "should show the vote buttons if we can vote" do
@@ -115,121 +89,6 @@ describe "vote your album:" do
       get "/upcoming"
       last_response.body.should_not match(%{a class='up'})
       last_response.body.should_not match(%{a class='down'})
-    end
-
-    it "should display the songs of the nomination" do
-      @nomination.stub!(:songs).and_return [Song.new(:artist => "visible", :title => "something")]
-
-      get "/upcoming"
-      last_response.body.should match(%{visible - something})
-    end
-
-    it "should display a '?' for the user if we dont have a user" do
-      get "/upcoming"
-      last_response.body.should match(%{by ?})
-    end
-
-    it "should display a question mark if we have a user without name" do
-      @nomination.stub!(:user).and_return User.new
-      get "/upcoming"
-      last_response.body.should match(%{by ?})
-    end
-
-    it "should display the name of the user if we have one" do
-      @nomination.stub!(:user).and_return User.new(:name => "me")
-      get "/upcoming"
-      last_response.body.should match(%{by me})
-    end
-
-    it "should escape the name" do
-      @nomination.stub!(:user).and_return User.new(:name => "<script>something</script>")
-      get "/upcoming"
-      last_response.body.should match(%{by &lt;script&gt;something&lt;/script&gt;})
-    end
-
-    describe "we nominated the album" do
-      before do
-        @nomination.stub!(:owned_by?).and_return true
-
-        @song = Song.new(:id => 123, :artist => "visible", :title => "better")
-        @album.stub!(:songs).and_return [@song]
-      end
-
-      it "should add a '*' after the album name if we have nominated the album" do
-        get "/upcoming"
-        last_response.body.should match(/.+\*/)
-      end
-
-      it "should not add the name of the nominator at the end" do
-        get "/upcoming"
-        last_response.body.should_not match(/by/)
-      end
-
-      it "should display the songs of the album not of the nomination" do
-        @nomination.stub!(:songs).and_return [Song.new(:artist => "hidden", :title => "something")]
-
-        get "/upcoming"
-        last_response.body.should match(%{visible - better})
-        last_response.body.should_not match(%{hidden - something})
-      end
-
-      it "should display a checkbox in front of each song" do
-        get "/upcoming"
-        last_response.body.should match(%{ref='123' type='checkbox'})
-      end
-
-      it "should not check the box if the song is not in the nomination's song list" do
-        get "/upcoming"
-        last_response.body.should_not match(%{checked})
-      end
-
-      it "should check the box if the song is in the nomination's song list" do
-        @nomination.stub!(:songs).and_return [@song]
-
-        get "/upcoming"
-        last_response.body.should match(%{checked})
-      end
-    end
-  end
-
-  describe "GET '/songs/:album'" do
-    before do
-      @album = Album.new(:artist => "artist", :name => "name")
-      @album.stub!(:songs).and_return []
-      Album.stub!(:get).and_return @album
-    end
-
-    it "should fetch the album with the given ID" do
-      Album.should_receive(:get).with(123).and_return @album
-      get "/songs/123"
-    end
-
-    it "should get the songs of that album" do
-      @album.should_receive(:songs).and_return []
-      get "/songs/123"
-    end
-
-    it "should render the fetched songs" do
-      @album.stub!(:songs).and_return [Song.new(:artist => "me", :title => "hit", :track => 1)]
-
-      get "/songs/123"
-      last_response.body.should match(%{me - hit})
-    end
-
-    describe "album not found" do
-      before do
-        Album.stub!(:get).and_return nil
-      end
-
-      it "should not try to get the songs" do
-        @album.should_not_receive :songs
-        get "/songs/123"
-      end
-
-      it "should return an empty response" do
-        get "/songs/123"
-        last_response.body.should == ""
-      end
     end
   end
 
@@ -297,13 +156,6 @@ describe "vote your album:" do
         get "/status"
         last_response.body.should match(/\"forceable\":false/)
       end
-
-      it "should have a flag saying if the user can rate this album (nomination)" do
-        @nomination.stub!(:can_be_rated_by?).and_return false
-
-        get "/status"
-        last_response.body.should match(/\"rateable\":false/)
-      end
     end
   end
 
@@ -343,7 +195,7 @@ describe "vote your album:" do
 
     it "should return the new list" do
       post "/add/321"
-      last_response.body.should match(%q{<span class='score})
+      last_response.body.should match(%q{aside class='voting})
     end
   end
 
@@ -371,7 +223,7 @@ describe "vote your album:" do
 
       it "should return the new list" do
         post "/#{action}/321"
-        last_response.body.should match(%q{<span class='score})
+        last_response.body.should match(%q{aside class='voting})
       end
     end
   end
@@ -399,38 +251,7 @@ describe "vote your album:" do
 
     it "should return the new list" do
       post "/remove/321"
-      last_response.body.should match(%q{<span class='score})
-    end
-  end
-
-  [:add, :delete].each do |action|
-    describe "POST '/#{action}_song/:nomination_id/:id'" do
-      before do
-        Nomination.stub!(:get).and_return @nomination = Nomination.new(:id => 123)
-        @nomination.stub! action
-      end
-
-      it "should try to find the nomination and the song" do
-        Nomination.should_receive(:get).with(123).and_return @nomination
-        post "/#{action}_song/123/321"
-      end
-
-      it "should not try to #{action} the song if we couldnt find a nomination" do
-        Nomination.stub!(:get).and_return nil
-        @nomination.should_not_receive action
-        post "/#{action}_song/123/321"
-      end
-
-      it "should try to #{action} the song to the nomination" do
-        @nomination.should_receive(action).with 321, "127.0.0.1"
-        post "/#{action}_song/123/321"
-      end
-
-      it "should render nothing" do
-        post "/#{action}_song/123/321"
-        last_response.body.should == ""
-        last_response.status.should == 200
-      end
+      last_response.body.should match(%q{aside class='voting})
     end
   end
 
@@ -447,23 +268,6 @@ describe "vote your album:" do
 
     it "should return the json status response" do
       post "/force"
-      last_response.body.should match(/\"volume\":/)
-    end
-  end
-
-  describe "POST '/rate/:value'" do
-    before do
-      Nomination.stub!(:current).and_return @nomination = Nomination.new(:id => 123)
-      @nomination.stub! :rate
-    end
-
-    it "should rate the currently playing album with the given value" do
-      @nomination.should_receive(:rate).with 3, "127.0.0.1"
-      post "/rate/3"
-    end
-
-    it "should return the json status response" do
-      post "/rate/1"
       last_response.body.should match(/\"volume\":/)
     end
   end
@@ -528,29 +332,6 @@ describe "vote your album:" do
     it "should render nothing" do
       post "/name"
       last_response.body.should == ""
-    end
-  end
-
-  describe "POST '/update'" do
-    before do
-      MpdProxy.stub! :execute
-      Album.stub! :update
-    end
-
-    it "should update mpd library" do
-      MpdProxy.should_receive(:execute).with :update
-      post "/update"
-    end
-
-    it "should update the database" do
-      Album.should_receive :update
-      post "/update"
-    end
-
-    it "should render an empty response body and a status of 200" do
-      post "/update"
-      last_response.body.should == ""
-      last_response.status.should == 200
     end
   end
 end

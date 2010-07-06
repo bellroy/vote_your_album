@@ -101,7 +101,7 @@ var drag_options = {
 function getList(type) {
   $("section.music .overlay").show();
 
-  $.getJSON("/list/" + type, function(list) {
+  $.getJSON("/music/" + type, function(list) {
     updateList(list);
     return false;
   });

@@ -81,10 +81,6 @@ class Album
       execute_sql "COUNT(DISTINCT n.id)", "n.status = 'played'"
     end
 
-    def top_rated
-      execute_sql "AVG(v.value)", "v.type = 'rating'"
-    end
-
     def most_popular
       execute_sql "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value > 0"
     end
