@@ -23,6 +23,12 @@ a:hover {
   text-decoration: underline;
 }
 
+a.disabled,
+a.disabled:hover {
+  cursor: default;
+  color: #000;
+}
+
 h1 {
   font-size: 1.2em;
   margin: 0;
@@ -157,6 +163,11 @@ section.news {
   margin-top: 1em;
 }
 
+section.music.over,
+section.upcoming.over {
+  background-color: #D0E5F5;
+}
+
 section.music .overlay {
   display: none;
   position: absolute;
@@ -208,8 +219,7 @@ section.news > section {
   height: 10.5em;
 }
 
-section.music article,
-section.upcoming article {
+article.album {
   clear: both;
   height: 3.1em;
   padding: 2px 4px;
@@ -219,8 +229,15 @@ section.upcoming article {
   cursor: hand;
 }
 
-section.music article:hover,
-section.upcoming article:hover {
+article.ui-draggable-dragging {
+  border: 1px solid #000;
+  background-color: #fff;
+  -webkit-border-radius: 0.4em;
+  -moz-border-radius: 0.4em;
+  border-radius: 0.4em;
+}
+
+article.album:hover {
   background-color: #D0E5F5;
   -webkit-border-top-left-radius: 0.4em;
   -webkit-border-top-right-radius: 0.4em;
@@ -230,32 +247,30 @@ section.upcoming article:hover {
   border-top-right-radius: 0.4em;
 }
 
-section.music article .art,
-section.upcoming article .art {
+article.album .art {
   float: left;
   width: 3em;
   height: 3em;
   margin-right: 0.6em;
 }
 
-section.music article .info,
-section.upcoming article .info {
+article.album .info {
   float: left;
   width: 27em;
 }
 
-section.upcoming article .voting {
+article.album .voting {
   float: right;
   width: 1.1em;
 }
 
-section.upcoming article .voting a {
+article.album .voting a {
   display: block;
   margin: 0;
   padding: 0.15em 0;
 }
 
-section.upcoming article .voting img {
+article.album .voting img {
   height: 1.2em;
 }
 

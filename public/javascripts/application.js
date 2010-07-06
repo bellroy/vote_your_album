@@ -4,48 +4,60 @@ $(function() {
   // Volume Slider definition
   $("#slider").slider({
     animate: true,
-    stop: function() { $.post("/volume/" + $(this).slider("option", "value")); }
+    stop: function() {
+      $.post("/volume/" + $(this).slider("option", "value"));
+    }
   });
 
   // Name form
   $("#change_name").ajaxForm({
-    success: function() { $("#change_name input").blur(); }
-  });
-
-  // Drop container definitions
-  $("#upcoming").droppable({
-    scope: "adding",
-    hoverClass: "over",
-    drop: function(event, ui) { $.post("/add/" + ui.draggable.attr("ref"), function(list) { $("#upcoming").html(list); }); }
-  });
-  $("#list").droppable({
-    scope: "removing",
-    hoverClass: "over",
-    drop: function(event, ui) {
-      $.post("/remove/" + ui.draggable.attr("ref"), function(list) { $("#upcoming").html(list); });
+    success: function() {
+      $("#change_name input").blur();
     }
   });
 
-  $("#upcoming").live("mouseover", function() {
-    $("#upcoming .album.deleteable").draggable($.extend(drag_options, {
+  // Drop container definitions
+  $("section.upcoming").droppable({
+    scope: "adding",
+    hoverClass: "over",
+    drop: function(event, ui) {
+      $.post("/add/" + ui.draggable.attr("ref"), function(list) {
+        $("section.upcoming #list").html(list);
+      });
+    }
+  });
+  $("section.music").droppable({
+    scope: "removing",
+    hoverClass: "over",
+    drop: function(event, ui) {
+      $.post("/remove/" + ui.draggable.attr("ref"), function(list) {
+        $("section.upcoming #list").html(list);
+      });
+    }
+  });
+
+  $("section.upcoming #list").live("mouseover", function() {
+    $("section.upcoming .deleteable").draggable($.extend(drag_options, {
       scope: "removing"
     }));
   });
 
   // Click events that update the status of the application
-  $(".control").click(function() { return executeAndUpdate("/control/" + $(this).attr("ref")); });
-  $("#force").click(function() { return executeAndUpdate("/force"); });
-
-  // Callback definition for the rating system
-  $(".rate_star").rating({
-    callback: function(value) { return executeAndUpdate("/rate/" + value); }
+  $(".control").click(function() {
+    return executeAndUpdate("/control/" + $(this).attr("ref"));
+  });
+  $("#force").click(function() {
+    return executeAndUpdate("/force");
   });
 
   // Click Events that update the 'upcoming list'
-  $.each(["add", "up", "down"], function() {
+  $.each(["up", "down"], function() {
     var action = this;
     $("." + action).live("click", function() {
-      $.post("/" + action + "/" + $(this).attr("ref"), function(list) { $("#upcoming").html(list); });
+      $.post("/" + action + "/" + $(this).attr("ref"), function(list) {
+        $("section.upcoming #list").html(list);
+      });
+
       return false
     });
   });
@@ -55,41 +67,17 @@ $(function() {
     $("#search").ajaxSubmit({
       dataType: "json",
       beforeSend: function() {
-        $(".list .overlay").show();
+        $("section.music .overlay").show();
       },
       success: function(list) {
-        highlightTab(".all");
         updateList(list);
       }
     });
   }, 0.3);
 
-  // Album songs
-  $(".toggle_songs").live("click", function() {
-    var li = $(this).parents(".album");
-
-    if (!li.hasClass("loaded")) {
-      $.get("/songs/" + $(this).attr("ref"), function(songs) { li.children(".songs").html(songs); });
-      li.addClass("loaded");
-    }
-
-    li.toggleClass("expanded");
-    return false;
-  });
-
-  // Nomination songs
-  $(".song input").live("click", function() {
-    var nomination = $(this).parents(".album").attr("ref");
-    $.post("/" + ($(this).attr("checked") ? "add" : "delete") + "_song/" + nomination + "/" + $(this).attr("ref"));
-  });
-
-  // Lists
-  $.each(["all", "most_listened", "top_rated", "most_popular", "least_popular", "never_nominated", "random"], function() {
-    var type = this;
-    $("." + type).click(function() { getList(type); });
-  });
-  $(".update").click(function() {
-    if (confirm("Do you really want to update the Database? This might take some time (and i cant tell you how long right now)...")) $.post("/update");
+  // Random
+  $("a.shuffle").click(function() {
+    getList("random");
     return false;
   });
 
@@ -101,35 +89,31 @@ $(function() {
 
 // Drag definitions
 var drag_options = {
-  handle: ".left",
   helper: "clone",
-  opacity: 0.4
+  opacity: 0.8,
+  zIndex: 99,
+  appendTo: "body"
 }
 
 /*
  * Requests an update of the available albums and updates the list
  */
 function getList(type) {
-  $(".list .overlay").show();
+  $("section.music .overlay").show();
+
   $.getJSON("/list/" + type, function(list) {
-    highlightTab("." + type);
     updateList(list);
     return false;
   });
-}
-function highlightTab(link) {
-  $("#tabs li").removeClass("selected");
-  $(link).parent().addClass("selected");
 }
 
 /*
  * Requests an update of the upcoming albums and updates the list
  */
 function getUpcoming() {
-  var params = "";
-  $(".upcoming li.expanded").each(function() { params += "&expanded[]=" + $(this).attr("ref"); });
-
-  $.get("/upcoming?" + params, function(list) { $("#upcoming").html(list); });
+  $.get("/upcoming", function(list) {
+    $("section.upcoming #list").html(list);
+  });
   setTimeout("getUpcoming();", 8000);
 }
 
@@ -138,43 +122,36 @@ function getUpcoming() {
  */
 function getStatus() {
   $.getJSON("/status", mainControls);
-	setTimeout("getStatus();", 10000);
+  setTimeout("getStatus();", 10000);
 }
 
 /*
  * Takes the list of albums and renders the list dynamically.
  */
-function updateList(list) {
-  var ul = $("#list");
-  ul.children().draggable("disable");
-  ul.html("");
+function updateList(albums) {
+  var list = $("section.music #list");
+  list.children().draggable("disable");
+  list.html("");
 
   var i = 0;
-  $.each(list, function() {
-    var li = '<li class="album ' + (i++ % 2 == 0 ? "even" : "odd") + '" ref="' + this.id + '">';
-    li += '<div class="left">';
-    li +=   '<a href="#" class="toggle_songs" ref="' + this.id + '"></a>';
-    li +=   '<span class="artist">' + this.artist + '</span>';
-    li +=   '<span> - </span>';
-    li +=   '<span class="album">' + this.name + '</span>';
-    if (this.value != null) li += '<span class="value">(' + this.value + ')</span>';
-    li += '</div>';
-    li += '<div class="right">';
-    li +=   '<a href="#" class="add" ref="' + this.id + '">';
-    li +=     '<img src="/images/add.png" title="Add Album to Upcoming Albums" />';
-    li +=   '</a>';
-    li += '</div>';
-    li += '<div class="songs clear"></div>';
-    li += '<div class="clear"></div>';
-    li += '</li>';
+  $.each(albums, function() {
+    var album = ' \
+      <article class="album" ref="' + this.id + '"> \
+        <div class="info"> \
+          <img class="art" /> \
+          <p>' + this.artist + '</p> \
+          <p>' + this.name + '</p> \
+        </div> \
+      </article> \
+    ';
 
-    ul.append(li);
+    list.append(album);
   });
 
-  ul.children().draggable($.extend(drag_options, {
+  list.children().draggable($.extend(drag_options, {
     scope: "adding"
   }));
-  $(".list .overlay").hide();
+  $("section.music .overlay").hide();
 }
 
 /*
@@ -190,24 +167,13 @@ function mainControls(data) {
     $("#song").html("(" + song.track + ") " + song.artist + " - " + song.title + " (" + data.time + ")");
 
     $("#force").show();
-    $("#force").attr("title", "Necessary Votes to force next album: " + data.down_votes_necessary);
     $("#force .necessary").html(data.down_votes_necessary);
-    if (data.forceable) $("#force").removeClass("disabled");
-    else                $("#force").addClass("disabled");
+    $("#force").toggleClass("disabled", data.forceable)
   }
   else {
     $("#current").html("");
     $("#song").html("");
     $("#force").hide();
-  }
-
-  // Update the rating elements
-  if (data.playing && data.rateable) {
-    $("#rate_current").removeClass("hidden");
-    $(".rate_star").removeClass("star-rating-on");
-  }
-  else {
-    $("#rate_current").addClass("hidden");
   }
 }
 
@@ -221,5 +187,6 @@ function executeAndUpdate(url) {
     url: url,
     success: mainControls
   });
+
   return false;
 }
