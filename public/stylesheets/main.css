@@ -27,6 +27,7 @@ a.disabled,
 a.disabled:hover {
   cursor: default;
   color: #000;
+  text-decoration: none;
 }
 
 h1 {

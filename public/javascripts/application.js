@@ -169,7 +169,7 @@ function mainControls(data) {
 
     $("#force").show();
     $("#force .necessary").html(data.down_votes_necessary);
-    $("#force").toggleClass("disabled", data.forceable)
+    $("#force").toggleClass("disabled", !data.forceable)
   }
   else {
     $("#current").html("");
