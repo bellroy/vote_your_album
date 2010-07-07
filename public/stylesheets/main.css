@@ -68,6 +68,8 @@ body > header article {
 body > header article p {
   text-align: center;
   padding: 0.1em;
+  height: 1.15em;
+  overflow: hidden;
 }
 
 body > header article footer {
@@ -88,7 +90,7 @@ body > header article footer p.force a:hover {
   color: #000;
 }
 
-body > header article footer p.time {
+body > header article footer p#time {
   float: right;
   text-align: right;
 }
@@ -253,6 +255,11 @@ article.album .art {
 article.album .info {
   float: left;
   width: 27em;
+}
+
+article.album .info p {
+  height: 1.5em;
+  overflow: hidden;
 }
 
 article.album .voting {
