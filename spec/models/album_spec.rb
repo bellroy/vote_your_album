@@ -57,6 +57,9 @@ describe Album do
       @nomination.stub! :save
 
       User.stub!(:get_or_create_by).and_return @user = User.new
+      @nomination.stub! :user => @user
+
+      Update.stub! :log
     end
 
     it "should not nominate the album, if we already have a active nomination" do

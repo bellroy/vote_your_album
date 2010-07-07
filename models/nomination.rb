@@ -19,11 +19,11 @@ class Nomination
   has n, :down_votes, :model => "Vote", :type => "force"
 
   def artist
-    album.artist
+    album && album.artist
   end
 
   def name
-    album.name
+    album && album.name
   end
 
   def ttl
@@ -44,7 +44,7 @@ class Nomination
     return unless can_be_voted_for_by?(ip)
 
     self.score = score + value
-    self.send(value > 0 ? :votes : :negative_votes).create :user => User.get_or_create_by(ip), :value => value, :type => "vote"
+    vote = self.send(value > 0 ? :votes : :negative_votes).create(:user => User.get_or_create_by(ip), :value => value, :type => "vote")
     self.status = "deleted" if score <= DEFAULT_ELIMINATION_SCORE
 
     if score < 0
@@ -54,6 +54,8 @@ class Nomination
     end
 
     save
+
+    Update.log "<i>#{vote.user.real_name}</i> voted <strong>#{value < 0 ? "against" : "for"}</strong> '#{artist} - #{name}'"
   end
 
   def can_be_voted_for_by?(ip)
@@ -62,6 +64,8 @@ class Nomination
 
   def remove(ip)
     self.update(:status => "deleted") if owned_by?(ip)
+
+    Update.log "<i>#{user.real_name}</i> removed '#{artist} - #{name}'"
   end
 
   # Force methods
@@ -73,8 +77,10 @@ class Nomination
   def force(ip)
     return unless can_be_forced_by?(ip)
 
-    self.down_votes.create :user => User.get_or_create_by(ip), :value => 1, :type => "force"
+    vote = self.down_votes.create(:user => User.get_or_create_by(ip), :value => 1, :type => "force")
     MpdProxy.execute(:clear) if down_votes_necessary <= 0
+
+    Update.log "<i>#{vote.user.real_name}</i> forced '#{artist} - #{name}'"
   end
 
   def can_be_forced_by?(ip)

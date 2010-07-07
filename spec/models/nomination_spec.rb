@@ -72,12 +72,15 @@ describe Nomination do
 
   describe "vote" do
     before do
+      User.stub!(:get_or_create_by).and_return @user = User.new
+      @vote = Vote.new(:user => @user)
+
       @nomination = Nomination.new(:score => 0)
-      @nomination.votes.stub!(:create).and_return true
-      @nomination.negative_votes.stub!(:create).and_return true
+      @nomination.votes.stub!(:create).and_return @vote
+      @nomination.negative_votes.stub!(:create).and_return @vote
       @nomination.stub! :save
 
-      User.stub!(:get_or_create_by).and_return @user = User.new
+      Update.stub! :log
     end
 
     it "should create an associated vote with the given value and ip" do
@@ -186,6 +189,8 @@ describe Nomination do
       @nomination = Nomination.new
       @nomination.stub!(:owned_by?).and_return true
       @nomination.stub! :update
+
+      Update.stub! :log
     end
 
     it "should do nothing if we havent nominated the album" do
@@ -226,8 +231,10 @@ describe Nomination do
       User.stub!(:get_or_create_by).and_return @user = User.new
 
       @nomination = Nomination.new
-      @nomination.stub!(:negative_votes).and_return [Vote.new(:user => @user)]
-      @nomination.down_votes.stub!(:create).and_return true
+      @nomination.stub!(:negative_votes).and_return [@vote = Vote.new(:user => @user)]
+      @nomination.down_votes.stub!(:create).and_return @vote
+
+      Update.stub! :log
     end
 
     it "should create an associated force vote with the ip" do
