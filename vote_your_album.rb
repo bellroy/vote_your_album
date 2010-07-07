@@ -22,6 +22,7 @@ def json_status
     :current_song => MpdProxy.current_song,
     :total => to_time(MpdProxy.total, false),
     :time => to_time(MpdProxy.time),
+    :nominated_by => current.nominated_by,
     :down_votes_necessary => current.down_votes_necessary,
     :forceable => current.can_be_forced_by?(request.ip)
   ) if MpdProxy.playing?

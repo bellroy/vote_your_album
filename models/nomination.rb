@@ -34,6 +34,10 @@ class Nomination
     user && user.ip == ip
   end
 
+  def nominated_by
+    (user && user.real_name) || "Dr Random"
+  end
+
   # Vote methods
   # ----------------------------------------------------------------------
   def vote(value, ip)

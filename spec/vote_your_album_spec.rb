@@ -127,6 +127,7 @@ describe "vote your album:" do
 
         @album = Album.new(:artist => "c", :name =>  "three")
         Nomination.stub!(:current).and_return @nomination = Nomination.new(:album => @album)
+        @nomination.stub! :nominated_by => "blubbi"
         @nomination.stub!(:down_votes_necessary).and_return 1
       end
 
@@ -149,6 +150,11 @@ describe "vote your album:" do
       it "should include the time remaining for the song" do
         get "/status"
         last_response.body.should match(/\"time\":\"-02:03\"/)
+      end
+
+      it "should include the album nominator" do
+        get "/status"
+        last_response.body.should match(/\"nominated_by\":\"blubbi\"/)
       end
 
       it "should include the number of necessary (remaining) forces" do

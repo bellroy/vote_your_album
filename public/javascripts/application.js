@@ -167,6 +167,7 @@ function mainControls(data) {
     var song = data.current_song
     $("#song").html("(" + song.track + ") " + song.artist + " - " + song.title);
     $("#time").html(data.time + " (" + data.total + ")");
+    $("#nominator").html("by " + data.nominated_by);
 
     $("#force").show();
     $("#force .necessary").html(data.down_votes_necessary);
@@ -176,6 +177,7 @@ function mainControls(data) {
     $("#current").html("");
     $("#song").html("");
     $("#time").html("");
+    $("#nominator").html("");
     $("#force").hide();
   }
 }

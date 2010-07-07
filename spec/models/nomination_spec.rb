@@ -52,6 +52,24 @@ describe Nomination do
     end
   end
 
+  describe "nominated by" do
+    before do
+      @nomination = Nomination.new
+    end
+
+    it "should return 'Dr Random' if we don't have a user" do
+      @nomination.nominated_by.should == "Dr Random"
+    end
+
+    it "should return the name of the user otherwise" do
+      user = User.new
+      user.stub! :real_name => "blubbi"
+      @nomination.user = user
+
+      @nomination.nominated_by.should == "blubbi"
+    end
+  end
+
   describe "vote" do
     before do
       @nomination = Nomination.new(:score => 0)
