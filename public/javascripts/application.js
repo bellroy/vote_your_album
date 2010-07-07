@@ -85,6 +85,7 @@ $(function() {
   getList("all");
   getUpcoming();
   getStatus();
+  getUpdates();
 });
 
 // Drag definitions
@@ -123,6 +124,16 @@ function getUpcoming() {
 function getStatus() {
   $.getJSON("/status", mainControls);
   setTimeout("getStatus();", 10000);
+}
+
+/*
+ * Requests the list of updates
+ */
+function getUpdates() {
+  $.get("/updates", function(list) {
+    $("section.updates #list").html(list);
+  });
+  setTimeout("getUpdates();", 7000);
 }
 
 /*

@@ -1,0 +1,4 @@
+- @updates.each do |update|
+  %article
+    = update.action
+    %time{ :datetime => update.time }= update.time.strftime("%d/%m %H:%M")

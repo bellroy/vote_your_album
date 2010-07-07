@@ -152,12 +152,12 @@ section.music {
 }
 
 section.upcoming,
-section.news {
+section.updates {
   height: 12.5em;
   float: right;
 }
 
-section.news {
+section.updates {
   margin-top: 1em;
 }
 
@@ -206,7 +206,7 @@ section.music #search .shuffle img {
 
 section.music > section,
 section.upcoming > section,
-section.news > section {
+section.updates > section {
   height: 26em;
   padding: 0 4px;
   overflow-x: hidden;
@@ -214,7 +214,7 @@ section.news > section {
 }
 
 section.upcoming > section,
-section.news > section {
+section.updates > section {
   height: 10.5em;
 }
 
@@ -278,15 +278,15 @@ article.album .voting img {
   height: 1.2em;
 }
 
-section.news article {
-  padding: 3px 2px;
+section.updates article {
+  padding: 0.3em;
 }
 
-section.news article:nth-child(odd) {
+section.updates article:nth-child(odd) {
   background-color: rgb(230, 230, 230);
 }
 
-section.news article time {
+section.updates article time {
   float: right;
   font-size: 0.7em;
   margin-top: 0.5em;

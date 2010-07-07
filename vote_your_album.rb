@@ -83,6 +83,11 @@ get "/status" do
   json_status
 end
 
+get "/updates" do
+  @updates = Update.all
+  haml :updates, :layout => false
+end
+
 post "/add/:id" do |album_id|
   album = Album.get(album_id.to_i)
   album.nominate(request.ip) if album

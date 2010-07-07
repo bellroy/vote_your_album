@@ -1,4 +1,4 @@
-- @nominations.each_with_index do |nomination, i|
+- @nominations.each do |nomination|
   %article{album_attributes(nomination, request.ip)}
     = haml :album_info, :layout => false, :locals => { :album => nomination }
     %aside.voting

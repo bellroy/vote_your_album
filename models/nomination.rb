@@ -55,7 +55,7 @@ class Nomination
 
     save
 
-    Update.log "<i>#{vote.user.real_name}</i> voted <strong>#{value < 0 ? "against" : "for"}</strong> '#{artist} - #{name}'"
+    Update.log "<i>#{vote.user.real_name}</i> voted '#{artist} - #{name}' #{value < 0 ? "down" : "up"}"
   end
 
   def can_be_voted_for_by?(ip)
