@@ -20,6 +20,7 @@ def json_status
   status = status.merge(
     :current_album => current.album.to_s,
     :current_song => MpdProxy.current_song,
+    :total => to_time(MpdProxy.total, false),
     :time => to_time(MpdProxy.time),
     :down_votes_necessary => current.down_votes_necessary,
     :forceable => current.can_be_forced_by?(request.ip)
@@ -47,12 +48,13 @@ helpers do
     attr
   end
 
-  def to_time(seconds)
+  def to_time(seconds, remaining = true)
     time = []
     time << "%02d" % (seconds / 3600) if seconds >= 3600
     time << "%02d" % ((seconds % 3600) / 60)
     time << "%02d" % (seconds % 60)
-    "-" + time.join(":")
+
+    (remaining ? "-" : "") + time.join(":")
   end
 end
 

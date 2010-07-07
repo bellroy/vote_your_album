@@ -2,6 +2,7 @@ class MpdProxy
   @mpd = nil
   @volume = 0
   @current_song = nil
+  @total = 0
   @time = 0
   @random_tracks = 1
 
@@ -29,8 +30,18 @@ class MpdProxy
       play_next unless song
     end
 
-    def time; @time end
-    def time=(elapsed, total); @time = total - elapsed end
+    def total
+      @total
+    end
+
+    def time
+      @time
+    end
+
+    def time=(elapsed, total)
+      @total = total
+      @time = total - elapsed
+    end
 
     def play_next
       @mpd.clear

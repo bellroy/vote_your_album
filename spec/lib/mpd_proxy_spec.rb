@@ -149,14 +149,6 @@ describe MpdProxy do
   end
 
   describe "time accessor" do
-    it "should return the saved time (seconds)" do
-      MpdProxy.class_eval do
-        @time = 123
-      end
-
-      MpdProxy.time.should == 123
-    end
-
     it "should set the time variable to the calculated time remaining" do
       MpdProxy.send :time=, 12, 43
       MpdProxy.time.should == 31

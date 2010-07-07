@@ -45,5 +45,11 @@ describe "vote your album helpers:" do
         last_response.body.should match(/\"time\":\"#{time}\"/)
       end
     end
+
+    it "should not add a minus at the start if we don't want one" do
+      MpdProxy.stub! :total => 123
+      get "/status"
+      last_response.body.should match(/\"total\":\"02:03\"/)
+    end
   end
 end

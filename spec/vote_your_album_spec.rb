@@ -117,6 +117,7 @@ describe "vote your album:" do
     describe "currently playing an album" do
       before do
         MpdProxy.stub!(:playing?).and_return true
+        MpdProxy.stub!(:total).and_return 321
         MpdProxy.stub!(:time).and_return 123
 
         song = MPD::Song.new
@@ -138,6 +139,11 @@ describe "vote your album:" do
         get "/status"
         last_response.body.should match(/\"artist\":\"me\"/)
         last_response.body.should match(/\"title\":\"song\"/)
+      end
+
+      it "should include the time total for the song" do
+        get "/status"
+        last_response.body.should match(/\"total\":\"05:21\"/)
       end
 
       it "should include the time remaining for the song" do

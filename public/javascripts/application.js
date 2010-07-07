@@ -165,7 +165,8 @@ function mainControls(data) {
     $("#current").html(data.current_album);
 
     var song = data.current_song
-    $("#song").html("(" + song.track + ") " + song.artist + " - " + song.title + " (" + data.time + ")");
+    $("#song").html("(" + song.track + ") " + song.artist + " - " + song.title);
+    $("#time").html(data.time + " (" + data.total + ")");
 
     $("#force").show();
     $("#force .necessary").html(data.down_votes_necessary);
@@ -174,6 +175,7 @@ function mainControls(data) {
   else {
     $("#current").html("");
     $("#song").html("");
+    $("#time").html("");
     $("#force").hide();
   }
 }
