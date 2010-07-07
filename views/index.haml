@@ -1,7 +1,7 @@
 %section.music
   %header
     %h1 Music
-    %form#search{ :action => "search", :method => :get }
+    %form#search{ :action => "search", :method => :get, :onSubmit => "return false;" }
       %a.shuffle{ :href => "/list/random", :title => "I don't have much time, just gimme something!" }
         %img{ :src => "/images/shuffle.png" }
       %input#query{ :type => "search", :name => "q", :value => params[:q], :placeholder => "Search for albums..." }

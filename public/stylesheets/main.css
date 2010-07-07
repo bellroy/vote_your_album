@@ -197,6 +197,7 @@ section.music #query {
 section.music #search .shuffle {
   display: block;
   float: left;
+  padding: 0.15em 0;
 }
 
 section.music #search .shuffle img {
