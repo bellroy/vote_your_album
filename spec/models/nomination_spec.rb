@@ -186,7 +186,7 @@ describe Nomination do
 
   describe "remove" do
     before do
-      @nomination = Nomination.new
+      @nomination = Nomination.new(:user => User.new)
       @nomination.stub!(:owned_by?).and_return true
       @nomination.stub! :update
 

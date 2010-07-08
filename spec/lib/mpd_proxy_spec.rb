@@ -172,6 +172,8 @@ describe MpdProxy do
       Album.stub!(:get).and_return @album = Album.new
       @album.stub_chain(:nominations, :new).and_return @nomination = Nomination.new
       @nomination.stub! :save
+
+      Update.stub! :log
     end
 
     it "should clear the playlist before we add the new stuff" do
@@ -187,7 +189,7 @@ describe MpdProxy do
 
     describe "with a nomination" do
       before do
-        @next = Nomination.new
+        @next = Nomination.new(:user => User.new)
         @next.stub! :update
 
         Nomination.stub!(:active).and_return [@next]

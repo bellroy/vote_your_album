@@ -50,6 +50,8 @@ class MpdProxy
         nomination.update :status => "played", :played_at => Time.now
         @random_tracks = 1
 
+        Update.log "Started playing '#{nomination.artist} - #{nomination.name}' (<i>#{nomination.user.real_name}</i>)"
+
       elsif (Time.now.utc + 36000).hour < 19
         album = Album.get(rand(Album.count) + 1)
         nomination = album.nominations.new(:status => "played", :played_at => Time.now, :created_at => Time.now, :user_id => 0)
@@ -59,6 +61,7 @@ class MpdProxy
         songs.each { |song| nomination.songs << song }
         nomination.save
 
+        Update.log "<i>Dr Random</i> started playing '#{album}' (#{@random_tracks} tracks)"
         @random_tracks += 1
       end
 
