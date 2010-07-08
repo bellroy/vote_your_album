@@ -42,7 +42,9 @@ helpers do
     attr = { :ref => nomination.id }
 
     classes = ["album"]
-    classes << ["deleteable"] if nomination.owned_by?(user)
+    classes << "deleteable" if nomination.owned_by?(user)
+    classes << "positive-score" if nomination.score > 0
+    classes << "negative-score" if nomination.score < 0
     attr.update :class => classes.join(" ")
 
     attr.update(:title => "TTL: #{to_time(nomination.ttl)}") if nomination.ttl

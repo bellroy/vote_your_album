@@ -267,6 +267,25 @@ article.album .info p {
   overflow: hidden;
 }
 
+article.album .score {
+  position: absolute;
+  width: 90%;
+  text-align: center;
+  font-size: 3.5em;
+  font-weight: bold;
+  opacity: 0.2;
+  line-height: 1em;
+  z-index: 1;
+}
+
+article.album.positive-score .score {
+  color: #0a0;
+}
+
+article.album.negative-score .score {
+  color: #c00;
+}
+
 article.album .voting {
   float: right;
   width: 1.1em;

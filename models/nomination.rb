@@ -38,6 +38,10 @@ class Nomination
     (user && user.real_name) || "Dr Random"
   end
 
+  def score_s
+    (score > 0 ? "+" : "") + score.to_s
+  end
+
   # Vote methods
   # ----------------------------------------------------------------------
   def vote(value, ip)

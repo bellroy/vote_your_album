@@ -5,7 +5,7 @@ describe "vote your album helpers:" do
   describe "album attributes" do
     before do
       @album = Album.new(:artist => "artist", :name => "name")
-      Nomination.stub!(:active).and_return [@nomination = Nomination.new(:id => 1, :album => @album, :score => 2)]
+      Nomination.stub!(:active).and_return [@nomination = Nomination.new(:id => 1, :album => @album, :score => 0)]
     end
 
     it "should have a set of classes by default" do
@@ -17,6 +17,23 @@ describe "vote your album helpers:" do
       @nomination.stub!(:owned_by?).and_return true
       get "/upcoming"
       last_response.body.should match(%{article class='album deleteable'})
+    end
+
+    it "should have not have a '*-score' class if the score is 0" do
+      get "/upcoming"
+      last_response.body.should match(%{article class='album'})
+    end
+
+    it "should have a 'positive-score' class if the score is > 0" do
+      @nomination.stub! :score => 1
+      get "/upcoming"
+      last_response.body.should match(%{article class='album positive-score'})
+    end
+
+    it "should have a 'negative-score' class if the score is < 0" do
+      @nomination.stub! :score => -1
+      get "/upcoming"
+      last_response.body.should match(%{article class='album negative-score'})
     end
 
     it "should not show a title if we have a positive score" do

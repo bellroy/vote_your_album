@@ -52,6 +52,24 @@ describe Nomination do
     end
   end
 
+  describe "score_s" do
+    it "should return '0' if the score is 0" do
+      Nomination.new(:score => 0).score_s.should == "0"
+    end
+
+    it "should return '+*' if the score is > 0" do
+      Nomination.new(:score => 1).score_s.should == "+1"
+      Nomination.new(:score => 3).score_s.should == "+3"
+      Nomination.new(:score => 5).score_s.should == "+5"
+    end
+
+    it "should return '-*' if the score is < 0" do
+      Nomination.new(:score => -1).score_s.should == "-1"
+      Nomination.new(:score => -3).score_s.should == "-3"
+      Nomination.new(:score => -5).score_s.should == "-5"
+    end
+  end
+
   describe "nominated by" do
     before do
       @nomination = Nomination.new
