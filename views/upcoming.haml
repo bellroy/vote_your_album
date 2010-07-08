@@ -4,7 +4,7 @@
     .score= nomination.score_s
     %aside.voting
       - if nomination.can_be_voted_for_by?(request.ip)
-        %a.up{ :href => "/vote/up", :title => "I like that shit! Play it now..." }
+        %a.up{ :href => "/vote/up", :ref => nomination.id, :title => "I like that shit! Play it now..." }
           %img{ :src => "/images/plus.png" }
-        %a.down{ :href => "/vote/down", :title => "Uuuhhhh, don't know about this one - let's get some beer first." }
+        %a.down{ :href => "/vote/down", :ref => nomination.id, :title => "Uuuhhhh, don't know about this one - let's get some beer first." }
           %img{ :src => "/images/minus.png" }
