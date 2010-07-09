@@ -258,6 +258,7 @@ article.album .art {
 }
 
 article.album .info {
+  position: relative;
   float: left;
   width: 27em;
 }
@@ -269,9 +270,10 @@ article.album .info p {
 
 article.album .score {
   position: absolute;
-  width: 90%;
+  top: 0;
+  width: 100%;
   text-align: center;
-  font-size: 3.5em;
+  font-size: 3em;
   font-weight: bold;
   opacity: 0.2;
   line-height: 1em;
@@ -289,7 +291,6 @@ article.album.negative-score .score {
 article.album .voting {
   float: right;
   width: 1.1em;
-  z-index: 2;
 }
 
 article.album .voting a {
