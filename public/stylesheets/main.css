@@ -9,6 +9,7 @@ body {
   width: 68em;
   margin: 1.3em auto 1em auto;
   padding: 0;
+  overflow: hidden;
 }
 
 p {

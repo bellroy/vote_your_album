@@ -1,6 +1,19 @@
 // On Load
 $(function() {
 
+  function resizeBody() {
+    $("section.music").css({ height: $(window).height() - $("body > header").outerHeight(true) - 70 });
+    $("section.music .list").css({ height: $("section.music").innerHeight() - $("section.music header").height() - 30 });
+
+    $("section.upcoming").css({ height: $("section.music").height() - $("section.updates").outerHeight(true) });
+    $("section.upcoming .list").css({ height: $("section.upcoming").innerHeight() - $("section.upcoming header").height() - 30 });
+  };
+
+  $(window).resize(function() {
+    resizeBody();
+  });
+  resizeBody();
+
   // Volume Slider definition
   $("#slider").slider({
     animate: true,
@@ -22,7 +35,7 @@ $(function() {
     hoverClass: "over",
     drop: function(event, ui) {
       $.post("/add/" + ui.draggable.attr("ref"), function(list) {
-        $("section.upcoming #list").html(list);
+        $("section.upcoming .list").html(list);
       });
     }
   });
@@ -31,12 +44,12 @@ $(function() {
     hoverClass: "over",
     drop: function(event, ui) {
       $.post("/remove/" + ui.draggable.attr("ref"), function(list) {
-        $("section.upcoming #list").html(list);
+        $("section.upcoming .list").html(list);
       });
     }
   });
 
-  $("section.upcoming #list").live("mouseover", function() {
+  $("section.upcoming .list").live("mouseover", function() {
     $("section.upcoming .deleteable").draggable($.extend(drag_options, {
       scope: "removing"
     }));
@@ -55,7 +68,7 @@ $(function() {
     var action = this;
     $("." + action).live("click", function() {
       $.post("/" + action + "/" + $(this).attr("ref"), function(list) {
-        $("section.upcoming #list").html(list);
+        $("section.upcoming .list").html(list);
       });
 
       return false
@@ -113,7 +126,7 @@ function getList(type) {
  */
 function getUpcoming() {
   $.get("/upcoming", function(list) {
-    $("section.upcoming #list").html(list);
+    $("section.upcoming .list").html(list);
   });
   setTimeout("getUpcoming();", 8000);
 }
@@ -131,7 +144,7 @@ function getStatus() {
  */
 function getUpdates() {
   $.get("/updates", function(list) {
-    $("section.updates #list").html(list);
+    $("section.updates .list").html(list);
   });
   setTimeout("getUpdates();", 7000);
 }
@@ -140,7 +153,7 @@ function getUpdates() {
  * Takes the list of albums and renders the list dynamically.
  */
 function updateList(albums) {
-  var list = $("section.music #list");
+  var list = $("section.music .list");
   list.children().draggable("disable");
   list.html("");
 

@@ -5,16 +5,16 @@
       %a.shuffle{ :href => "/list/random", :title => "I don't have much time, just gimme something!" }
         %img{ :src => "/images/shuffle.png" }
       %input#query{ :type => "search", :name => "q", :value => params[:q], :placeholder => "Search for albums..." }
-  %section#list
+  %section.list
   .overlay
     %img.spinner{ :src => "/images/spinner.gif" }
 
 %section.upcoming
   %header
     %h1 Nominated
-  %section#list
+  %section.list
 
 %section.updates
   %header
     %h1 Updates
-  %section#list
+  %section.list
