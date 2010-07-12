@@ -4,6 +4,7 @@ $(function() {
   function resizeBody() {
     $("section.music").css({ height: $(window).height() - $("body > header").outerHeight(true) - 70 });
     $("section.music .list").css({ height: $("section.music").innerHeight() - $("section.music header").height() - 30 });
+    $("section.music .overlay").css({ height: $("section.music").outerHeight(true) });
 
     $("section.upcoming").css({ height: $("section.music").height() - $("section.updates").outerHeight(true) });
     $("section.upcoming .list").css({ height: $("section.upcoming").innerHeight() - $("section.upcoming header").height() - 30 });
