@@ -1,6 +1,6 @@
 %w[rubygems sinatra json haml librmpd dm-core dm-aggregates].each { |lib| require lib }
 %w[album song nomination vote user update].each { |model| require "models/#{model}" }
-require 'lib/mpd_proxy'
+%w[mpd_proxy album_art].each { |lib| require "lib/#{lib}" }
 
 require 'lib/config'
 

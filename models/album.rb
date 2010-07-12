@@ -4,6 +4,7 @@ class Album
   property :id, Serial
   property :artist, String, :length => 200
   property :name, String, :length => 200
+  property :art, String, :length => 255
 
   has n, :songs
   has n, :nominations
@@ -32,6 +33,11 @@ class Album
     nomination.vote 1, ip
     songs.each { |song| nomination.songs << song }
     nomination.save
+  end
+
+  def fetch_album_art
+    self.art = AlbumArt.new.fetch(artist, name)
+    save
   end
 
   def to_s
