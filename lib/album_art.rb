@@ -13,5 +13,7 @@ class AlbumArt
     return nil unless art_url.is_a?(String)
 
     art_url
+  rescue NoMethodError
+    nil
   end
 end
