@@ -36,6 +36,8 @@ class Album
   end
 
   def fetch_album_art
+    return if artist.blank? || name.blank?
+
     self.art = AlbumArt.new.fetch(artist, name)
     save
   end
