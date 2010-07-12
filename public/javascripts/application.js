@@ -162,7 +162,7 @@ function updateList(albums) {
     var album = ' \
       <article class="album" ref="' + this.id + '"> \
         <div class="info"> \
-          <img class="art" /> \
+          <img class="art" ' + (this.art != null ? ('src="' + this.art + '"') : '') + ' /> \
           <p>' + this.artist + '</p> \
           <p>' + this.name + '</p> \
         </div> \

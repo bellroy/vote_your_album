@@ -1,7 +1,10 @@
 - @nominations.each do |nomination|
   %article{album_attributes(nomination, request.ip)}
     .info
-      %img.art
+      - unless nomination.art
+        %img.art
+      - else
+        %img.art{ :src => nomination.art }
       %p= nomination.artist
       %p= nomination.name
       .score= nomination.score_s

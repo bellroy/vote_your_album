@@ -45,7 +45,7 @@ class Album
   end
 
   def to_hash
-    { :id => id, :artist => artist, :name => name }
+    { :id => id, :artist => artist, :name => name, :art => art }
   end
 
   class << self

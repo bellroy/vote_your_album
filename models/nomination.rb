@@ -26,6 +26,10 @@ class Nomination
     album && album.name
   end
 
+  def art
+    album && album.art
+  end
+
   def ttl
     expires_at && ((expires_at - DateTime.now).to_f * 86400).to_i
   end
