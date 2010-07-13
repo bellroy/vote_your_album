@@ -20,6 +20,7 @@ def json_status
   status = status.merge(
     :current_album => current.album.to_s,
     :current_song => MpdProxy.current_song,
+    :current_art => current.art,
     :total => to_time(MpdProxy.total, false),
     :time => to_time(MpdProxy.time),
     :nominated_by => current.nominated_by,
