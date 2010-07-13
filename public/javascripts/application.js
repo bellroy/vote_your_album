@@ -185,9 +185,11 @@ function updateList(albums) {
 function mainControls(data) {
   $("header section.controls").toggleClass("playing", data.playing);
   $("#slider").slider("option", "value", data.volume);
+  $("#art").removeAttr("src");
 
   if (data.playing) {
     $("#current").html(data.current_album);
+    if (data.current_art) $("#art").attr("src", data.current_art);
 
     var song = data.current_song
     $("#song").html("(" + song.track + ") " + song.artist + " - " + song.title);

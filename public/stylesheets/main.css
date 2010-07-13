@@ -71,14 +71,14 @@ body > header article {
 }
 
 body > header article p {
-  text-align: center;
   padding: 0.1em;
-  height: 1.15em;
+  height: 1.5em;
+  line-height: 1.5em;
   overflow: hidden;
 }
 
 body > header article footer {
-  margin-top: 1.5em;
+  margin-top: 0.5em;
 }
 
 body > header article footer p {
@@ -251,7 +251,7 @@ article.album:hover {
   border-top-right-radius: 0.4em;
 }
 
-article.album .art {
+.art {
   float: left;
   width: 3em;
   height: 3em;
