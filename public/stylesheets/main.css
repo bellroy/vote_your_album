@@ -71,14 +71,13 @@ body > header article {
 }
 
 body > header article p {
-  padding: 0.1em;
   height: 1.5em;
   line-height: 1.5em;
   overflow: hidden;
 }
 
 body > header article footer {
-  margin-top: 0.5em;
+  margin-top: 0.9em;
 }
 
 body > header article footer p {
