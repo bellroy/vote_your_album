@@ -139,7 +139,7 @@ get "/sign-in" do
   haml :sign_in
 end
 
-get "/signed-in" do
+post "/signed-in" do
   if logged_in? || authenticate(params[:token])
     haml :index
   else
