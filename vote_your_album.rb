@@ -141,9 +141,9 @@ end
 
 post "/signed-in" do
   if logged_in? || authenticate(params[:token])
-    haml :index
+    redirect "/"
   else
-    haml :sign_in
+    redirect "/sign-in"
   end
 end
 
