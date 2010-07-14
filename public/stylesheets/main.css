@@ -138,6 +138,16 @@ body > header #slider .ui-slider-handle {
   margin-left: -0.2em;
 }
 
+/* -- Sign-In
+ * -------------------------------------------------------- */
+.sign-in {
+  float: none;
+  width: 25em;
+  height: 16em;
+  margin: 0 auto;
+}
+
+
 /* -- Content
  * -------------------------------------------------------- */
 body > section {
