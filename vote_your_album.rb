@@ -1,4 +1,4 @@
-%w[rubygems sinatra json haml librmpd dm-core dm-aggregates].each { |lib| require lib }
+%w[rubygems sinatra rest_client json haml librmpd dm-core dm-aggregates].each { |lib| require lib }
 %w[album song nomination vote user update].each { |model| require "models/#{model}" }
 %w[mpd_proxy album_art].each { |lib| require "lib/#{lib}" }
 
@@ -60,6 +60,10 @@ helpers do
 
     (remaining ? "-" : "") + time.join(":")
   end
+
+  def logged_in?
+    !!session["vya.user"]
+  end
 end
 
 
@@ -67,7 +71,7 @@ end
 # Actions
 # -----------------------------------------------------------------------------------
 get "/" do
-  haml :index
+  haml(logged_in? ? :index : :sign_in)
 end
 
 get "/music/:type" do |list_type|
@@ -129,4 +133,36 @@ end
 post "/name" do
   user = User.get_or_create_by(request.ip)
   user.update(:name => params[:name]) if user
+end
+
+get "/sign-in" do
+  haml :sign_in
+end
+
+get "/signed-in" do
+  if logged_in? || authenticate(params[:token])
+    haml :index
+  else
+    haml :sign_in
+  end
+end
+
+def authenticate(token)
+  response = JSON.parse(
+    RestClient.post("https://rpxnow.com/api/v2/auth_info",
+      :token => token,
+      :apiKey => "15d9dea0e625eb09642bd796816ece60737521d7",
+      :format => "json",
+      :extended => "true"
+    )
+  )
+
+  if response["stat"] == "ok"
+    session["vya.user"] = response["profile"]["identifier"]
+    session["vya.name"] = response["profile"]["preferredUsername"]
+
+    return true
+  end
+
+  return false
 end

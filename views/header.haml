@@ -26,6 +26,8 @@
 
   %aside.right
     %p
-      %form{ :id => "change_name", :action => "/name", :method => "post" }
-        %span Who am I?
-        %input{ :type => "text", :name => "name", :value => User.get_or_create_by(request.ip).name }
+      - if logged_in?
+        You are
+        = session["vya.name"]
+        = "|"
+        %a{ :href => "/sign-in" } Not You?

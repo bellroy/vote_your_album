@@ -12,4 +12,6 @@ end
 configure :production do
   DataMapper.setup(:default, "mysql://localhost/vote_your_album_prod")
   MpdProxy.setup "mpd", 6600, true
+
+  enable :sessions
 end
