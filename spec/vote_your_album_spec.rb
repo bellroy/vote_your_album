@@ -318,32 +318,4 @@ describe "vote your album:" do
       last_response.status.should == 200
     end
   end
-
-  describe "POST '/name'" do
-    before do
-      User.stub!(:get_or_create_by).and_return @user = User.new
-      @user.stub! :update
-    end
-
-    it "should fetch the user with the given ip" do
-      User.should_receive(:get_or_create_by).with "127.0.0.1"
-      post "/name"
-    end
-
-    it "should do nothing if we cant find the user" do
-      User.should_receive(:get_or_create_by).and_return nil
-      @user.should_not_receive :update
-      post "/name"
-    end
-
-    it "should update the name of the user" do
-      @user.should_receive(:update).with :name => "my name"
-      post "/name", :name => "my name"
-    end
-
-    it "should render nothing" do
-      post "/name"
-      last_response.body.should == ""
-    end
-  end
 end
