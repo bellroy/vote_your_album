@@ -82,11 +82,10 @@ helpers do
   end
 
   def logged_in?
-    !!session["vya.user"]
+    !!current_user
   end
 
   def current_user
-    return nil unless logged_in?
     User.first :identifier => session["vya.user"]
   end
 end
