@@ -11,6 +11,6 @@ class User
   end
 
   def self.create_from_profile(profile)
-    create :identifier => profile["identifier"], :username => profile["preferredUsername"], :name => ""
+    create :identifier => profile["identifier"], :username => profile["preferredUsername"]
   end
 end
