@@ -24,13 +24,13 @@ class Album
     !nominations.played.empty?
   end
 
-  def nominate(ip)
+  def nominate(current_user)
     return if currently_nominated?
 
-    nomination = nominations.create(:status => "active", :created_at => Time.now, :user => User.get_or_create_by(ip))
-    Update.log "<i>#{nomination.user.real_name}</i> nominated '#{to_s}'"
+    nomination = nominations.create(:status => "active", :created_at => Time.now, :user => current_user)
+    Update.log "<i>#{current_user.real_name}</i> nominated '#{to_s}'"
 
-    nomination.vote 1, ip
+    nomination.vote 1, current_user
     songs.each { |song| nomination.songs << song }
     nomination.save
   end

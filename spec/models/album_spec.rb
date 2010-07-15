@@ -49,15 +49,14 @@ describe Album do
 
   describe "nominate" do
     before do
+      @user = User.new
+
       @album = Album.new
       @album.stub!(:songs).and_return []
 
       @album.nominations.stub!(:create).and_return @nomination = Nomination.new
       @nomination.stub! :vote
       @nomination.stub! :save
-
-      User.stub!(:get_or_create_by).and_return @user = User.new
-      @nomination.stub! :user => @user
 
       Update.stub! :log
     end
@@ -66,29 +65,29 @@ describe Album do
       @album.stub!(:currently_nominated?).and_return true
       @album.nominations.should_not_receive :create
 
-      @album.nominate "me"
+      @album.nominate @user
     end
 
     it "should create a nomination for that album" do
       Time.stub!(:now).and_return time = mock("Now", :tv_sec => 1)
       @album.nominations.should_receive(:create).with :status => "active", :created_at => time, :user => @user
-      @album.nominate "me"
+      @album.nominate @user
     end
 
     it "should also add a up vote immediately for the given user" do
-      @nomination.should_receive(:vote).with 1, "me"
-      @album.nominate "me"
+      @nomination.should_receive(:vote).with 1, @user
+      @album.nominate @user
     end
 
     it "should add the songs of the album to the nomination" do
       @album.stub!(:songs).and_return [song = Song.new(:track => 1)]
-      @album.nominate "me"
+      @album.nominate @user
       @nomination.songs.should include(song)
     end
 
     it "should save the nomination again, to persist the songs" do
       @nomination.should_receive :save
-      @album.nominate "me"
+      @album.nominate @user
     end
   end
 
@@ -104,11 +103,11 @@ describe Album do
 
   describe "to hash" do
     before do
-      @album = Album.new(:id => 123, :artist => "artist", :name => "album")
+      @album = Album.new(:id => 123, :artist => "artist", :name => "album", :art => "some_url")
     end
 
     it "should return the album's attributes in a hash" do
-      @album.to_hash.should == { :id => 123, :artist => "artist", :name => "album" }
+      @album.to_hash.should == { :id => 123, :artist => "artist", :name => "album", :art => "some_url" }
     end
   end
 

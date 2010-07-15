@@ -183,7 +183,7 @@ describe "vote your album:" do
 
     it "should nominate the album if we can find one" do
       Album.should_receive(:get).with(123).and_return @album
-      @album.should_receive(:nominate).with "127.0.0.1"
+      @album.should_receive :nominate
       post "/add/123"
     end
 
@@ -223,7 +223,7 @@ describe "vote your album:" do
 
       it "should vote the Nomination #{action}" do
         Nomination.should_receive(:get).with(123).and_return @nomination
-        @nomination.should_receive(:vote).with change, "127.0.0.1"
+        @nomination.should_receive(:vote).with change, nil
         post "/#{action}/123"
       end
 
@@ -251,7 +251,7 @@ describe "vote your album:" do
 
     it "should remove the Nomination" do
       Nomination.should_receive(:get).with(123).and_return @nomination
-      @nomination.should_receive(:remove).with "127.0.0.1"
+      @nomination.should_receive :remove
       post "/remove/123"
     end
 
@@ -274,7 +274,7 @@ describe "vote your album:" do
     end
 
     it "should force the next album" do
-      @nomination.should_receive(:force).with "127.0.0.1"
+      @nomination.should_receive :force
       post "/force"
     end
 

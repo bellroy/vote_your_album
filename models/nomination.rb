@@ -34,8 +34,8 @@ class Nomination
     expires_at && ((expires_at - DateTime.now).to_f * 86400).to_i
   end
 
-  def owned_by?(ip)
-    user && user.ip == ip
+  def owned_by?(current_user)
+    user == current_user
   end
 
   def nominated_by
@@ -48,11 +48,11 @@ class Nomination
 
   # Vote methods
   # ----------------------------------------------------------------------
-  def vote(value, ip)
-    return unless can_be_voted_for_by?(ip)
+  def vote(value, current_user)
+    return unless can_be_voted_for_by?(current_user)
 
     self.score = score + value
-    vote = self.send(value > 0 ? :votes : :negative_votes).create(:user => User.get_or_create_by(ip), :value => value, :type => "vote")
+    vote = self.send(value > 0 ? :votes : :negative_votes).create(:user => current_user, :value => value, :type => "vote")
     self.status = "deleted" if score <= DEFAULT_ELIMINATION_SCORE
 
     if score < 0
@@ -63,17 +63,17 @@ class Nomination
 
     save
 
-    Update.log "#{value > 0 ? "+1" : "-1"} for '#{artist} - #{name}' from <i>#{vote.user.real_name}</i>"
+    Update.log "#{value > 0 ? "+1" : "-1"} for '#{artist} - #{name}' from <i>#{current_user.real_name}</i>"
   end
 
-  def can_be_voted_for_by?(ip)
-    !(votes + negative_votes).map { |v| v.user }.include?(User.get_or_create_by(ip))
+  def can_be_voted_for_by?(current_user)
+    !(votes + negative_votes).map { |v| v.user }.include?(current_user)
   end
 
-  def remove(ip)
-    self.update(:status => "deleted") if owned_by?(ip)
+  def remove(current_user)
+    self.update(:status => "deleted") if owned_by?(current_user)
 
-    Update.log "<i>#{user.real_name}</i> removed '#{artist} - #{name}'"
+    Update.log "<i>#{current_user.real_name}</i> removed '#{artist} - #{name}'"
   end
 
   # Force methods
@@ -82,17 +82,17 @@ class Nomination
     [score + 2, 1].max - down_votes.inject(0) { |sum, v| sum + v.value }
   end
 
-  def force(ip)
-    return unless can_be_forced_by?(ip)
+  def force(current_user)
+    return unless can_be_forced_by?(current_user)
 
-    vote = self.down_votes.create(:user => User.get_or_create_by(ip), :value => 1, :type => "force")
+    vote = self.down_votes.create(:user => current_user, :value => 1, :type => "force")
     MpdProxy.execute(:clear) if down_votes_necessary <= 0
 
-    Update.log "<i>#{vote.user.real_name}</i> forced '#{artist} - #{name}'"
+    Update.log "<i>#{current_user.real_name}</i> forced '#{artist} - #{name}'"
   end
 
-  def can_be_forced_by?(ip)
-    !down_votes.map { |v| v.user }.include?(User.get_or_create_by(ip))
+  def can_be_forced_by?(current_user)
+    !down_votes.map { |v| v.user }.include?(current_user)
   end
 
   # Class methods

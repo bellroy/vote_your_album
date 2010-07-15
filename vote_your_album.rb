@@ -25,7 +25,7 @@ def json_status
     :time => to_time(MpdProxy.time),
     :nominated_by => current.nominated_by,
     :down_votes_necessary => current.down_votes_necessary,
-    :forceable => current.can_be_forced_by?(request.ip)
+    :forceable => current.can_be_forced_by?(current_user)
   ) if MpdProxy.playing?
   status.to_json
 end
@@ -119,7 +119,7 @@ end
 
 post "/add/:id" do |album_id|
   album = Album.get(album_id.to_i)
-  album.nominate(request.ip) if album
+  album.nominate(current_user) if album
 
   MpdProxy.play_next unless MpdProxy.playing?
 
@@ -127,19 +127,19 @@ post "/add/:id" do |album_id|
 end
 
 post "/up/:id" do |nomination_id|
-  execute_on_nomination(nomination_id) { |nomination| nomination.vote 1, request.ip }
+  execute_on_nomination(nomination_id) { |nomination| nomination.vote 1, current_user }
 end
 
 post "/down/:id" do |nomination_id|
-  execute_on_nomination(nomination_id) { |nomination| nomination.vote -1, request.ip }
+  execute_on_nomination(nomination_id) { |nomination| nomination.vote -1, current_user }
 end
 
 post "/remove/:id" do |nomination_id|
-  execute_on_nomination(nomination_id) { |nomination| nomination.remove request.ip }
+  execute_on_nomination(nomination_id) { |nomination| nomination.remove current_user }
 end
 
 post "/force" do
-  Nomination.current.force request.ip
+  Nomination.current.force current_user
   json_status
 end
 
