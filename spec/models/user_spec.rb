@@ -8,8 +8,8 @@ describe User do
     end
 
     it "should create a user with the given profile attributes" do
-      User.should_receive(:create).with hash_including(:identifier => "abc", :username => "my self")
-      User.create_from_profile "identifier" => "abc", "preferredUsername" => "my self"
+      User.should_receive(:create).with hash_including(:identifier => "abc", :username => "m.self", :name => "my self")
+      User.create_from_profile "identifier" => "abc", "preferredUsername" => "m.self", "displayName" => "my self"
     end
   end
 end
