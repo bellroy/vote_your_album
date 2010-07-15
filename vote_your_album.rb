@@ -35,6 +35,26 @@ def render_upcoming
   haml :upcoming, :layout => false
 end
 
+def authenticate(token)
+  response = JSON.parse(
+    RestClient.post("https://rpxnow.com/api/v2/auth_info",
+      :token => token,
+      :apiKey => "15d9dea0e625eb09642bd796816ece60737521d7",
+      :format => "json",
+      :extended => "true"
+    )
+  )
+
+  if response["stat"] == "ok"
+    session["vya.user"] = response["profile"]["identifier"]
+    User.create_from_profile(response["profile"]) unless current_user
+
+    return true
+  end
+
+  return false
+end
+
 helpers do
   include Rack::Utils
   alias_method :h, :escape_html
@@ -64,24 +84,7 @@ helpers do
   def logged_in?
     !!session["vya.user"]
   end
-  def authenticate(token)
-    response = JSON.parse(
-      RestClient.post("https://rpxnow.com/api/v2/auth_info",
-        :token => token,
-        :apiKey => "15d9dea0e625eb09642bd796816ece60737521d7",
-        :format => "json",
-        :extended => "true"
-      )
-    )
 
-    if response["stat"] == "ok"
-      session["vya.user"] = response["profile"]["identifier"]
-      User.create_from_profile(response["profile"]) unless current_user
-
-      return true
-    end
-
-    return false
   def current_user
     return nil unless logged_in?
     User.first :identifier => session["vya.user"]
