@@ -159,7 +159,7 @@ get "/sign-in" do
 end
 
 post "/signed-in" do
-  if logged_in? || authenticate(params[:token])
+  if authenticate(params[:token])
     redirect "/"
   else
     redirect "/sign-in"
