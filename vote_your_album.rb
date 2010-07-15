@@ -82,6 +82,9 @@ helpers do
     end
 
     return false
+  def current_user
+    return nil unless logged_in?
+    User.first :identifier => session["vya.user"]
   end
 end
 

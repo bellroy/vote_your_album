@@ -29,6 +29,6 @@
     %p
       - if logged_in?
         You are
-        = session["vya.name"]
+        = current_user.real_name
         = "|"
         %a{ :href => "/sign-in" } Not You?
