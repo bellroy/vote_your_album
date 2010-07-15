@@ -2,18 +2,15 @@ class User
   include DataMapper::Resource
 
   property :id, Serial
-  property :name, String, :length => 100
-  property :ip, String, :length => 20
-
-  def has_name?
-    name && name != ""
-  end
+  property :identifier, String, :length => 100
+  property :username, String, :length => 100
+  property :name, String, :length => 200
 
   def real_name
-    name || "?"
+    name || username
   end
 
-  def self.get_or_create_by(ip)
-    first(:ip => ip) || create(:ip => ip)
+  def self.create_from_profile(profile)
+    create :identifier => profile["identifier"], :username => profile["preferredUsername"], :name => ""
   end
 end
