@@ -151,32 +151,52 @@ function getUpdates() {
 }
 
 /*
- * Takes the list of albums and renders the list dynamically.
+ * Takes the list of albums and initializes iterative renderding.
  */
+var albumList = [];
 function updateList(albums) {
   var list = $("section.music .list");
   list.children().draggable("disable");
   list.html("");
 
-  var i = 0;
+  albumList = albums;
+  $("section.music .overlay").hide();
+
+  if (!_.isEmpty(albumList)) setTimeout("appendAlbumsIteratively()", 1);
+}
+
+/*
+ * Renders 20 albums at once and then 'flushes' them out.
+ */
+function appendAlbumsIteratively() {
+  var list = $("section.music .list");
+
+  var albums = _.first(albumList, 20);
+  albumList = _.rest(albumList, 20);
+
   $.each(albums, function() {
-    var album = ' \
-      <article class="album" ref="' + this.id + '"> \
-        <div class="info"> \
-          <img class="art" ' + (this.art != null ? ('src="' + this.art + '"') : '') + ' /> \
-          <p>' + this.artist + '</p> \
-          <p>' + this.name + '</p> \
-        </div> \
-      </article> \
-    ';
-
-    list.append(album);
+    list.append(albumElement(this));
   });
-
   list.children().draggable($.extend(drag_options, {
     scope: "adding"
   }));
-  $("section.music .overlay").hide();
+
+  if (!_.isEmpty(albumList)) setTimeout("appendAlbumsIteratively()", 1);
+}
+
+/*
+ * Returns an album element.
+ */
+function albumElement(album) {
+  return ' \
+    <article class="album" ref="' + album.id + '"> \
+      <div class="info"> \
+        <img class="art" ' + (album.art != null ? ('src="' + album.art + '"') : '') + ' /> \
+        <p>' + album.artist + '</p> \
+        <p>' + album.name + '</p> \
+      </div> \
+    </article> \
+  ';
 }
 
 /*
