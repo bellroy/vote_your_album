@@ -11,5 +11,10 @@ describe User do
       User.should_receive(:create).with hash_including(:identifier => "abc", :username => "m.self", :name => "my self")
       User.create_from_profile "identifier" => "abc", "preferredUsername" => "m.self", "displayName" => "my self"
     end
+
+    it "should use the given name of the user, if present" do
+      User.should_receive(:create).with hash_including(:name => "my")
+      User.create_from_profile "name" => { "givenName" => "my", "familyName" => "self" }
+    end
   end
 end

@@ -13,6 +13,6 @@ class User
   def self.create_from_profile(profile)
     create  :identifier => profile["identifier"],
             :username => profile["preferredUsername"],
-            :name => profile["displayName"]
+            :name => (profile["name"] ? profile["name"]["givenName"] : profile["displayName"])
   end
 end
