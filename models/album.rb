@@ -51,6 +51,8 @@ class Album
   class << self
     def update
       MpdProxy.execute(:albums).each do |album|
+        print "."
+
         album.gsub!(/"/, '')
         next if first(:name => album)
 
@@ -70,7 +72,7 @@ class Album
         new_album.fetch_album_art
         new_album.save
 
-        print "."
+        print "+"
       end
     end
 
