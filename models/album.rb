@@ -55,8 +55,14 @@ class Album
         next if first(:name => album)
 
         new_album = Album.new(:name => album)
-        songs = MpdProxy.find_songs_for(album)
-        songs.each { |song| new_album.songs.new :track => song.track.to_i, :artist => song.artist, :title => song.title, :file => song.file }
+        songs = MpdProxy.find_songs_for(album).reject { |song| Song.first(:title => song.title) }
+        songs.each do |song|
+          new_album.songs.new :track => song.track.to_i,
+                              :artist => song.artist,
+                              :title => song.title,
+                              :length => song.time.to_i,
+                              :file => song.file
+        end
 
         new_album.artist = get_artist_from(songs)
         new_album.save

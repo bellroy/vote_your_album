@@ -114,7 +114,14 @@ describe Album do
   describe "update" do
     before do
       @song = MPD::Song.new
-      { "track" => "1", "artist" => "me", "title" => "song", "album" => "album1", "file" => "path" }.each { |k, v| @song[k] = v }
+      {
+        "track" => "1",
+        "artist" => "me",
+        "title" => "song",
+        "album" => "album1",
+        "time" => "123",
+        "file" => "path"
+      }.each { |k, v| @song[k] = v }
 
       MpdProxy.stub!(:execute).with(:albums).and_return ["album1"]
       MpdProxy.stub!(:find_songs_for).and_return @songs = [@song]
@@ -149,18 +156,22 @@ describe Album do
     end
 
     it "should add the found songs to the album" do
-      @album.songs.should_receive(:new).with :track => 1, :artist => "me", :title => "song", :file => "path"
+      @album.songs.should_receive(:new).with :track => 1, :artist => "me", :title => "song", :length => 123, :file => "path"
       Album.update
+    end
+
+    it "should not add duplicate songs" do
+      song2 = MPD::Song.new
+      { "track" => 2, "artist" => nil, "title" => "song", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
     end
 
     ["5", "5/11", "5 of 11"].each do |track|
       it "should convert the track '#{track}' to a integer value" do
         @song["track"] = track
-        @album.songs.should_receive(:new).with :track => 5, :artist => "me", :title => "song", :file => "path"
+        @album.songs.should_receive(:new).with hash_including(:track => 5)
         Album.update
       end
     end
-
 
     it "should get the name of the artist for the album from the songs" do
       @album.should_receive(:artist=).with "me"
@@ -168,11 +179,10 @@ describe Album do
     end
 
     it "should not use a nil artist if we have a non-nil artist in the song list" do
-      song2 = MPD::Song.new
-      { "track" => 2, "artist" => nil, "title" => "song", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
-      MpdProxy.stub!(:find_songs_for).and_return [song2, @song]
+      @song["title"] = "duplicate"
+      Song.stub!(:first).with(:title => "duplicate").and_return true
 
-      @album.should_receive(:artist=).with "me"
+      @album.songs.should_not_receive :new
       Album.update
     end
 
