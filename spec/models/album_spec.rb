@@ -150,6 +150,12 @@ describe Album do
       Album.update
     end
 
+    it "should not build an album, if we can't find any songs" do
+      MpdProxy.stub!(:find_songs_for).and_return []
+      Album.should_not_receive :new
+      Album.update
+    end
+
     it "should fetch all the songs for that album from the server" do
       MpdProxy.should_receive(:find_songs_for).with "album1"
       Album.update
@@ -188,7 +194,7 @@ describe Album do
 
     it "should assign a empty value instead of a nil value if we dont have any artists" do
       @song["artist"] = nil
-      @album.should_receive(:artist=).with ""
+      @album.should_receive(:artist=).with "Unknown"
       Album.update
     end
 

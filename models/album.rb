@@ -54,8 +54,10 @@ class Album
         album.gsub!(/"/, '')
         next if first(:name => album)
 
-        new_album = Album.new(:name => album)
         songs = MpdProxy.find_songs_for(album).reject { |song| Song.first(:title => song.title) }
+        return if songs.empty?
+
+        new_album = Album.new(:name => album)
         songs.each do |song|
           new_album.songs.new :track => song.track.to_i,
                               :artist => song.artist,
@@ -110,7 +112,7 @@ class Album
 
       case
         when shortest.nil?
-          ""
+          "Unknown"
         when artists.select { |artist| artist =~ /\A#{Regexp.escape(shortest)}/ }.size >= (songs.size / 2.0)
           shortest
         else
