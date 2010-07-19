@@ -57,7 +57,7 @@ class Album
         next if first(:name => album)
 
         songs = MpdProxy.find_songs_for(album).reject { |song| Song.first(:title => song.title) }
-        return if songs.empty?
+        next if songs.empty?
 
         new_album = Album.new(:name => album)
         songs.each do |song|
