@@ -67,7 +67,10 @@ class Album
         end
 
         new_album.artist = get_artist_from(songs)
+        new_album.fetch_album_art
         new_album.save
+
+        print "."
       end
     end
 
