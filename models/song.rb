@@ -5,6 +5,7 @@ class Song
   property :track, Integer
   property :artist, String, :length => 200
   property :title, String, :length => 200
+  property :length, Integer
   property :file, String, :length => 500
 
   belongs_to :album
