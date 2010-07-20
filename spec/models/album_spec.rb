@@ -130,7 +130,7 @@ describe Album do
 
       @album = Album.new
       Album.stub!(:new).and_return @album
-      @album.stub! :save
+      @album.stub! :save => true, :fetch_album_art => true
       @album.songs.stub!(:first).and_return @song
     end
 
@@ -178,6 +178,15 @@ describe Album do
     it "should not care about title case when identifying duplicate songs" do
       song2 = MPD::Song.new
       { "track" => 2, "artist" => "someone", "title" => "sOnG", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
+      MpdProxy.stub!(:find_songs_for).and_return [@song, song2]
+
+      @album.songs.should_receive(:new).exactly(:once)
+      Album.update
+    end
+
+    it "should handle nil titles when identifying duplicate songs" do
+      song2 = MPD::Song.new
+      { "track" => 2, "artist" => "someone", "title" => nil, "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
       MpdProxy.stub!(:find_songs_for).and_return [@song, song2]
 
       @album.songs.should_receive(:new).exactly(:once)

@@ -57,7 +57,7 @@ class Album
         next if first(:name => album)
 
         songs = MpdProxy.find_songs_for(album).inject([]) do |list, song|
-          unless list.map { |s| s.title.downcase }.include?(song.title.downcase)
+          if song.title && !list.map { |s| s.title.downcase }.include?(song.title.downcase)
             list << song
           else
             list
