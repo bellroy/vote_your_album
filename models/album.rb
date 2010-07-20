@@ -56,7 +56,13 @@ class Album
         album.gsub!(/"/, '')
         next if first(:name => album)
 
-        songs = MpdProxy.find_songs_for(album).reject { |song| Song.first(:title => song.title) }
+        songs = MpdProxy.find_songs_for(album).inject([]) do |list, song|
+          unless list.map { |s| s.title.downcase }.include?(song.title.downcase)
+            list << song
+          else
+            list
+          end
+        end
         next if songs.empty?
 
         new_album = Album.new(:name => album)
@@ -121,7 +127,7 @@ class Album
         when artists.select { |artist| artist =~ /\A#{Regexp.escape(shortest)}/ }.size >= (songs.size / 2.0)
           shortest
         else
-          "VA"
+          "Various Artists"
       end
     end
 

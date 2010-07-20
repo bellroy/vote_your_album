@@ -168,7 +168,20 @@ describe Album do
 
     it "should not add duplicate songs" do
       song2 = MPD::Song.new
-      { "track" => 2, "artist" => nil, "title" => "song", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
+      { "track" => 2, "artist" => "someone", "title" => "song", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
+      MpdProxy.stub!(:find_songs_for).and_return [@song, song2]
+
+      @album.songs.should_receive(:new).exactly(:once)
+      Album.update
+    end
+
+    it "should not care about title case when identifying duplicate songs" do
+      song2 = MPD::Song.new
+      { "track" => 2, "artist" => "someone", "title" => "sOnG", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
+      MpdProxy.stub!(:find_songs_for).and_return [@song, song2]
+
+      @album.songs.should_receive(:new).exactly(:once)
+      Album.update
     end
 
     ["5", "5/11", "5 of 11"].each do |track|
@@ -184,14 +197,6 @@ describe Album do
       Album.update
     end
 
-    it "should not use a nil artist if we have a non-nil artist in the song list" do
-      @song["title"] = "duplicate"
-      Song.stub!(:first).with(:title => "duplicate").and_return true
-
-      @album.songs.should_not_receive :new
-      Album.update
-    end
-
     it "should assign a empty value instead of a nil value if we dont have any artists" do
       @song["artist"] = nil
       @album.should_receive(:artist=).with "Unknown"
@@ -201,23 +206,23 @@ describe Album do
     it "should take the name of the shortest artist if at least 50% of the song's artist start with the string" do
       @song["artist"] = "longer"
       song2 = MPD::Song.new
-      { "track" => 2, "artist" => "MJ", "title" => "song", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
+      { "track" => 2, "artist" => "MJ", "title" => "song 2", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
       song3 = MPD::Song.new
-      { "track" => 3, "artist" => "MJ & DJ", "title" => "song", "album" => "album1", "file" => "other" }.each { |k, v| song3[k] = v }
+      { "track" => 3, "artist" => "MJ & DJ", "title" => "song 3", "album" => "album1", "file" => "other" }.each { |k, v| song3[k] = v }
       MpdProxy.stub!(:find_songs_for).and_return [@song, song2, song3]
 
       @album.should_receive(:artist=).with "MJ"
       Album.update
     end
 
-    it "should assign a 'VA' string if we have to many different artists" do
+    it "should assign a 'Various Artists' string if we have to many different artists" do
       song2 = MPD::Song.new
-      { "track" => 2, "artist" => "MJ", "title" => "song", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
+      { "track" => 2, "artist" => "MJ", "title" => "song 2", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
       song3 = MPD::Song.new
-      { "track" => 3, "artist" => "lala", "title" => "song", "album" => "album1", "file" => "other" }.each { |k, v| song3[k] = v }
+      { "track" => 3, "artist" => "lala", "title" => "song 3", "album" => "album1", "file" => "other" }.each { |k, v| song3[k] = v }
       MpdProxy.stub!(:find_songs_for).and_return [@song, song2, song3]
 
-      @album.should_receive(:artist=).with "VA"
+      @album.should_receive(:artist=).with "Various Artists"
       Album.update
     end
 
