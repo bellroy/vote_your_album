@@ -165,13 +165,13 @@ describe MpdProxy do
       MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
       MpdProxy.setup "server", 1234
 
-      @mpd.stub! :clear
-      @mpd.stub! :add
-      @mpd.stub! :play
+      @mpd.stub! :clear => true, :add => true, :play => true
 
-      Album.stub!(:get).and_return @album = Album.new
-      @album.stub_chain(:nominations, :new).and_return @nomination = Nomination.new
-      @nomination.stub! :save
+      @album = Album.new
+      Album.stub!(:nominate_similar).and_return @nomination = Nomination.new(:album => @album)
+      @nomination.stub! :update
+
+      Nomination.stub_chain(:current, :album).and_return @current = Album.new
 
       Update.stub! :log
     end
@@ -221,43 +221,14 @@ describe MpdProxy do
         @songs = [Song.new(:file => "path1"), Song.new(:file => "path2"), Song.new(:file => "path3"), Song.new(:file => "path4")]
       end
 
-      it "should find a random album" do
-        Album.should_receive(:get).and_return @album
+      it "should find a similar album" do
+        Album.should_receive(:nominate_similar).with(@album, 1).and_return @nomination
         MpdProxy.play_next
       end
 
       it "should increase the random tracks count" do
         MpdProxy.play_next
         MpdProxy.instance_variable_get(:@random_tracks).should == 2
-      end
-
-      it "should create a new nomination (that will work as the 'current' one)" do
-        @album.nominations.should_receive(:new).with(hash_including(:status => "played"))
-        MpdProxy.play_next
-      end
-
-      it "should assign the songs to the nomination and save it" do
-        MpdProxy.instance_variable_set :@random_tracks, 5
-
-        @album.stub!(:songs).and_return @songs
-        MpdProxy.play_next
-        @nomination.songs.should == @songs
-      end
-
-      it "should add all the songs of the album if the random tracks count is greater than the number of tracks in the album" do
-        MpdProxy.instance_variable_set :@random_tracks, 5
-
-        @album.stub!(:songs).and_return @songs
-        @songs.map { |s| s.file }.each { |path| @mpd.should_receive(:add).with path }
-        MpdProxy.play_next
-      end
-
-      it "should add random_tracks x tracks of the album to the playlist" do
-        MpdProxy.instance_variable_set :@random_tracks, 2
-
-        @album.stub!(:songs).and_return @songs
-        @mpd.should_receive(:add).twice
-        MpdProxy.play_next
       end
 
       it "should not add random tracks if it's after 7PM (9AM UTC)" do

@@ -52,25 +52,18 @@ class MpdProxy
       @mpd.clear
 
       if nomination = Nomination.active.first
-        nomination.update :status => "played", :played_at => Time.now
+        Update.log "Playing '#{nomination.album}' (<i>#{nomination.user.real_name}</i>)"
         @random_tracks = 1
 
-        Update.log "Playing '#{nomination.artist} - #{nomination.name}' (<i>#{nomination.user.real_name}</i>)"
-
       elsif (Time.now.utc + 36000).hour < 19
-        album = Album.get(rand(Album.count) + 1)
-        nomination = album.nominations.new(:status => "played", :played_at => Time.now, :created_at => Time.now, :user_id => 0)
+        nomination = Album.nominate_similar(Nomination.current.album, @random_tracks)
 
-        songs = album.songs.dup
-        (songs.size - @random_tracks).times { songs.delete_at(rand(songs.size)) } unless @random_tracks > songs.size
-        songs.each { |song| nomination.songs << song }
-        nomination.save
-
-        Update.log "<i>Dr Random</i> selected '#{album}' (#{@random_tracks} tracks)"
+        Update.log "<i>Dr Random</i> selected '#{nomination.album}' (#{@random_tracks} tracks)"
         @random_tracks += 1
       end
 
       if nomination
+        nomination.update :status => "played", :played_at => Time.now
         nomination.songs.each { |song| @mpd.add song.file }
         @mpd.play
       end

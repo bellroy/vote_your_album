@@ -136,6 +136,59 @@ describe Album do
     end
   end
 
+  describe "nominate similar" do
+    before do
+      @current = Album.new(:id => 123)
+
+      @album = Album.new
+      @current.stub! :find_similar => @album
+      Album.stub! :get => @album
+
+      @nomination = Nomination.new
+      @album.nominations.stub! :new => @nomination
+      @nomination.stub! :save => true
+
+      @songs = [Song.new(:file => "path1"), Song.new(:file => "path2"), Song.new(:file => "path3"), Song.new(:file => "path4")]
+      @album.stub!(:songs).and_return @songs
+    end
+
+    it "should try to find a similar album" do
+      @current.should_receive(:find_similar).and_return @album
+      Album.should_not_receive(:get).and_return @album
+      Album.nominate_similar @current, 1
+    end
+
+    it "should find a random album, if we can't find a similar album" do
+      @current.stub! :find_similar => nil
+      Album.should_receive(:get).and_return @album
+      Album.nominate_similar @current, 1
+    end
+
+    it "should create a new nomination (that will work as the 'current' one)" do
+      @album.nominations.should_receive(:new).with(hash_including(:user_id => 0))
+      Album.nominate_similar @current, 1
+    end
+
+    it "should assign the songs to the nomination and save it" do
+      Album.nominate_similar @current, 5
+      @nomination.songs.should == @songs
+    end
+
+    it "should add random_tracks x tracks of the album to the playlist" do
+      Album.nominate_similar @current, 2
+      @nomination.should have(2).songs
+    end
+
+    it "should return the nomination if it was created" do
+      Album.nominate_similar(@current, 1).should == @nomination
+    end
+
+    it "should return false if the nomination couldn't be saved" do
+      @nomination.stub! :save => false
+      Album.nominate_similar(@current, 1).should be_false
+    end
+  end
+
   describe "update" do
     before do
       @song = MPD::Song.new

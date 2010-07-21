@@ -56,6 +56,17 @@ class Album
   end
 
   class << self
+    def nominate_similar(current, track_count)
+      album = current.find_similar || Album.get(rand(Album.count) + 1)
+      nomination = album.nominations.new(:created_at => Time.now, :user_id => 0)
+
+      songs = album.songs.dup
+      (songs.size - track_count).times { songs.delete_at(rand(songs.size)) } unless track_count > songs.size
+      songs.each { |song| nomination.songs << song }
+
+      nomination.save && nomination
+    end
+
     def update
       MpdProxy.execute(:albums).each do |album|
         print "."
