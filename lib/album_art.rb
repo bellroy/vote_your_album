@@ -1,9 +1,5 @@
-require 'httparty'
-
 class AlbumArt
-  include HTTParty
-  base_uri "http://ws.audioscrobbler.com"
-  default_params :api_key => "46021e7f85a446b1097cfe618f10ce3a"
+  include LastFm
 
   def initialize(artist, album)
     @artist, @album = artist, album
