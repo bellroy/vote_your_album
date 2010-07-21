@@ -91,6 +91,31 @@ describe Album do
     end
   end
 
+  describe "find similar" do
+    before do
+      @album = Album.new(:id => 123)
+
+      Album.stub! :all => [Album.new(:id => 1), Album.new(:id => 2)]
+      Album.stub!(:all).with(:artist => []).and_return []
+
+      LastFmMeta.stub! :similar_artists => ["Fugees", "Kanye West"]
+    end
+
+    it "should return nil if we can't find any similar artists" do
+      LastFmMeta.stub! :similar_artists => []
+      @album.find_similar.should be_nil
+    end
+
+    it "should return nil if we can't find a similar album in the DB" do
+      Album.stub! :all => []
+      @album.find_similar.should be_nil
+    end
+
+    it "should return a random album of a similar artist" do
+      @album.find_similar.should be_a(Album)
+    end
+  end
+
   describe "to s" do
     before do
       @album = Album.new(:id => 123, :artist => "artist", :name => "album")

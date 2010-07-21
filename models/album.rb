@@ -40,6 +40,13 @@ class Album
     save
   end
 
+  def find_similar
+    similar = Album.all(:artist => LastFmMeta.similar_artists(artist))
+    return nil if similar.empty?
+
+    similar[rand(similar.size)]
+  end
+
   def to_s
     "#{artist} - #{name}"
   end
