@@ -43,6 +43,11 @@ class MpdProxy
       @time = total - elapsed
     end
 
+    def clear_playlist
+      @random_tracks = 1
+      execute :clear
+    end
+
     def play_next
       @mpd.clear
 

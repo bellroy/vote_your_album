@@ -86,7 +86,7 @@ class Nomination
     return unless can_be_forced_by?(current_user)
 
     vote = self.down_votes.create(:user => current_user, :value => 1, :type => "force")
-    MpdProxy.execute(:clear) if down_votes_necessary <= 0
+    MpdProxy.clear_playlist if down_votes_necessary <= 0
 
     Update.log "<i>#{current_user.real_name}</i> forced '#{artist} - #{name}'"
   end
