@@ -173,6 +173,8 @@ describe "vote your album:" do
 
   describe "POST '/add/:id'" do
     before do
+      User.stub! :first => User.new
+
       Album.stub!(:get).and_return @album = Album.new(:id => 123, :artist => "artist", :name =>  "album")
       @album.stub! :nominate
 
@@ -214,6 +216,8 @@ describe "vote your album:" do
   { :up => 1, :down => -1 }.each do |action, change|
     describe "POST '/up/:id'" do
       before do
+        User.stub! :first => @user = User.new
+
         album = Album.new(:artist => "artist", :name =>  "album")
         Nomination.stub!(:get).and_return @nomination = Nomination.new(:id => 123, :album => album)
         @nomination.stub! :vote
@@ -223,7 +227,7 @@ describe "vote your album:" do
 
       it "should vote the Nomination #{action}" do
         Nomination.should_receive(:get).with(123).and_return @nomination
-        @nomination.should_receive(:vote).with change, nil
+        @nomination.should_receive(:vote).with change, @user
         post "/#{action}/123"
       end
 
@@ -242,6 +246,8 @@ describe "vote your album:" do
 
   describe "POST '/remove/:id" do
     before do
+      User.stub! :first => User.new
+
       album = Album.new(:artist => "artist", :name =>  "album")
       Nomination.stub!(:get).and_return @nomination = Nomination.new(:id => 123, :album => album)
       @nomination.stub! :remove
@@ -269,6 +275,8 @@ describe "vote your album:" do
 
   describe "POST '/force" do
     before do
+      User.stub! :first => User.new
+
       Nomination.stub!(:current).and_return @nomination = Nomination.new(:id => 123)
       @nomination.stub! :force
     end

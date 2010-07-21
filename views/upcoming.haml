@@ -1,5 +1,5 @@
 - @nominations.each do |nomination|
-  %article{album_attributes(nomination, request.ip)}
+  %article{album_attributes(nomination, current_user)}
     .info
       - unless nomination.art
         %img.art
@@ -10,7 +10,7 @@
       .score= nomination.score_s
 
     %aside.voting
-      - if nomination.can_be_voted_for_by?(request.ip)
+      - if nomination.can_be_voted_for_by?(current_user)
         %a.up{ :href => "/vote/up", :ref => nomination.id, :title => "I like that shit! Play it now..." }
           %img{ :src => "/images/plus.png" }
         %a.down{ :href => "/vote/down", :ref => nomination.id, :title => "Uuuhhhh, don't know about this one - let's get some beer first." }

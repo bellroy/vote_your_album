@@ -8,6 +8,8 @@ require 'lib/config'
 # Helpers
 # -----------------------------------------------------------------------------------
 def execute_on_nomination(id, do_render = true, &block)
+  return "" unless logged_in?
+
   nomination = Nomination.get(id.to_i)
   yield(nomination) if nomination
   do_render ? render_upcoming : ""
@@ -120,6 +122,8 @@ get "/updates" do
 end
 
 post "/add/:id" do |album_id|
+  render "" unless logged_in?
+
   album = Album.get(album_id.to_i)
   album.nominate(current_user) if album
 
@@ -141,7 +145,7 @@ post "/remove/:id" do |nomination_id|
 end
 
 post "/force" do
-  Nomination.current.force current_user
+  Nomination.current.force(current_user) if logged_in?
   json_status
 end
 

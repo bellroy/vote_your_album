@@ -6,6 +6,7 @@ describe "vote your album helpers:" do
     before do
       @album = Album.new(:artist => "artist", :name => "name")
       Nomination.stub!(:active).and_return [@nomination = Nomination.new(:id => 1, :album => @album, :score => 0)]
+      @nomination.stub!(:owned_by?).and_return false
     end
 
     it "should have a set of classes by default" do
