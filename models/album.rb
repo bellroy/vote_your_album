@@ -137,11 +137,16 @@ class Album
 
     def get_artist_from(songs)
       artists = songs.map { |song| song.artist }.compact
+      counts = artists.uniq.inject({}) { |res, item| res.merge(item => artists.grep(item).size) }
+
+      album_artist = counts.sort_by { |artist, count| count }.reverse.first # ["name", count]
       shortest = artists.sort_by { |artist| artist.length }.first
 
       case
         when shortest.nil?
           "Unknown"
+        when album_artist && artists.select { |artist| artist =~ /\A#{Regexp.escape(album_artist.first)}/ }.size >= (songs.size / 2.0)
+          album_artist.first
         when artists.select { |artist| artist =~ /\A#{Regexp.escape(shortest)}/ }.size >= (songs.size / 2.0)
           shortest
         else

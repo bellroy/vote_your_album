@@ -284,7 +284,7 @@ describe Album do
       Album.update
     end
 
-    it "should assign a empty value instead of a nil value if we dont have any artists" do
+    it "should assign a 'Unknown instead of a nil value if we dont have any artists" do
       @song["artist"] = nil
       @album.should_receive(:artist=).with "Unknown"
       Album.update
@@ -310,6 +310,18 @@ describe Album do
       MpdProxy.stub!(:find_songs_for).and_return [@song, song2, song3]
 
       @album.should_receive(:artist=).with "Various Artists"
+      Album.update
+    end
+
+    it "should use the name of the most common name, even if it's not the shortest" do
+      @song["artist"] = "Method Man"
+      song2 = MPD::Song.new
+      { "track" => 2, "artist" => "Method Man", "title" => "song 2", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
+      song3 = MPD::Song.new
+      { "track" => 3, "artist" => "Saukrates", "title" => "song 3", "album" => "album1", "file" => "other" }.each { |k, v| song3[k] = v }
+      MpdProxy.stub!(:find_songs_for).and_return [@song, song2, song3]
+
+      @album.should_receive(:artist=).with "Method Man"
       Album.update
     end
 
