@@ -23,11 +23,6 @@ $(function() {
     }
   });
 
-  // Name form
-  $("#change_name").ajaxForm({
-    success: function() {
-      $("#change_name input").blur();
-    }
   });
 
   // Drop container definitions
