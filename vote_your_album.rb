@@ -121,6 +121,13 @@ get "/updates" do
   haml :updates, :layout => false
 end
 
+get "/songs/:id" do |album_id|
+  album = Album.get(album_id.to_i)
+  @songs = (album ? album.songs : [])
+
+  haml :songs, :layout => false
+end
+
 post "/add/:id" do |album_id|
   render "" unless logged_in?
 

@@ -233,6 +233,7 @@ section.updates > section {
 }
 
 article.album {
+  position: relative;
   clear: both;
   height: 3.1em;
   padding: 2px 4px;
@@ -265,6 +266,17 @@ article.album:hover {
   width: 3em;
   height: 3em;
   margin-right: 0.6em;
+}
+
+.song_spinner {
+  display: none;
+  position: absolute;
+  top: 0.5em;
+  left: 14em;
+  height: 2.5em;
+  width: 2.5em;
+  z-index: 1;
+  opacity: 0.4;
 }
 
 article.album .info {

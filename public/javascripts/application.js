@@ -23,6 +23,17 @@ $(function() {
     }
   });
 
+  // Fetch songs when clicking on the album
+  $("section.music article").live("click", function() {
+    var album = $(this);
+    album.children(".song_spinner").show();
+
+    $.get("/songs/" + $(this).attr("ref"), function(list) {
+      album.children(".song_spinner").hide();
+      album.children(".songs").html(list);
+    });
+
+    return false;
   });
 
   // Drop container definitions
@@ -184,12 +195,14 @@ function appendAlbumsIteratively() {
  */
 function albumElement(album) {
   return ' \
-    <article class="album" ref="' + album.id + '"> \
+    <article class="album" ref="' + album.id + '" title="Click to show songs"> \
+      <img class="song_spinner" src="/images/spinner.gif" /> \
       <div class="info"> \
         <img class="art" ' + (album.art != null ? ('src="' + album.art + '"') : '') + ' /> \
         <p>' + album.artist + '</p> \
         <p>' + album.name + '</p> \
       </div> \
+      <aside class="songs"></aside> \
     </article> \
   ';
 }
