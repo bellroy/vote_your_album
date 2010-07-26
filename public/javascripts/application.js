@@ -33,7 +33,7 @@ $(function() {
       $(".song_spinner").hide();
       album.children(".songs").html(list).show("blind", {}, "normal", function() {
         $("section.music .list").scrollTo(album, {
-          offset: 50
+          offset: -50
         });
       });
     });
