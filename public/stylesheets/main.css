@@ -328,6 +328,29 @@ article.album .voting img {
   height: 1.2em;
 }
 
+article.album .songs {
+  display: none;
+  margin: 0.4em 0 0.1em 1.5em;
+  border-top: 1px dotted #000;
+}
+
+article.album .songs p {
+  height: 1.5em;
+}
+
+article.album .songs span {
+  display: block;
+  float: left;
+  width: 24em;
+  overflow: hidden;
+}
+article.album .songs time {
+  display: block;
+  float: right;
+  width: 3em;
+  text-align: right;
+}
+
 section.updates article {
   padding: 0.3em;
 }
