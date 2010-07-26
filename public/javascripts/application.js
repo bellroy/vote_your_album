@@ -26,12 +26,13 @@ $(function() {
   // Fetch songs when clicking on the album
   $("section.music article").live("click", function() {
     var album = $(this);
-    album.children(".song_spinner").show();
+    $(".song_spinner", album).show();
     $("section.music article .songs:visible").hide("blind");
 
     $.get("/songs/" + $(this).attr("ref"), function(list) {
-      album.children(".song_spinner").hide();
+      $(".song_spinner").hide();
       album.children(".songs").html(list).show("blind");
+      $("section.music .list").scrollTo(album);
     });
 
     return false;
