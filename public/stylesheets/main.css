@@ -235,12 +235,15 @@ section.updates > section {
 article.album {
   position: relative;
   clear: both;
-  height: 3.1em;
   padding: 2px 4px;
   border-bottom: 1px solid #000;
   line-height: 1.5em;
   cursor: pointer;
   cursor: hand;
+}
+
+article.album .header {
+  height: 3.1em;
 }
 
 article.ui-draggable-dragging {

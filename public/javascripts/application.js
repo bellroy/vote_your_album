@@ -27,10 +27,11 @@ $(function() {
   $("section.music article").live("click", function() {
     var album = $(this);
     album.children(".song_spinner").show();
+    $("section.music article .songs:visible").hide("blind");
 
     $.get("/songs/" + $(this).attr("ref"), function(list) {
       album.children(".song_spinner").hide();
-      album.children(".songs").html(list);
+      album.children(".songs").html(list).show("blind");
     });
 
     return false;
@@ -196,11 +197,13 @@ function appendAlbumsIteratively() {
 function albumElement(album) {
   return ' \
     <article class="album" ref="' + album.id + '" title="Click to show songs"> \
-      <img class="song_spinner" src="/images/spinner.gif" /> \
-      <div class="info"> \
-        <img class="art" ' + (album.art != null ? ('src="' + album.art + '"') : '') + ' /> \
-        <p>' + album.artist + '</p> \
-        <p>' + album.name + '</p> \
+      <div class="header"> \
+        <img class="song_spinner" src="/images/spinner.gif" /> \
+        <div class="info"> \
+          <img class="art" ' + (album.art != null ? ('src="' + album.art + '"') : '') + ' /> \
+          <p>' + album.artist + '</p> \
+          <p>' + album.name + '</p> \
+        </div> \
       </div> \
       <aside class="songs"></aside> \
     </article> \
