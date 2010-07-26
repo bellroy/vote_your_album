@@ -32,7 +32,7 @@ $(function() {
     $.get("/songs/" + $(this).attr("ref"), function(list) {
       $(".song_spinner").hide();
       album.children(".songs").html(list).show("blind", {}, "normal", function() {
-        $("section.music .list").scrollTo(album, {
+        $("section.music .list").scrollTo(album, 500, {
           offset: -50
         });
       });
