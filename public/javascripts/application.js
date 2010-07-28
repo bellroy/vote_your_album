@@ -41,7 +41,7 @@ $(function() {
     return false;
   });
 
-  // Drop container definitions
+  // Drag & Drop definitions
   $("section.upcoming").droppable({
     scope: "adding",
     hoverClass: "over",
@@ -51,6 +51,7 @@ $(function() {
       });
     }
   });
+
   $("section.music").droppable({
     scope: "removing",
     hoverClass: "over",
@@ -65,6 +66,25 @@ $(function() {
     $("section.upcoming .deleteable").draggable($.extend(drag_options, {
       scope: "removing"
     }));
+  });
+
+  // Show updates when clicking on a nomination
+  $("section.upcoming article").live("click", function() {
+    var nomination = $(this);
+
+    if (nomination.children(".updates:visible").length > 0) {
+      nomination.children(".updates").hide("blind");
+    }
+    else {
+      $("section.upcoming article .updates:visible").hide("blind");
+      nomination.children(".updates").show("blind", {}, "normal", function() {
+        $("section.upcoming .list").scrollTo(nomination, 500, {
+          offset: -50
+        });
+      });
+    }
+
+    return false;
   });
 
   // Click events that update the status of the application

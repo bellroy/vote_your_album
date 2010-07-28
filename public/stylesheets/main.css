@@ -337,14 +337,18 @@ article.album .voting img {
   height: 1.2em;
 }
 
-article.album .songs {
+article.album .songs,
+article.album .updates {
   display: none;
   margin: 0.4em 0 0.1em 1.5em;
   border-top: 1px dotted #000;
+  font-size: 0.85em;
 }
 
-article.album .songs p {
+article.album .songs p,
+article.album .updates p {
   height: 1.5em;
+  overflow: hidden;
 }
 
 article.album .songs span {
@@ -369,7 +373,8 @@ section.updates article:nth-child(odd) {
   background-color: rgb(230, 230, 230);
 }
 
-section.updates article time {
+section.updates article time,
+article.album .updates time {
   font-size: 0.7em;
   margin: 0.5em 0 0 1em;
   opacity: 0.6;

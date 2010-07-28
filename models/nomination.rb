@@ -17,6 +17,7 @@ class Nomination
   has n, :votes, :type => "vote", :value.gt => 0
   has n, :negative_votes, :model => "Vote", :type => "vote", :value.lt => 0
   has n, :down_votes, :model => "Vote", :type => "force"
+  has n, :updates
 
   def artist
     album && album.artist

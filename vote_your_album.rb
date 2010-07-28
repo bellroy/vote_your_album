@@ -70,7 +70,12 @@ helpers do
     classes << "negative-score" if nomination.score < 0
     attr.update :class => classes.join(" ")
 
-    attr.update(:title => "TTL: #{to_time(nomination.ttl)}") if nomination.ttl
+    if nomination.ttl
+      attr.update(:title => "TTL: #{to_time(nomination.ttl)}")
+    else
+      attr.update(:title => "Click to show log")
+    end
+
     attr
   end
 
