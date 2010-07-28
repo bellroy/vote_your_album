@@ -63,7 +63,7 @@ class Nomination
 
     save
 
-    Update.log "#{value > 0 ? "+1" : "-1"} for '#{artist} - #{name}' from <i>#{current_user.real_name}</i>"
+    Update.log "#{value > 0 ? "+1" : "-1"} for '#{artist} - #{name}' from <i>#{current_user.real_name}</i>", self, current_user
   end
 
   def can_be_voted_for_by?(current_user)
@@ -73,7 +73,7 @@ class Nomination
   def remove(current_user)
     self.update(:status => "deleted") if owned_by?(current_user)
 
-    Update.log "<i>#{current_user.real_name}</i> removed '#{artist} - #{name}'"
+    Update.log "<i>#{current_user.real_name}</i> removed '#{artist} - #{name}'", self, current_user
   end
 
   # Force methods
@@ -88,7 +88,7 @@ class Nomination
     vote = self.down_votes.create(:user => current_user, :value => 1, :type => "force")
     MpdProxy.clear_playlist if down_votes_necessary <= 0
 
-    Update.log "<i>#{current_user.real_name}</i> forced '#{artist} - #{name}'"
+    Update.log "<i>#{current_user.real_name}</i> forced '#{artist} - #{name}'", self, current_user
   end
 
   def can_be_forced_by?(current_user)

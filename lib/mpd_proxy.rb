@@ -52,13 +52,13 @@ class MpdProxy
       @mpd.clear
 
       if nomination = Nomination.active.first
-        Update.log "Playing '#{nomination.album}' (<i>#{nomination.user.real_name}</i>)"
+        Update.log "Playing '#{nomination.album}' (<i>#{nomination.user.real_name}</i>)", nomination, nomination.user
         @random_tracks = 1
 
       elsif (Time.now.utc + 36000).hour < 19
         nomination = Album.nominate_similar(Nomination.current.album, @random_tracks)
 
-        Update.log "<i>Dr Random</i> selected '#{nomination.album}' (#{@random_tracks} tracks)"
+        Update.log "<i>Dr Random</i> selected '#{nomination.album}' (#{@random_tracks} tracks)", nomination
         @random_tracks += 1
       end
 

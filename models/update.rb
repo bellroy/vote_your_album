@@ -5,6 +5,9 @@ class Update
   property :action, String, :length => 255
   property :time, DateTime
 
+  belongs_to :user
+  belongs_to :nomination
+
   default_scope(:default).update :order => [:time.desc, :id.desc], :limit => 20
 
   def time_ago
@@ -23,7 +26,7 @@ class Update
     end
   end
 
-  def self.log(action)
-    create :action => action, :time => Time.now
+  def self.log(action, nomination, user = nil)
+    create :action => action, :time => Time.now, :user => user, :nomination => nomination
   end
 end
