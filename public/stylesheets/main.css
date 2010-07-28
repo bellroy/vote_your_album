@@ -342,6 +342,7 @@ article.album .songs span {
   display: block;
   float: left;
   width: 24em;
+  height: 1.5em;
   overflow: hidden;
 }
 article.album .songs time {
