@@ -6,6 +6,12 @@ class User
   property :username, String, :length => 100
   property :name, String, :length => 200
 
+  has n, :nominations
+  has n, :played_nominations, :model => "Nomination", :status => "played"
+  has n, :votes, :type => "vote", :value.gt => 0
+  has n, :negative_votes, :model => "Vote", :type => "vote", :value.lt => 0
+  has n, :down_votes, :model => "Vote", :type => "force"
+
   def real_name
     name || username
   end

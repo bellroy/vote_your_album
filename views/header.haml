@@ -26,9 +26,23 @@
       %p#time
 
   %aside.right
-    %p
-      - if logged_in?
+    - if logged_in?
+      %p
         You are
         = current_user.real_name
         = "|"
         %a{ :href => "/sign-in" } Not You?
+      %p
+        Nominations:
+        %span.value= current_user.nominations.count
+      %p
+        Nom. played:
+        %span.value= current_user.played_nominations.count
+      %p
+        +1 / -1 / force:
+        %span.value
+          = current_user.votes.count
+          = "/"
+          = current_user.negative_votes.count
+          = "/"
+          = current_user.down_votes.count
