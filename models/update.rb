@@ -5,7 +5,7 @@ class Update
   property :action, String, :length => 255
   property :time, DateTime
 
-  belongs_to :user
+  belongs_to :user, :required => false
   belongs_to :nomination
 
   default_scope(:default).update :order => [:time.desc, :id.desc], :limit => 20
