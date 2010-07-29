@@ -69,8 +69,14 @@ describe "vote your album:" do
 
       get "/search", :q => "shuffle"
       last_response.body.should match(/\"id\":2/)
-      last_response.body.should match(/\"artist\":\"someone\"/)
-      last_response.body.should match(/\"name\":\"else\"/)
+    end
+
+    it "should load all albums for the given tag if the search starts with 'tag:'" do
+      Tag.stub!(:first).with(:name => "rock").and_return tag = Tag.new
+      tag.stub! :albums => [album = Album.new(:id => 3, :artist => "tagged!", :name => "bla")]
+
+      get "/search", :q => "tag:rock"
+      last_response.body.should match(/\"id\":3/)
     end
   end
 

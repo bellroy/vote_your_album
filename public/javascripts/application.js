@@ -130,6 +130,13 @@ $(function() {
     return false;
   });
 
+  // Tag listings
+  $("a.tag").live("click", function() {
+    $("#query").val('tag:' + $(this).attr("ref"));
+    $("#search").submit();
+    return false;
+  });
+
   // Initial page update to load the lists and the status
   getList("all");
   getUpcoming();
