@@ -12,14 +12,10 @@ class AlbumArt
 protected
 
   def fetch_by_exact_match
-    album_info = self.class.get("/2.0", :query => {
-      :method => "album.getinfo",
-      :artist => @artist,
-      :album => @album
-    })
+    album_info = LastFmMeta.album_info(@artist, @album)
 
     extract_art do
-      album_info["lfm"]["album"]["image"][2]
+      album_info["image"][2]
     end
   rescue NoMethodError
     nil
