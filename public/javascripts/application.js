@@ -233,6 +233,11 @@ function albumElement(album) {
           <p>' + album.name + '</p> \
         </div> \
       </div> \
+      <aside class="tags">' +
+        _(album.tags).map(function(tag) {
+          return ' <a href="search?q=tag:' + tag + '" class="tag" ref="' + tag + '">' + tag + '</a>';
+        })
+      + '</aside> \
       <aside class="songs"></aside> \
     </article> \
   ';

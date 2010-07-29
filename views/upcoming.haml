@@ -17,6 +17,9 @@
           %a.down{ :href => "/vote/down", :ref => nomination.id, :title => "Uuuhhhh, don't know about this one - let's get some beer first." }
             %img{ :src => "/images/minus.png" }
 
+    %aside.tags
+      = nomination.tags.map { |tag| "<a href=\"/search?q=tag:#{tag.name}\" class=\"tag\" ref=\"#{tag.name}\">#{tag.name}</a>" }.join(", ")
+
     %aside.updates
       - nomination.updates.each do |update|
         %p

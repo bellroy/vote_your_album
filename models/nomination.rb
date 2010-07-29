@@ -19,16 +19,11 @@ class Nomination
   has n, :down_votes, :model => "Vote", :type => "force"
   has n, :updates
 
-  def artist
-    album && album.artist
-  end
-
-  def name
-    album && album.name
-  end
-
-  def art
-    album && album.art
+  # delegation
+  [:artist, :name, :art, :tags].each do |method_name|
+    define_method method_name do
+      album && album.send(method_name)
+    end
   end
 
   def ttl

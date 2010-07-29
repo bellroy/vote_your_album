@@ -337,6 +337,15 @@ article.album .voting img {
   height: 1.2em;
 }
 
+article.album .tags {
+  text-align: right;
+  font-size: 0.9em;
+}
+
+article.album .tags .tag {
+  z-index: 2;
+}
+
 article.album .songs,
 article.album .updates {
   display: none;

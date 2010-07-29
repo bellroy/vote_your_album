@@ -132,7 +132,7 @@ describe Album do
     end
 
     it "should return the album's attributes in a hash" do
-      @album.to_hash.should == { :id => 123, :artist => "artist", :name => "album", :art => "some_url" }
+      @album.to_hash.should == { :id => 123, :artist => "artist", :name => "album", :art => "some_url", :tags => [] }
     end
   end
 

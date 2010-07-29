@@ -61,7 +61,13 @@ class Album
   end
 
   def to_hash
-    { :id => id, :artist => artist, :name => name, :art => art }
+    {
+      :id => id,
+      :artist => artist,
+      :name => name,
+      :art => art,
+      :tags => tags.map { |t| t.name }
+    }
   end
 
   class << self
