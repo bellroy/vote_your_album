@@ -41,7 +41,7 @@
       %p
         +1 / -1 / force:
         %span.value
-          = current_user.votes.count
+          = (current_user.votes.count - current_user.nominations.count)
           = "/"
           = current_user.negative_votes.count
           = "/"
