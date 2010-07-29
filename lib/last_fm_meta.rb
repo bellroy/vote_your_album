@@ -13,7 +13,7 @@ class LastFmMeta
     end
 
     def tags(info)
-      info["toptags"]["tag"].map { |t| t["name"] }
+      [info["toptags"]["tag"]].flatten.map { |t| t["name"] }
     rescue NoMethodError
       []
     end
