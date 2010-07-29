@@ -11,13 +11,18 @@ class LastFmMeta
     rescue NoMethodError
       nil
     end
+
+    def tags(info)
+      info["toptags"]["tag"].map { |t| t["name"] }
+    rescue NoMethodError
+      []
+    end
+
     def similar_artists(artist)
-      artists = get("/2.0", :query => {
+      get("/2.0", :query => {
         :method => "artist.getinfo",
         :artist => artist
-      })
-
-      artists["lfm"]["artist"]["similar"]["artist"].map { |h| h["name"] }
+      })["lfm"]["artist"]["similar"]["artist"].map { |h| h["name"] }
     rescue NoMethodError
       []
     end

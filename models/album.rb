@@ -9,6 +9,7 @@ class Album
   has n, :songs
   has n, :nominations
   has n, :active_nominations, :model => "Nomination", :status => "active"
+  has n, :tags, :through => Resource
 
   default_scope(:default).update :order => [:artist, :name]
 
@@ -37,6 +38,14 @@ class Album
 
   def fetch_album_art
     self.art = AlbumArt.new(artist, name).fetch
+    save
+  end
+
+  def fetch_tags
+    LastFmMeta.tags(LastFmMeta.album_info(artist, name)).each do |tag|
+      tags << Tag.find_or_create_by_name(tag)
+    end
+
     save
   end
 
