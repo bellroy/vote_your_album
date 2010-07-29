@@ -401,17 +401,6 @@ describe Album do
     end
   end
 
-  describe "random" do
-    before do
-      @album = Album.new(:id => 1)
-      Album.stub!(:get).and_return @album
-    end
-
-    it "should return a random album as a list" do
-      Album.random.should == [@album]
-    end
-  end
-
   describe "most listened" do
     it "should query the database directly for the most listened albums" do
       Album.should_receive(:execute_sql).with "COUNT(DISTINCT n.id)", "n.status = 'played'"

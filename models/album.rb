@@ -118,7 +118,11 @@ class Album
     end
 
     def random
-      [get(rand(count) + 1)]
+      random_id = repository(:default).adapter.select <<-SQL
+SELECT id FROM albums ORDER BY RAND() LIMIT 5
+      SQL
+
+      all :id => random_id
     end
 
     def most_listened
@@ -155,7 +159,7 @@ class Album
     end
 
     def execute_sql(value, conditions, sort = "DESC")
-      repository(:default).adapter.query <<-SQL
+      repository(:default).adapter.select <<-SQL
 SELECT a.*, #{value} AS value FROM albums a
 INNER JOIN nominations n ON n.album_id = a.id
 INNER JOIN votes v ON v.nomination_id = n.id
