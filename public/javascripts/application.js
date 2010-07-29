@@ -107,22 +107,26 @@ $(function() {
     });
   });
 
+  // Submit the form with AJAX
+  $("#search").ajaxForm({
+    dataType: "json",
+    beforeSend: function() {
+      $("section.music .overlay").show();
+    },
+    success: function(list) {
+      updateList(list);
+    }
+  });
+
   // Search
   $("#query").delayedObserver(function() {
-    $("#search").ajaxSubmit({
-      dataType: "json",
-      beforeSend: function() {
-        $("section.music .overlay").show();
-      },
-      success: function(list) {
-        updateList(list);
-      }
-    });
+    $("#search").submit();
   }, 0.3);
 
-  // Random
+  // Shuffle
   $("a.shuffle").click(function() {
-    getList("random");
+    $("#query").val("shuffle");
+    $("#search").submit();
     return false;
   });
 

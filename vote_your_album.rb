@@ -110,7 +110,13 @@ get "/music/:type" do |list_type|
 end
 
 get "/search" do
-  Album.search(params[:q]).map { |a| a.to_hash }.to_json
+  if params[:q] == "shuffle"
+    res = Album.random
+  else
+    res = Album.search(params[:q])
+  end
+
+  res.map { |a| a.to_hash }.to_json
 end
 
 get "/upcoming" do

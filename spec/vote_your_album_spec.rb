@@ -63,6 +63,15 @@ describe "vote your album:" do
       last_response.body.should match(/\"artist\":\"artist\"/)
       last_response.body.should match(/\"name\":\"name\"/)
     end
+
+    it "should return random albums when submitting 'shuffle'" do
+      Album.stub! :random => [album = Album.new(:id => 2, :artist => "someone", :name => "else")]
+
+      get "/search", :q => "shuffle"
+      last_response.body.should match(/\"id\":2/)
+      last_response.body.should match(/\"artist\":\"someone\"/)
+      last_response.body.should match(/\"name\":\"else\"/)
+    end
   end
 
   describe "GET '/upcoming'" do
