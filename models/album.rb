@@ -120,18 +120,6 @@ class Album
       all :conditions => ["artist LIKE ? OR name LIKE ?", "%#{q}%", "%#{q}%"]
     end
 
-    def nominated
-      all.select { |a| a.nominated? }
-    end
-
-    def never_nominated
-      all.reject { |a| a.nominated? }
-    end
-
-    def played
-      all.select { |a| a.played? }
-    end
-
     def random
       random_id = repository(:default).adapter.select <<-SQL
 SELECT id FROM albums ORDER BY RAND() LIMIT 5
@@ -140,16 +128,8 @@ SELECT id FROM albums ORDER BY RAND() LIMIT 5
       all :id => random_id
     end
 
-    def most_listened
-      execute_sql "COUNT(DISTINCT n.id)", "n.status = 'played'"
     end
 
-    def most_popular
-      execute_sql "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value > 0"
-    end
-
-    def least_popular
-      execute_sql "SUM(v.value) / COUNT(DISTINCT n.id)", "v.type = 'vote' AND v.value < 0", "ASC"
     end
 
   private
@@ -171,17 +151,6 @@ SELECT id FROM albums ORDER BY RAND() LIMIT 5
         else
           "Various Artists"
       end
-    end
-
-    def execute_sql(value, conditions, sort = "DESC")
-      repository(:default).adapter.select <<-SQL
-SELECT a.*, #{value} AS value FROM albums a
-INNER JOIN nominations n ON n.album_id = a.id
-INNER JOIN votes v ON v.nomination_id = n.id
-WHERE #{conditions}
-GROUP BY a.id
-ORDER BY value #{sort}
-      SQL
     end
   end
 end
