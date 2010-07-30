@@ -72,7 +72,7 @@ class Album
 
   class << self
     def nominate_similar(current, track_count)
-      album = current.find_similar || Album.get(rand(Album.count) + 1)
+      album = current.find_similar || single_random
       nomination = album.nominations.new(:created_at => Time.now, :user_id => 0)
 
       songs = album.songs.dup
@@ -128,6 +128,8 @@ SELECT id FROM albums ORDER BY RAND() LIMIT 5
       all :id => random_id
     end
 
+    def single_random
+      random[0]
     end
 
     end

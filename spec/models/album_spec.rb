@@ -142,7 +142,7 @@ describe Album do
 
       @album = Album.new
       @current.stub! :find_similar => @album
-      Album.stub! :get => @album
+      Album.stub! :single_random => @album
 
       @nomination = Nomination.new
       @album.nominations.stub! :new => @nomination
@@ -160,7 +160,7 @@ describe Album do
 
     it "should find a random album, if we can't find a similar album" do
       @current.stub! :find_similar => nil
-      Album.should_receive(:get).and_return @album
+      Album.should_receive(:single_random).and_return @album
       Album.nominate_similar @current, 1
     end
 
