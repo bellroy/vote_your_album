@@ -50,7 +50,7 @@ class Album
   end
 
   def find_similar
-    similar = Album.all(:artist => LastFmMeta.similar_artists(artist))
+    similar = Album.all(:artist => LastFmMeta.similar_artists(artist), :id.not => Album.recently_played_ids)
     return nil if similar.empty?
 
     similar[rand(similar.size)]
@@ -132,6 +132,13 @@ SELECT id FROM albums ORDER BY RAND() LIMIT 5
       random[0]
     end
 
+    def recently_played_ids
+      repository(:default).adapter.select <<-SQL
+SELECT DISTINCT(albums.id) FROM albums LEFT OUTER JOIN nominations ON albums.id = nominations.album_id
+WHERE nominations.status = 'played'
+ORDER BY played_at DESC
+LIMIT 5
+      SQL
     end
 
   private
