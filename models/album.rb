@@ -151,7 +151,7 @@ SELECT id FROM albums ORDER BY RAND() LIMIT 5
 SELECT DISTINCT(albums.id) FROM albums LEFT OUTER JOIN nominations ON albums.id = nominations.album_id
 WHERE nominations.status = 'played'
 ORDER BY played_at DESC
-LIMIT 5
+LIMIT 10
       SQL
     end
 
