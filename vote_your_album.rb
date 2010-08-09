@@ -178,6 +178,10 @@ post "/volume/:value" do |value|
   MpdProxy.change_volume_to value.to_i
 end
 
+post "/library/update" do
+  Library.update
+end
+
 get "/sign-in" do
   haml :sign_in
 end
