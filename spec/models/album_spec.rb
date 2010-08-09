@@ -94,20 +94,11 @@ describe Album do
   describe "find similar" do
     before do
       @album = Album.new(:id => 123)
-
-      Album.stub! :all => [Album.new(:id => 1), Album.new(:id => 2)]
-      Album.stub!(:all).with(:artist => []).and_return []
-
-      LastFmMeta.stub! :similar_artists => ["Fugees", "Kanye West"]
-    end
-
-    it "should return nil if we can't find any similar artists" do
-      LastFmMeta.stub! :similar_artists => []
-      @album.find_similar.should be_nil
+      @album.stub_chain(:similar_albums, :all).and_return [Album.new(:id => 1), Album.new(:id => 2)]
     end
 
     it "should return nil if we can't find a similar album in the DB" do
-      Album.stub! :all => []
+      @album.stub_chain(:similar_albums, :all).and_return []
       @album.find_similar.should be_nil
     end
 
@@ -208,7 +199,7 @@ describe Album do
 
       @album = Album.new
       Album.stub!(:new).and_return @album
-      @album.stub! :save => true, :fetch_album_art => true
+      @album.stub! :save => true, :fetch_album_art => true, :fetch_tags => true, :fetch_similar => true
       @album.songs.stub!(:first).and_return @song
     end
 

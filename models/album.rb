@@ -10,6 +10,8 @@ class Album
   has n, :nominations
   has n, :active_nominations, "Nomination", :status => "active"
   has n, :tags, :through => Resource
+  has n, :similarities, :child_key => [:source_id]
+  has n, :similar_albums, self, :through => :similarities, :via => :target
 
   default_scope(:default).update :order => [:artist, :name]
 
@@ -50,7 +52,7 @@ class Album
   end
 
   def find_similar
-    similar = Album.all(:artist => LastFmMeta.similar_artists(artist), :id.not => Album.recently_played_ids)
+    similar = similar_albums.all(:id.not => Album.recently_played_ids)
     return nil if similar.empty?
 
     similar[rand(similar.size)]
