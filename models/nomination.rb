@@ -15,8 +15,8 @@ class Nomination
   belongs_to :user
   has n, :songs, :through => Resource
   has n, :votes, :type => "vote", :value.gt => 0
-  has n, :negative_votes, :model => "Vote", :type => "vote", :value.lt => 0
-  has n, :down_votes, :model => "Vote", :type => "force"
+  has n, :negative_votes, "Vote", :type => "vote", :value.lt => 0
+  has n, :down_votes, "Vote", :type => "force"
   has n, :updates
 
   # delegation

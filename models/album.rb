@@ -8,7 +8,7 @@ class Album
 
   has n, :songs
   has n, :nominations
-  has n, :active_nominations, :model => "Nomination", :status => "active"
+  has n, :active_nominations, "Nomination", :status => "active"
   has n, :tags, :through => Resource
 
   default_scope(:default).update :order => [:artist, :name]
