@@ -51,6 +51,16 @@ class Album
     save
   end
 
+  def fetch_similar
+    return unless artist
+
+    Album.all(:artist => LastFmMeta.similar_artists(artist)).each do |album|
+      similar_albums << album
+    end
+
+    save
+  end
+
   def find_similar
     similar = similar_albums.all(:id.not => Album.recently_played_ids)
     return nil if similar.empty?
@@ -111,6 +121,8 @@ class Album
 
         new_album.artist = get_artist_from(songs)
         new_album.fetch_album_art
+        new_album.fetch_tags
+        new_album.fetch_similar
         new_album.save
 
         print "+"
