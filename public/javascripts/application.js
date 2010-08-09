@@ -137,6 +137,15 @@ $(function() {
     return false;
   });
 
+  // Update the library
+  $("a.update-lib").click(function() {
+    if (confirm("Did u add your music to the server?\nAre u ready to wait about half a minute?\nPromise u won't blaim Tom if this doesn't work?\nThen go on!")) {
+      $.post("/library/update", "");
+    }
+
+    return false;
+  });
+
   // Initial page update to load the lists and the status
   getList("all");
   getUpcoming();

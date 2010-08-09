@@ -1,6 +1,8 @@
 %section.music
   %header
     %h1 Music
+    %a.update-lib{ :href => "/library/update", :method => :post, :title => "Show me my new shit!" }
+      %img{ :src => "/images/update.png" }
     %form#search{ :action => "search", :method => :get, :onSubmit => "return false;" }
       %a.shuffle{ :href => "/search?q=shuffle", :title => "I don't have much time, just gimme something!" }
         %img{ :src => "/images/shuffle.png" }

@@ -206,6 +206,16 @@ section.music .overlay .spinner {
   margin: 12.5em 13em;
 }
 
+section.music .update-lib {
+  position: absolute;
+  top: 1.1em;
+  left: 5em;
+}
+
+section.music .update-lib img {
+  height: 1.4em;
+}
+
 section.music #search {
   position: absolute;
   top: 0.6em;
