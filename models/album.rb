@@ -136,7 +136,7 @@ class Album
 
     def random
       random_id = repository(:default).adapter.select <<-SQL
-SELECT id FROM albums ORDER BY RAND() LIMIT 5
+SELECT id FROM albums ORDER BY RAND() LIMIT 10
       SQL
 
       all :id => random_id
