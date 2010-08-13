@@ -120,7 +120,12 @@ $(function() {
 
   // Search
   $("#query").delayedObserver(function() {
-    $("#search").submit();
+    if ($(this).val().length == 0) {
+      updateList([]);
+    }
+    else if ($(this).val().length > 2) {
+      $("#search").submit();
+    }
   }, 0.3);
 
   // Shuffle
@@ -147,7 +152,6 @@ $(function() {
   });
 
   // Initial page update to load the lists and the status
-  getList("all");
   getUpcoming();
   getStatus();
   getUpdates();
