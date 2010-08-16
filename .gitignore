@@ -1,5 +1,6 @@
 config.rb
 public/.DS_Store
 public/images/.DS_Store
+public/images/albums/*
 log/*
 tmp/*
