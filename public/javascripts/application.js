@@ -248,7 +248,7 @@ function albumElement(album) {
       <div class="header"> \
         <img class="song_spinner" src="/images/spinner.gif" /> \
         <div class="info"> \
-          <img class="art" ' + (album.art != null ? ('src="' + album.art + '"') : '') + ' /> \
+          <img class="art" ' + (album.art != null ? ('src="/images/albums/' + album.art + '"') : '') + ' /> \
           <p>' + album.artist + '</p> \
           <p>' + album.name + '</p> \
         </div> \

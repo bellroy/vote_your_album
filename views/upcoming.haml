@@ -5,7 +5,7 @@
         - unless nomination.art
           %img.art
         - else
-          %img.art{ :src => nomination.art }
+          %img.art{ :src => "/images/albums/#{nomination.art}" }
         %p= nomination.artist
         %p= nomination.name
         .score= nomination.score_s
