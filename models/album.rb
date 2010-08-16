@@ -42,9 +42,11 @@ class Album
     return unless url = AlbumArt.new(artist, name).fetch
 
     self.art = url.split("/").last
-    save
-
     rio(File.join(File.dirname(__FILE__), "..", "public", "images", "albums", art)) << rio(url)
+  rescue OpenURI::HTTPError
+    self.art = nil
+  ensure
+    save
   end
 
   def fetch_tags
