@@ -39,8 +39,12 @@ class Album
   end
 
   def fetch_album_art
-    self.art = AlbumArt.new(artist, name).fetch
+    return unless url = AlbumArt.new(artist, name).fetch
+
+    self.art = url.split("/").last
     save
+
+    rio(File.join(File.dirname(__FILE__), "..", "public", "images", "albums", art)) << rio(url)
   end
 
   def fetch_tags
