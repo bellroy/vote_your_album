@@ -43,8 +43,7 @@ describe MpdProxy do
 
   describe "execute" do
     before do
-      MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
-      MpdProxy.setup "server", 1234
+      MpdProxy.stub!(:mpd).and_return @mpd = mock("MPD")
       @mpd.stub! :action
     end
 
@@ -61,8 +60,7 @@ describe MpdProxy do
 
   describe "find songs for" do
     before do
-      MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
-      MpdProxy.setup "server", 1234
+      MpdProxy.stub!(:mpd).and_return @mpd = mock("MPD")
       @mpd.stub!(:find).and_return "songs"
     end
 
@@ -93,8 +91,7 @@ describe MpdProxy do
 
   describe "change volume to" do
     before do
-      MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
-      MpdProxy.setup "server", 1234
+      MpdProxy.stub!(:mpd).and_return @mpd = mock("MPD")
     end
 
     it "should change the volume on the MPD server" do
@@ -162,9 +159,7 @@ describe MpdProxy do
 
   describe "play next" do
     before do
-      MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
-      MpdProxy.setup "server", 1234
-
+      MpdProxy.stub!(:mpd).and_return @mpd = mock("MPD")
       @mpd.stub! :clear => true, :add => true, :play => true
 
       @album = Album.new
@@ -239,6 +234,27 @@ describe MpdProxy do
 
         MpdProxy.play_next
       end
+    end
+  end
+
+  describe "mpd accessor" do
+    before do
+      MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
+      MpdProxy.setup "server", 1234
+    end
+
+    it "should use existing mpd instance if we can get the status" do
+      @mpd.should_receive(:status).twice
+      MpdProxy.execute :status
+    end
+
+    it "should reconnect if we lost connection" do
+      @mpd.stub!(:status).and_raise RuntimeError.new("woohooo!")
+
+      MPD.stub!(:new).and_return mpd = mock("MPD 2", :connect => nil, :register_callback => nil)
+      mpd.should_receive :status
+
+      MpdProxy.execute :status
     end
   end
 end
