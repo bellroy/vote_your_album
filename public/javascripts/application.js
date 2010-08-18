@@ -273,7 +273,7 @@ function mainControls(data) {
 
   if (data.playing) {
     $("#current").html(data.current_album);
-    if (data.current_art) $("#art").attr("src", data.current_art);
+    if (data.current_art) $("#art").attr("src", "/images/albums/" + data.current_art);
 
     var song = data.current_song
     $("#song").html("(" + song.track + ") " + song.artist + " - " + song.title);
