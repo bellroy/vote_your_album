@@ -135,6 +135,13 @@ $(function() {
     return false;
   });
 
+  // Character quick links
+  $("a.artist-index").click(function() {
+    $("#query").val("artist:" + $(this).attr("ref"));
+    $("#search").submit();
+    return false;
+  });
+
   // Tag listings
   $("a.tag").live("click", function() {
     $("#query").val('tag:' + $(this).attr("ref"));

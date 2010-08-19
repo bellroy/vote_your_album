@@ -112,6 +112,8 @@ end
 get "/search" do
   if params[:q] == "shuffle"
     res = Album.random
+  elsif params[:q] =~ /^artist:(.*)$/
+    res = Album.all(:artist.like => "#{$1}%")
   elsif params[:q] =~ /^tag:(.*)$/
     res = Tag.first(:name => $1).albums
   else

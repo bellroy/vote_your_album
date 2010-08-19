@@ -242,6 +242,12 @@ section.music #search .shuffle img {
   height: 1.25em;
 }
 
+section.music #search .quick-links {
+  padding-top: 1em;
+  line-height: 0.8em;
+  font-size: 0.8em;
+}
+
 section.music > section,
 section.upcoming > section,
 section.updates > section {
