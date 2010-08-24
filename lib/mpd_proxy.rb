@@ -13,6 +13,11 @@ class MpdProxy
   class << self
     def setup(server, port, callbacks = false)
       @server, @port, @callbacks = server, port, callbacks
+
+      @mpd = MPD.new(@server, @port)
+      @mpd.register_callback method(:current_song=), MPD::CURRENT_SONG_CALLBACK
+      @mpd.register_callback method(:volume=), MPD::VOLUME_CALLBACK
+      @mpd.register_callback method(:time=), MPD::TIME_CALLBACK
       connect
     end
 
@@ -72,21 +77,14 @@ class MpdProxy
   protected
 
     def connect
-      @mpd = MPD.new(@server, @port)
-      @mpd.register_callback method(:current_song=), MPD::CURRENT_SONG_CALLBACK
-      @mpd.register_callback method(:volume=), MPD::VOLUME_CALLBACK
-      @mpd.register_callback method(:time=), MPD::TIME_CALLBACK
       @mpd.connect @callbacks
     rescue SocketError
     end
 
     # check if we lost connection to the server
     def mpd
-      @mpd.status
-    rescue RuntimeError
-      connect
-    ensure
-      return @mpd
+      connect unless @mpd.connected?
+      @mpd
     end
   end
 end

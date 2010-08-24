@@ -239,20 +239,18 @@ describe MpdProxy do
 
   describe "mpd accessor" do
     before do
-      MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :register_callback => nil)
+      MPD.stub!(:new).and_return @mpd = mock("MPD", :connect => nil, :connected? => true, :register_callback => nil, :status => nil)
       MpdProxy.setup "server", 1234
     end
 
-    it "should use existing mpd instance if we can get the status" do
-      @mpd.should_receive(:status).twice
+    it "should not connect again, if we are connected" do
+      @mpd.should_not_receive :connect
       MpdProxy.execute :status
     end
 
     it "should reconnect if we lost connection" do
-      @mpd.stub!(:status).and_raise RuntimeError.new("woohooo!")
-
-      MPD.stub!(:new).and_return mpd = mock("MPD 2", :connect => nil, :register_callback => nil)
-      mpd.should_receive :status
+      @mpd.stub! :connected? => false
+      @mpd.should_receive :connect
 
       MpdProxy.execute :status
     end
