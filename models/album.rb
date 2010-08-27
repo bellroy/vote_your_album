@@ -154,8 +154,8 @@ SELECT id FROM albums ORDER BY RAND() LIMIT 10
 
     def recently_played_ids
       repository(:default).adapter.select <<-SQL
-SELECT DISTINCT(albums.id) FROM albums LEFT OUTER JOIN nominations ON albums.id = nominations.album_id
-WHERE nominations.status = 'played'
+SELECT album_id FROM nominations
+WHERE status = 'played'
 ORDER BY played_at DESC
 LIMIT 10
       SQL
