@@ -12,6 +12,7 @@ class Album
   has n, :tags, :through => Resource
   has n, :similarities, :child_key => [:source_id]
   has n, :similar_albums, self, :through => :similarities, :via => :target
+  has n, :starred_albums
 
   default_scope(:default).update :order => [:artist, :name]
 

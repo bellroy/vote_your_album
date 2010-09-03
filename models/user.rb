@@ -12,6 +12,8 @@ class User
   has n, :negative_votes, "Vote", :type => "vote", :value.lt => 0
   has n, :down_votes, "Vote", :type => "force"
   has n, :updates
+  has n, :starred_albums
+  has n, :favourite_albums, "Album", :through => :starred_albums, :via => :album
 
   def real_name
     name || username
