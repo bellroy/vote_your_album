@@ -8,7 +8,7 @@ class Update
   belongs_to :user, :required => false
   belongs_to :nomination
 
-  default_scope(:default).update :order => [:time.desc, :id.desc], :limit => 20
+  default_scope(:default).update :order => [:time.desc, :id.desc], :limit => 30
 
   def time_ago
     distance = ((DateTime.now - time) * 24 * 60).to_f.round
