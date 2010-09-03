@@ -1,5 +1,5 @@
 %w[rubygems sinatra rest_client json haml librmpd dm-core dm-aggregates rio].each { |lib| require lib }
-%w[album song nomination vote user update tag similarity].each { |model| require "models/#{model}" }
+%w[album song nomination vote user update tag similarity starred_album].each { |model| require "models/#{model}" }
 %w[mpd_proxy last_fm album_art last_fm_meta library].each { |lib| require "lib/#{lib}" }
 
 require 'lib/config'
@@ -106,7 +106,13 @@ get "/" do
 end
 
 get "/music/:type" do |list_type|
-  Album.send(list_type).map { |a| a.to_hash }.to_json
+  if list_type == "starred"
+    list = current_user.favourite_albums
+  else
+    list = Album.send(list_type)
+  end
+
+  list.map { |a| a.to_hash }.to_json
 end
 
 get "/search" do

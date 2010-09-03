@@ -121,7 +121,7 @@ $(function() {
   // Search
   $("#query").delayedObserver(function() {
     if ($(this).val().length == 0) {
-      updateList([]);
+      getList("starred");
     }
     else if ($(this).val().length > 2) {
       $("#search").submit();
@@ -159,6 +159,7 @@ $(function() {
   });
 
   // Initial page update to load the lists and the status
+  getList("starred");
   getUpcoming();
   getStatus();
   getUpdates();
