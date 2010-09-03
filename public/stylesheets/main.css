@@ -358,6 +358,22 @@ article.album .voting img {
   height: 1.2em;
 }
 
+article.album .voting a.star {
+  display: block;
+  height: 16px;
+  width: 16px;
+  background: url(/images/stars.gif) no-repeat 0 0;
+  padding: 0;
+}
+
+article.album .voting a.star.favourite {
+  background-position: 0 -16px;
+}
+
+article.album .voting .star-spinner {
+  display: none;
+}
+
 article.album .tags {
   text-align: right;
   font-size: 0.9em;

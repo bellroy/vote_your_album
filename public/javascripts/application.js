@@ -260,6 +260,10 @@ function albumElement(album) {
           <p>' + album.artist + '</p> \
           <p>' + album.name + '</p> \
         </div> \
+        <aside class="voting"> \
+          <a class="star' + (album.favourite ? " favourite" : "") + '" href="/star/"' + album.id + '" title="Damn awesome stuff! Show it to me all the time"></a> \
+          <img class="star-spinner" src="/images/circling-ball.gif" /> \
+        </aside> \
       </div> \
       <aside class="tags">' +
         _(album.tags).map(function(tag) {
