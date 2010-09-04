@@ -107,6 +107,24 @@ $(function() {
     });
   });
 
+  // (Un-) Star an album
+  $(".star").live("click", function() {
+    var star = $(this).hide();
+    var spinner = $(this).siblings(".star-spinner").show();
+
+    $.ajax({
+      type: "POST",
+      url: star.attr("href"),
+      data: "",
+      success: function() {
+        spinner.hide();
+        star.toggleClass("favourite").show();
+      }
+    });
+
+    return false;
+  });
+
   // Submit the form with AJAX
   $("#search").ajaxForm({
     dataType: "json",
@@ -261,7 +279,7 @@ function albumElement(album) {
           <p>' + album.name + '</p> \
         </div> \
         <aside class="voting"> \
-          <a class="star' + (album.favourite ? " favourite" : "") + '" href="/star/"' + album.id + '" title="Damn awesome stuff! Show it to me all the time"></a> \
+          <a class="star' + (album.favourite ? " favourite" : "") + '" href="/star/' + album.id + '" title="Damn awesome stuff! Show it to me all the time"></a> \
           <img class="star-spinner" src="/images/circling-ball.gif" /> \
         </aside> \
       </div> \

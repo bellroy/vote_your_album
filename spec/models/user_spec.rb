@@ -17,4 +17,28 @@ describe User do
       User.create_from_profile "name" => { "givenName" => "my", "familyName" => "self" }
     end
   end
+
+  describe "toogle favourite" do
+    before do
+      @album = Album.create(:artist => "Beatsteaks", :name => "Limbo Messiah")
+      @user = User.create(:name => "Me")
+    end
+
+    it "should add the album to the favourites if it's not starred" do
+      @user.toggle_favourite @album
+
+      @user.reload
+      @user.favourite_albums.should include(@album)
+    end
+
+    it "should remove the album from the favourites if it's starred" do
+      @user.favourite_albums << @album
+      @user.save
+
+      @user.toggle_favourite @album
+
+      @user.reload
+      @user.favourite_albums.should be_empty
+    end
+  end
 end

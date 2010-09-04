@@ -177,6 +177,11 @@ post "/force" do
   json_status
 end
 
+post "/star/:id" do |album_id|
+  current_user.toggle_favourite Album.get(album_id.to_i)
+  ""
+end
+
 post "/control/:action" do |action|
   MpdProxy.execute action.to_sym
   json_status

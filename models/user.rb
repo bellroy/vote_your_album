@@ -22,6 +22,16 @@ class User
   def has_favourite?(album)
     favourite_albums.include? album
   end
+
+  def toggle_favourite(album)
+    if has_favourite?(album)
+      starred_albums(:album => album).destroy
+    else
+      favourite_albums << album
+      save
+    end
+  end
+
   def self.create_from_profile(profile)
     create  :identifier => profile["identifier"],
             :username => profile["preferredUsername"],
