@@ -112,7 +112,7 @@ get "/music/:type" do |list_type|
     list = Album.send(list_type)
   end
 
-  list.map { |a| a.to_hash }.to_json
+  list.map { |a| a.to_hash(current_user) }.to_json
 end
 
 get "/search" do
@@ -126,7 +126,7 @@ get "/search" do
     res = Album.search(params[:q])
   end
 
-  res.map { |a| a.to_hash }.to_json
+  res.map { |a| a.to_hash(current_user) }.to_json
 end
 
 get "/upcoming" do

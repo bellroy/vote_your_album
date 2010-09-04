@@ -79,13 +79,14 @@ class Album
     "#{artist} - #{name}"
   end
 
-  def to_hash
+  def to_hash(user)
     {
       :id => id,
       :artist => artist,
       :name => name,
       :art => art,
-      :tags => tags.map { |t| t.name }
+      :tags => tags.map { |t| t.name },
+      :favourite => user.has_favourite?(self)
     }
   end
 

@@ -119,11 +119,12 @@ describe Album do
 
   describe "to hash" do
     before do
+      @user = mock("User", :has_favourite? => true)
       @album = Album.new(:id => 123, :artist => "artist", :name => "album", :art => "some_url")
     end
 
     it "should return the album's attributes in a hash" do
-      @album.to_hash.should == { :id => 123, :artist => "artist", :name => "album", :art => "some_url", :tags => [] }
+      @album.to_hash(@user).should == { :id => 123, :artist => "artist", :name => "album", :art => "some_url", :tags => [], :favourite => true }
     end
   end
 

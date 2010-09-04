@@ -16,14 +16,17 @@ describe "vote your album:" do
   describe "GET '/music/:type'" do
     before(:all) do
       Struct.new("Album", :id, :artist, :name) do
-        def to_hash
+        def to_hash(user)
           { :id => id, :artist => artist, :name => name }
         end
       end
     end
 
     before do
-      Album.stub!("all").and_return [@album = Album.new(:id => 1, :artist => "artist", :name => "name")]
+      @album = Album.new
+      @album.stub! :to_hash => { :id => 1, :artist => "artist", :name => "name" }
+
+      Album.stub!("all").and_return [@album]
     end
 
     it "should call the given type on the Album class to get the list" do
@@ -49,7 +52,10 @@ describe "vote your album:" do
 
   describe "GET '/search/:q'" do
     before do
-      Album.stub!(:search).and_return [@album = Album.new(:id => 1, :artist => "artist", :name => "name")]
+      @album = Album.new
+      @album.stub! :to_hash => { :id => 1, :artist => "artist", :name => "name" }
+
+      Album.stub!(:search).and_return [@album]
     end
 
     it "should search for matching album using the library" do
@@ -65,7 +71,10 @@ describe "vote your album:" do
     end
 
     it "should return random albums when submitting 'shuffle'" do
-      Album.stub! :random => [album = Album.new(:id => 2, :artist => "someone", :name => "else")]
+      album = Album.new
+      album.stub! :to_hash => { :id => 2 }
+
+      Album.stub! :random => [album]
 
       get "/search", :q => "shuffle"
       last_response.body.should match(/\"id\":2/)
@@ -73,7 +82,11 @@ describe "vote your album:" do
 
     it "should load all albums for the given tag if the search starts with 'tag:'" do
       Tag.stub!(:first).with(:name => "rock").and_return tag = Tag.new
-      tag.stub! :albums => [album = Album.new(:id => 3, :artist => "tagged!", :name => "bla")]
+
+      album = Album.new(:id => 3, :artist => "tagged!", :name => "bla")
+      album.stub! :to_hash => { :id => 3 }
+
+      tag.stub! :albums => [album]
 
       get "/search", :q => "tag:rock"
       last_response.body.should match(/\"id\":3/)

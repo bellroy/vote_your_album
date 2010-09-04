@@ -19,6 +19,9 @@ class User
     name || username
   end
 
+  def has_favourite?(album)
+    favourite_albums.include? album
+  end
   def self.create_from_profile(profile)
     create  :identifier => profile["identifier"],
             :username => profile["preferredUsername"],
