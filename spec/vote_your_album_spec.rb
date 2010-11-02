@@ -199,6 +199,37 @@ describe "vote your album:" do
     end
   end
 
+  describe "GET '/songs/:id'" do
+    before do
+      Album.stub!(:get).and_return @album = Album.new(:id => 123, :artist => "artist", :name =>  "album")
+    end
+
+    it "should return an empty result set if the album has no songs" do
+      get "/songs/123"
+      last_response.body.should == "[]"
+    end
+
+    describe "with songs" do
+      before do
+        @album.stub! :songs => [
+          Song.new(:id => 11, :track => "1", :artist => "artist", :title => "title 1", :length => 122),
+          Song.new(:id => 12, :track => "2", :artist => "artist", :title => "title 2", :length => 322),
+        ]
+      end
+
+      it "should return the songs of the album as JSON" do
+        get "/songs/123"
+        last_response.body.should match(/\"title\":\"title 1\"/)
+        last_response.body.should match(/\"title\":\"title 2\"/)
+      end
+
+      it "should return the formatted length" do
+        get "/songs/123"
+        last_response.body.should match(/\"length\":\"02:02\"/)
+      end
+    end
+  end
+
   describe "POST '/add/:id'" do
     before do
       User.stub! :first => User.new

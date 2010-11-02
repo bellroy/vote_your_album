@@ -29,15 +29,7 @@ $(function() {
     $(".song_spinner", album).show();
     $("section.music article .songs:visible").hide("blind");
 
-    $.get("/songs/" + $(this).attr("ref"), function(list) {
-      $(".song_spinner").hide();
-      album.children(".songs").html(list).show("blind", {}, "normal", function() {
-        $("section.music .list").scrollTo(album, 500, {
-          offset: -50
-        });
-      });
-    });
-
+    getSongs(album);
     return false;
   });
 
@@ -204,6 +196,22 @@ function getList(type) {
 }
 
 /*
+ * Fetch the albums songs and render them inside the songs element
+ */
+function getSongs(album) {
+  $.getJSON("/songs/" + album.attr("ref"), function(list) {
+    $(".song_spinner").hide();
+
+    renderSongs(album.children(".songs"), list);
+    album.children(".songs").show("blind", {}, "normal", function() {
+      $("section.music .list").scrollTo(album, 500, {
+        offset: -50
+      });
+    });
+  });
+}
+
+/*
  * Requests an update of the upcoming albums and updates the list
  */
 function getUpcoming() {
@@ -321,6 +329,22 @@ function mainControls(data) {
     $("#nominator").html("");
     $("#force").hide();
   }
+}
+
+/*
+ * Render the songs inside the given element
+ */
+function renderSongs(songs, list) {
+  songs.html("");
+
+  $.each(list, function() {
+    songs.append(' \
+      <p> \
+        <span>(' + this.track + ') ' + this.title + '</span> \
+        <time>' + this.length + '</time> \
+      </p> \
+    ');
+  });
 }
 
 /*

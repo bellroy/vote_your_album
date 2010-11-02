@@ -12,4 +12,14 @@ class Song
   has n, :nominations, :through => Resource
 
   default_scope(:default).update :order => [:track]
+
+  def to_hash
+    {
+      :id => id,
+      :track => track,
+      :artist => artist,
+      :title => title,
+      :length => length,
+    }
+  end
 end

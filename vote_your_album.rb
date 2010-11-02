@@ -144,9 +144,10 @@ end
 
 get "/songs/:id" do |album_id|
   album = Album.get(album_id.to_i)
-  @songs = (album ? album.songs : [])
 
-  haml :songs, :layout => false
+  res = (album ? album.songs : []).map { |s| s.to_hash }
+  res.each { |s| s[:length] = to_time(s[:length], false) }
+  res.to_json
 end
 
 post "/add/:id" do |album_id|
