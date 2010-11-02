@@ -1,7 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/../vote_your_album')
-require 'spec'
-require 'spec/interop/test'
+# require 'spec'
+# require 'spec/interop/test'
 require 'rack/test'
+require 'rspec'
 
 set :environment, :test
 include Rack::Test::Methods
@@ -10,5 +11,6 @@ include Rack::Test::Methods
 def app; Sinatra::Application end
 
 require 'dm-migrations'
+DataMapper::Logger.new(STDOUT, :info)
 DataMapper.setup(:default, "mysql://localhost/vote_your_album_test")
 DataMapper.auto_migrate!
