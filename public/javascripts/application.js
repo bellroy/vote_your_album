@@ -202,7 +202,7 @@ function getSongs(album) {
   $.getJSON("/songs/" + album.attr("ref"), function(list) {
     $(".song_spinner").hide();
 
-    renderSongs(album.children(".songs"), list);
+    renderSongs(album.children(".songs"), album.attr("ref"), list);
     album.children(".songs").show("blind", {}, "normal", function() {
       $("section.music .list").scrollTo(album, 500, {
         offset: -50
@@ -274,11 +274,23 @@ function appendAlbumsIteratively() {
 }
 
 /*
+ * Render the songs inside the given element
+ */
+function renderSongs(songs, album_id, list, allowSelection) {
+  var container = songs;
+  container.html("");
+
+  $.each(list, function() {
+    container.append(songElement(this, allowSelection));
+  });
+}
+
+/*
  * Returns an album element.
  */
 function albumElement(album) {
   return ' \
-    <article class="album" ref="' + album.id + '" title="Click to show songs"> \
+    <article class="album" ref="' + album.id + '" artist="' + album.artist + '" title="' + album.name + '" title="Click to show songs"> \
       <div class="header"> \
         <img class="song_spinner" src="/images/spinner.gif" /> \
         <div class="info"> \
@@ -329,22 +341,6 @@ function mainControls(data) {
     $("#nominator").html("");
     $("#force").hide();
   }
-}
-
-/*
- * Render the songs inside the given element
- */
-function renderSongs(songs, list) {
-  songs.html("");
-
-  $.each(list, function() {
-    songs.append(' \
-      <p> \
-        <span>(' + this.track + ') ' + this.title + '</span> \
-        <time>' + this.length + '</time> \
-      </p> \
-    ');
-  });
 }
 
 /*
