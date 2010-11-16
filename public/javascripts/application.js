@@ -47,22 +47,31 @@ $(function() {
     drop: function(event, ui) {
       var album = ui.draggable;
 
-      $("#modal-dialog")
-        .dialog("option", "buttons", {
-          "Add selected tracks": function() {
-            $("#add-album").ajaxSubmit();
-            // $.post("/add/" + album.attr("ref"), function(list) {
-            //   $("section.upcoming .list").html(list);
-            // });
-            $(this).dialog("close");
-          }
-        })
-        .dialog("option", "title", album.attr("artist") + " - " + album.attr("title"));
+      if (album.children(".songs").is(":visible")) {
+        $("#modal-dialog")
+          .dialog("option", "title", album.attr("artist") + " - " + album.attr("title"))
+          .dialog("option", "buttons", {
+            "Add selected tracks": function() {
+              $("#add-album").ajaxSubmit({
+                success: function(list) {
+                  $("section.upcoming .list").html(list);
+                }
+              });
 
-      $.getJSON("/songs/" + album.attr("ref"), function(list) {
-        $("#modal-dialog").dialog("open");
-        renderSongs($("#modal-dialog"), album.attr("ref"), list, true)
-      });
+              $(this).dialog("close");
+            }
+          });
+
+        $.getJSON("/songs/" + album.attr("ref"), function(list) {
+          $("#modal-dialog").dialog("open");
+          renderSongs($("#modal-dialog"), album.attr("ref"), list, true)
+        });
+      }
+      else {
+        $.post("/add", { album_id: album.attr("ref") }, function(list) {
+          $("section.upcoming .list").html(list);
+        });
+      }
     }
   });
 
@@ -86,7 +95,7 @@ $(function() {
   $("section.upcoming article").live("click", function() {
     var nomination = $(this);
 
-    if (nomination.children(".songs:visible").length > 0) {
+    if (nomination.children(".songs").is(":visible")) {
       nomination.children(".songs").hide("blind");
     }
     else {
