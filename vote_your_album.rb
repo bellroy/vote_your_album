@@ -150,11 +150,11 @@ get "/songs/:id" do |album_id|
   res.to_json
 end
 
-post "/add/:id" do |album_id|
+post "/add" do
   render "" unless logged_in?
 
-  album = Album.get(album_id.to_i)
-  album.nominate(current_user) if album
+  album = Album.get(params[:album_id].to_i)
+  album.nominate(current_user, params[:songs]) if album
 
   MpdProxy.play_next unless MpdProxy.playing?
 

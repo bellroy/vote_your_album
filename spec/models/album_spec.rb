@@ -65,29 +65,52 @@ describe Album do
       @album.stub!(:currently_nominated?).and_return true
       @album.nominations.should_not_receive :create
 
-      @album.nominate @user
+      @album.nominate @user, nil
     end
 
     it "should create a nomination for that album" do
       Time.stub!(:now).and_return time = mock("Now", :tv_sec => 1)
       @album.nominations.should_receive(:create).with :status => "active", :created_at => time, :user => @user
-      @album.nominate @user
+      @album.nominate @user, nil
     end
 
     it "should also add a up vote immediately for the given user" do
       @nomination.should_receive(:vote).with 1, @user
-      @album.nominate @user
+      @album.nominate @user, nil
     end
 
-    it "should add the songs of the album to the nomination" do
+    it "should add all songs of the album to the nomination (given we don't provide a list of songs)" do
       @album.stub!(:songs).and_return [song = Song.new(:track => 1)]
-      @album.nominate @user
+      @album.nominate @user, nil
       @nomination.songs.should include(song)
+    end
+
+    describe "given a list of songs is provided" do
+      before do
+        @album.stub!(:songs).and_return [
+          @song1 = Song.new(:id => 1),
+          @song2 = Song.new(:id => 2),
+        ]
+      end
+
+      it "should only add the songs provided to the nomination" do
+        @album.nominate @user, [2]
+
+        @nomination.songs.should include(@song2)
+        @nomination.songs.should_not include(@song1)
+      end
+
+      it "should only also work with a list of strings" do
+        @album.nominate @user, ["1"]
+
+        @nomination.songs.should include(@song1)
+        @nomination.songs.should_not include(@song2)
+      end
     end
 
     it "should save the nomination again, to persist the songs" do
       @nomination.should_receive :save
-      @album.nominate @user
+      @album.nominate @user, nil
     end
   end
 

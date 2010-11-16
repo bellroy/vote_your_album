@@ -230,7 +230,7 @@ describe "vote your album:" do
     end
   end
 
-  describe "POST '/add/:id'" do
+  describe "POST '/add'" do
     before do
       User.stub! :first => User.new
 
@@ -245,18 +245,24 @@ describe "vote your album:" do
     it "should nominate the album if we can find one" do
       Album.should_receive(:get).with(123).and_return @album
       @album.should_receive :nominate
-      post "/add/123"
+      post "/add", :album_id => 123
     end
 
     it "should do nothing when we can't find the album in the list" do
       Album.should_receive(:get).with(321).and_return nil
       @album.should_not_receive :nominate
-      post "/add/321"
+      post "/add", :album_id => 321
+    end
+
+    it "should pass in the selected songs if present" do
+      Album.should_receive(:get).with(123).and_return @album
+      @album.should_not_receive(:nominate).with @album, [1, 2, 3]
+      post "/add", :album_id => 123, :songs => [1, 2, 3]
     end
 
     it "should not immediately play the just added album if we already play some music" do
       MpdProxy.should_not_receive :play_next
-      post "/add/321"
+      post "/add"
     end
 
     it "should immediately play the just album if we arent playing anything right now" do
@@ -264,11 +270,11 @@ describe "vote your album:" do
       MpdProxy.stub!(:playing?).and_return false
       MpdProxy.should_receive :play_next
 
-      post "/add/321"
+      post "/add", :album_id => 321
     end
 
     it "should return the new list" do
-      post "/add/321"
+      post "/add", :album_id => 321
       last_response.body.should match(%q{aside class='voting})
     end
   end
