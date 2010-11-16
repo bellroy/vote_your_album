@@ -45,8 +45,23 @@ $(function() {
     scope: "adding",
     hoverClass: "over",
     drop: function(event, ui) {
-      $.post("/add/" + ui.draggable.attr("ref"), function(list) {
-        $("section.upcoming .list").html(list);
+      var album = ui.draggable;
+
+      $("#modal-dialog")
+        .dialog("option", "buttons", {
+          "Add selected tracks": function() {
+            $("#add-album").ajaxSubmit();
+            // $.post("/add/" + album.attr("ref"), function(list) {
+            //   $("section.upcoming .list").html(list);
+            // });
+            $(this).dialog("close");
+          }
+        })
+        .dialog("option", "title", album.attr("artist") + " - " + album.attr("title"));
+
+      $.getJSON("/songs/" + album.attr("ref"), function(list) {
+        $("#modal-dialog").dialog("open");
+        renderSongs($("#modal-dialog"), album.attr("ref"), list, true)
       });
     }
   });
@@ -287,6 +302,14 @@ function renderSongs(songs, album_id, list, allowSelection) {
   var container = songs;
   container.html("");
 
+  if (allowSelection) {
+    var form = $('<form action="/add" method="post" id="add-album"></form>');
+    form.append('<input type="hidden" name="album_id" value="' + album_id + '" />');
+
+    songs.append(form);
+    container = form;
+  }
+
   $.each(list, function() {
     container.append(songElement(this, allowSelection));
   });
@@ -317,6 +340,17 @@ function albumElement(album) {
       + '</aside> \
       <aside class="songs"></aside> \
     </article> \
+  ';
+}
+
+function songElement(song, insertCheckbox) {
+  return ' \
+    <p> \
+      ' + (insertCheckbox ? '<input type="checkbox" name="songs[]" value="' + song.id + '" checked="checked">' : '') + ' \
+      <span>(' + song.track + ') ' + song.title + '</span> \
+      ' + (insertCheckbox ? ' - ' : '') + ' \
+      <time>' + song.length + '</time> \
+    </p> \
   ';
 }
 
