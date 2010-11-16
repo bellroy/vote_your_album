@@ -33,6 +33,13 @@ $(function() {
     return false;
   });
 
+  // Basic modal dialog settings
+  $("#modal-dialog").dialog({
+    autoOpen: false,
+    modal: true,
+    width: 500
+  });
+
   // Drag & Drop definitions
   $("section.upcoming").droppable({
     scope: "adding",
