@@ -86,12 +86,12 @@ $(function() {
   $("section.upcoming article").live("click", function() {
     var nomination = $(this);
 
-    if (nomination.children(".updates:visible").length > 0) {
-      nomination.children(".updates").hide("blind");
+    if (nomination.children(".songs:visible").length > 0) {
+      nomination.children(".songs").hide("blind");
     }
     else {
-      $("section.upcoming article .updates:visible").hide("blind");
-      nomination.children(".updates").show("blind", {}, "normal", function() {
+      $("section.upcoming article .songs:visible").hide("blind");
+      nomination.children(".songs").show("blind", {}, "normal", function() {
         $("section.upcoming .list").scrollTo(nomination, 500, {
           offset: -50
         });

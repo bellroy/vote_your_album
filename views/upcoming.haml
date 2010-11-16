@@ -20,8 +20,8 @@
     %aside.tags
       = nomination.tags.map { |tag| "<a href=\"/search?q=tag:#{tag.name}\" class=\"tag\" ref=\"#{tag.name}\">#{tag.name}</a>" }.join(", ")
 
-    %aside.updates
-      - nomination.updates.each do |update|
+    %aside.songs
+      - nomination.songs.each do |song|
         %p
-          = update.action
-          %time{ :datetime => update.time }= update.time_ago
+          %span= "(#{song.track}) #{song.title}"
+          %time= to_time(song.length, false)
