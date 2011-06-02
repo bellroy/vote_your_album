@@ -80,8 +80,7 @@ describe Nomination do
     end
 
     it "should return the name of the user otherwise" do
-      user = User.new
-      user.stub! :real_name => "blubbi"
+      user = User.new(:name => "blubbi")
       @nomination.user = user
 
       @nomination.nominated_by.should == "blubbi"
@@ -90,57 +89,48 @@ describe Nomination do
 
   describe "vote" do
     before do
-      @user = User.new
-      @vote = Vote.new(:user => @user)
+      @user = User.create(:identifier => "awesome@example.com")
+      @album = Album.create(:artist => "Arctic", :name => "Monkeys")
 
-      @nomination = Nomination.new(:score => 0)
-      @nomination.votes.stub!(:create).and_return @vote
-      @nomination.negative_votes.stub!(:create).and_return @vote
-      @nomination.stub! :save
+      @nomination = Nomination.create(:album => @album, :user => @user, :status => "active")
+      # @nomination.votes.stub!(:create).and_return @vote
+      # @nomination.negative_votes.stub!(:create).and_return @vote
+      # @nomination.stub! :save
 
       Update.stub! :log
     end
 
     it "should create an associated vote with the given value and ip" do
-      @nomination.votes.should_receive(:create).with :user => @user, :value => 1, :type => "vote"
       @nomination.vote 1, @user
+      @nomination.votes.should_not be_empty
     end
 
     it "should create an associated negative vote with the given (negative) value and ip" do
-      @nomination.negative_votes.should_receive(:create).with :user => @user, :value => -1, :type => "vote"
       @nomination.vote -1, @user
+      @nomination.negative_votes.should_not be_empty
     end
 
     it "should update the score attribute" do
-      @nomination.should_receive(:score=).with 2
       @nomination.vote 2, @user
-    end
-
-    it "should save the nomination after we have created a vote" do
-      @nomination.should_receive :save
-      @nomination.vote 2, @user
+      @nomination.score.should == 2
     end
 
     it "should not allow a vote, if we have already voted" do
-      @nomination.votes.should_receive(:create).once
       2.times { @nomination.vote 1, @user }
+      @nomination.votes.size.should == 1
     end
 
     describe "eliminate" do
-      before do
-        @nomination.stub! :update
-      end
-
       it "should not change the status to 'deleted' when the threshold isnt reached" do
-        @nomination.should_not_receive(:status=).with "deleted"
         @nomination.stub!(:score).and_return -2
         @nomination.vote -2, @user
+        @nomination.status.should == "active"
       end
 
       it "should change the status to 'deleted' when we have reached the elimination threshold (3)" do
-        @nomination.should_receive(:status=).with "deleted"
         @nomination.stub!(:score).and_return -3
         @nomination.vote -3, @user
+        @nomination.status.should == "deleted"
       end
     end
 
@@ -157,8 +147,8 @@ describe Nomination do
 
         it "should not be set if we already have set it before" do
           @nomination.stub!(:ttl).and_return "not nil"
-          @nomination.should_not_receive :expires_at=
           @nomination.vote -2, @user
+          @nomination.expires_at.should be_nil
         end
       end
 
@@ -174,8 +164,8 @@ describe Nomination do
         end
 
         it "should do nothing if its not set" do
-          @nomination.should_not_receive :expires_at=
           @nomination.vote 2, @user
+          @nomination.expires_at.should be_nil
         end
       end
     end
@@ -245,29 +235,28 @@ describe Nomination do
 
   describe "force" do
     before do
-      @user = User.new
+      @album = Album.create(:artist => "Arctic", :name => "Monkeys")
+      @user = User.create(:identifier => "awesome@example.com")
 
-      @nomination = Nomination.new
-      @nomination.stub!(:negative_votes).and_return [@vote = Vote.new(:user => @user)]
-      @nomination.down_votes.stub!(:create).and_return @vote
+      @nomination = Nomination.create(:album => @album, :user => @user, :status => "active")
 
       Update.stub! :log
     end
 
     it "should create an associated force vote with the ip" do
-      @nomination.down_votes.should_receive(:create).with :user => @user, :value => 1, :type => "force"
       @nomination.force @user
+      @nomination.down_votes.should_not be_empty
     end
 
     it "should not allow a vote, if we have already forced" do
-      @nomination.down_votes.should_receive(:create).once
       2.times { @nomination.force @user }
+      @nomination.down_votes.size.should == 1
     end
 
     it "should not play the next album if we have a 'force score' of 1 or more" do
       @nomination.stub!(:down_votes_necessary).and_return 1
       MpdProxy.should_not_receive :execute
-      @nomination.force@user
+      @nomination.force @user
     end
 
     it "should play the next album if we have a 'force score' of 0 or less" do

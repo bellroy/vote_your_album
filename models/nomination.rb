@@ -48,7 +48,9 @@ class Nomination
     return unless can_be_voted_for_by?(current_user)
 
     self.score = score + value
-    vote = self.send(value > 0 ? :votes : :negative_votes).create(:user => current_user, :value => value, :type => "vote")
+
+    scope = (value > 0 ? :votes : :negative_votes)
+    vote = send(scope).create(:user => current_user, :value => value, :type => "vote")
     self.status = "deleted" if score <= DEFAULT_ELIMINATION_SCORE
 
     if score < 0
