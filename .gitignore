@@ -4,3 +4,7 @@ public/images/.DS_Store
 public/images/albums/*
 log/*
 tmp/*
+
+# Vagrant files
+.vagrant
+Vagrantfile
