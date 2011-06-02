@@ -1,8 +1,12 @@
-%w[rubygems sinatra rest_client json haml librmpd dm-core dm-aggregates rio].each { |lib| require lib }
-%w[album song nomination vote user update tag similarity starred_album].each { |model| require "models/#{model}" }
-%w[mpd_proxy last_fm album_art last_fm_meta library].each { |lib| require "lib/#{lib}" }
+%w[sinatra rest_client json haml librmpd dm-core dm-aggregates rio].each { |lib| require lib }
+%w[album song nomination vote user update tag similarity starred_album].each do |model|
+  require File.join(File.dirname(__FILE__), "models", model)
+end
+%w[mpd_proxy last_fm album_art last_fm_meta library].each do |lib|
+  require File.join(File.dirname(__FILE__), "lib", lib)
+end
 
-require 'lib/config'
+require File.join(File.dirname(__FILE__), "config")
 
 # -----------------------------------------------------------------------------------
 # Helpers
