@@ -58,19 +58,19 @@ describe MpdProxy do
     end
   end
 
-  describe "find songs for" do
+  describe "songs for" do
     before do
       MpdProxy.stub!(:mpd).and_return @mpd = mock("MPD")
-      @mpd.stub!(:find).and_return "songs"
+      @mpd.stub!(:songs).and_return "songs"
     end
 
     it "should ask the mpd object for the songs" do
-      @mpd.should_receive(:find).with "album", "hits"
-      MpdProxy.find_songs_for "hits"
+      @mpd.should_receive(:songs).with "abc/hits"
+      MpdProxy.songs_for "abc/hits"
     end
 
     it "should return the result of the find" do
-      MpdProxy.find_songs_for("hits").should == "songs"
+      MpdProxy.songs_for("abc/hits").should == "songs"
     end
   end
 

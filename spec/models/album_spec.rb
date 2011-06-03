@@ -216,8 +216,8 @@ describe Album do
         "file" => "path"
       }.each { |k, v| @song[k] = v }
 
-      MpdProxy.stub!(:execute).with(:albums).and_return ["album1"]
-      MpdProxy.stub!(:find_songs_for).and_return @songs = [@song]
+      Library.stub!(:album_paths).and_return ["abc/album1"]
+      MpdProxy.stub!(:songs_for).and_return @songs = [@song]
 
       Album.stub! :first
 
@@ -228,61 +228,29 @@ describe Album do
     end
 
     it "should fetch all albums from the server" do
-      MpdProxy.should_receive(:execute).with(:albums).and_return []
+      Library.should_receive(:album_paths).and_return []
       Album.update
     end
 
     it "should not do anything if we already have that album in the DB" do
-      Album.should_receive(:first).with(:name => "album1").and_return "exists!"
+      Album.should_receive(:first).with(:base_path => "abc/album1").and_return "exists!"
       Album.should_not_receive :build
       Album.update
     end
 
     it "should build a new album if we dont know it yet" do
-      Album.should_receive(:new).with(:name => "album1").and_return @album
+      Album.should_receive(:new).with(hash_including(:name => "album1")).and_return @album
       Album.update
     end
 
     it "should not build an album, if we can't find any songs" do
-      MpdProxy.stub!(:find_songs_for).and_return []
+      MpdProxy.stub!(:songs_for).and_return []
       Album.should_not_receive :new
-      Album.update
-    end
-
-    it "should fetch all the songs for that album from the server" do
-      MpdProxy.should_receive(:find_songs_for).with "album1"
       Album.update
     end
 
     it "should add the found songs to the album" do
       @album.songs.should_receive(:new).with :track => 1, :artist => "me", :title => "song", :length => 123, :file => "path"
-      Album.update
-    end
-
-    it "should not add duplicate songs" do
-      song2 = MPD::Song.new
-      { "track" => 2, "artist" => "someone", "title" => "song", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
-      MpdProxy.stub!(:find_songs_for).and_return [@song, song2]
-
-      @album.songs.should_receive(:new).exactly(:once)
-      Album.update
-    end
-
-    it "should not care about title case when identifying duplicate songs" do
-      song2 = MPD::Song.new
-      { "track" => 2, "artist" => "someone", "title" => "sOnG", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
-      MpdProxy.stub!(:find_songs_for).and_return [@song, song2]
-
-      @album.songs.should_receive(:new).exactly(:once)
-      Album.update
-    end
-
-    it "should handle nil titles when identifying duplicate songs" do
-      song2 = MPD::Song.new
-      { "track" => 2, "artist" => "someone", "title" => nil, "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
-      MpdProxy.stub!(:find_songs_for).and_return [@song, song2]
-
-      @album.songs.should_receive(:new).exactly(:once)
       Album.update
     end
 
@@ -311,7 +279,7 @@ describe Album do
       { "track" => 2, "artist" => "MJ", "title" => "song 2", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
       song3 = MPD::Song.new
       { "track" => 3, "artist" => "MJ & DJ", "title" => "song 3", "album" => "album1", "file" => "other" }.each { |k, v| song3[k] = v }
-      MpdProxy.stub!(:find_songs_for).and_return [@song, song2, song3]
+      MpdProxy.stub!(:songs_for).and_return [@song, song2, song3]
 
       @album.should_receive(:artist=).with "MJ"
       Album.update
@@ -322,7 +290,7 @@ describe Album do
       { "track" => 2, "artist" => "MJ", "title" => "song 2", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
       song3 = MPD::Song.new
       { "track" => 3, "artist" => "lala", "title" => "song 3", "album" => "album1", "file" => "other" }.each { |k, v| song3[k] = v }
-      MpdProxy.stub!(:find_songs_for).and_return [@song, song2, song3]
+      MpdProxy.stub!(:songs_for).and_return [@song, song2, song3]
 
       @album.should_receive(:artist=).with "Various Artists"
       Album.update
@@ -334,7 +302,7 @@ describe Album do
       { "track" => 2, "artist" => "Method Man", "title" => "song 2", "album" => "album1", "file" => "other" }.each { |k, v| song2[k] = v }
       song3 = MPD::Song.new
       { "track" => 3, "artist" => "Saukrates", "title" => "song 3", "album" => "album1", "file" => "other" }.each { |k, v| song3[k] = v }
-      MpdProxy.stub!(:find_songs_for).and_return [@song, song2, song3]
+      MpdProxy.stub!(:songs_for).and_return [@song, song2, song3]
 
       @album.should_receive(:artist=).with "Method Man"
       Album.update

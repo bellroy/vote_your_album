@@ -4,6 +4,7 @@ class Album
   property :id, Serial
   property :artist, String, :length => 200
   property :name, String, :length => 200
+  property :base_path, String, :length => 255
   property :art, String, :length => 255
 
   has n, :songs
@@ -106,22 +107,14 @@ class Album
     end
 
     def update
-      MpdProxy.execute(:albums).each do |album|
+      Library.album_paths.each do |path|
         print "."
+        next if first(:base_path => path)
 
-        album.gsub!(/"/, '')
-        next if first(:name => album)
-
-        songs = MpdProxy.find_songs_for(album).inject([]) do |list, song|
-          if song.title && !list.map { |s| s.title.downcase }.include?(song.title.downcase)
-            list << song
-          else
-            list
-          end
-        end
+        songs = MpdProxy.songs_for(path)
         next if songs.empty?
 
-        new_album = Album.new(:name => album)
+        new_album = Album.new(:name => songs.first.album, :base_path => path)
         songs.each do |song|
           new_album.songs.new :track => song.track.to_i,
                               :artist => song.artist,
