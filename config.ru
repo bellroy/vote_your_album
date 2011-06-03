@@ -9,5 +9,5 @@ set :app_file, File.join(root_dir, 'vote_your_album.rb')
 
 disable :run
 
-require 'vote_your_album'
+require File.join(root_dir, 'vote_your_album')
 run Sinatra::Application
