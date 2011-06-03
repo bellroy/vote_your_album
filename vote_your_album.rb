@@ -1,4 +1,4 @@
-%w[sinatra rest_client json haml librmpd dm-core dm-aggregates rio].each { |lib| require lib }
+%w[rubygems sinatra rest_client json haml librmpd dm-core dm-aggregates rio].each { |lib| require lib }
 %w[album song nomination vote user update tag similarity starred_album].each do |model|
   require File.join(File.dirname(__FILE__), "models", model)
 end
