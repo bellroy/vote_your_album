@@ -7,6 +7,7 @@
       %input#query{ :type => "text", :name => "q", :value => params[:q], :autocomplete => "off", :placeholder => "Search for albums..." }
       %a.shuffle{ :href => "/search?q=shuffle", :title => "I don't have much time, just gimme something!" }
         %img{ :src => "/images/shuffle.png" }
+      %a.starred{ :href => "/music/starred", :title => "I can't handle it... just show me what I like" }
       %p.quick-links
         Artist Index:
         - ("A".."Z").each do |char|

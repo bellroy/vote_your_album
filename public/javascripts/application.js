@@ -169,6 +169,13 @@ $(function() {
     }
   }, 0.3);
 
+  // Starred music
+  $("a.starred").click(function() {
+    $("#query").val("");
+    getList("starred");
+    return false;
+  });
+
   // Shuffle
   $("a.shuffle").click(function() {
     $("#query").val("shuffle");

@@ -232,6 +232,15 @@ section.music #query {
   padding: 0.2em;
 }
 
+section.music #search .starred {
+  display: block;
+  float: right;
+  height: 16px;
+  margin: 0.55em 0.45em 0.45em 0;
+  width: 1.25em;
+  background: url(/images/stars.gif) no-repeat 0 -16px;
+}
+
 section.music #search .shuffle {
   display: block;
   float: right;
