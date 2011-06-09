@@ -124,6 +124,8 @@ class Album
         end
 
         new_album.artist = get_artist_from(songs)
+        next if first(:artist => new_album.artist, :name => new_album.name)
+
         new_album.fetch_album_art
         new_album.fetch_tags
         new_album.fetch_similar
