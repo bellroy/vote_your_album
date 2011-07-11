@@ -1,8 +1,8 @@
 class Nomination
   include DataMapper::Resource
 
-  DEFAULT_ELIMINATION_SCORE = -3
-  TTL = 3 * 60 * 60 # 3 h
+  DEFAULT_ELIMINATION_SCORE = -2
+  TTL = 1 * 60 * 60 # 3 h
 
   property :id, Serial
   property :score, Integer, :default => 0
