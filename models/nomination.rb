@@ -42,6 +42,17 @@ class Nomination
     (score > 0 ? "+" : "") + score.to_s
   end
 
+  def score_class
+    case
+    when score > 0
+      "positive-score"
+    when score < 0
+      "negative-score"
+    else
+      ""
+    end
+  end
+
   # Vote methods
   # ----------------------------------------------------------------------
   def vote(value, current_user)

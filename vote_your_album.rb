@@ -70,8 +70,7 @@ helpers do
 
     classes = ["album"]
     classes << "deleteable" if nomination.owned_by?(user)
-    classes << "positive-score" if nomination.score > 0
-    classes << "negative-score" if nomination.score < 0
+    classes << nomination.score_class
     attr.update :class => classes.join(" ")
 
     if nomination.ttl
