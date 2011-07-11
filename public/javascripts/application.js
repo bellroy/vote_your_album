@@ -387,16 +387,23 @@ function mainControls(data) {
     $("#time").html(data.time + " (" + data.total + ")");
     $("#nominator").html("by " + data.nominated_by);
 
-    $("#force").show();
-    $("#force .necessary").html(data.down_votes_necessary);
-    $("#force").toggleClass("disabled", !data.forceable)
+    $("header article .info .score").html(data.score);
+    $("header article .info").attr("class", "info " + data.score_class);
+
+    if (data.voteable) {
+      $("header article footer .voting").show();
+      $("header article footer .voting a").attr("ref", data.id);
+    }
+    else {
+      $("header article footer .voting").hide();
+    }
   }
   else {
     $("#current").html("");
     $("#song").html("");
     $("#time").html("");
     $("#nominator").html("");
-    $("#force").hide();
+    $("header article footer .voting").hide();
   }
 }
 

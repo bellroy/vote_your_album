@@ -24,14 +24,16 @@ def json_status
 
   status = { :playing => MpdProxy.playing?, :volume => MpdProxy.volume }
   status = status.merge(
+    :id => current.id,
     :current_album => current.album.to_s,
     :current_song => MpdProxy.current_song,
     :current_art => current.art,
     :total => to_time(MpdProxy.total, false),
     :time => to_time(MpdProxy.time),
     :nominated_by => current.nominated_by,
-    :down_votes_necessary => current.down_votes_necessary,
-    :forceable => current.can_be_forced_by?(current_user)
+    :voteable => true, #current.can_be_voted_for_by?(current_user),
+    :score => current.score_s,
+    :score_class => current.score_class
   ) if MpdProxy.playing?
   status.to_json
 end

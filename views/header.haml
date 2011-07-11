@@ -12,17 +12,19 @@
     #slider
 
   %article
-    %img#art.art
-    %p#current
-    %p#song
+    .info
+      %img#art.art
+      %p#current
+      %p#song
+      .score
     %footer
       %p#nominator
-      %p.force
+      %p.voting
         - if logged_in?
-          %a#force.display-none{ :href => "#", :title => "Gosh, I hate this album, must be Joanna Newsom!" }
-            Force Next (
-            %span.necessary
-            )
+          %a.up{ :href => "/vote/up", :title => "I like that shit! Play it now..." }
+            %img{ :src => "/images/plus.png" }
+          %a.down{ :href => "/vote/down", :title => "Uuuhhhh, don't know about this one - let's get some beer first." }
+            %img{ :src => "/images/minus.png" }
       %p#time
 
   %aside.right

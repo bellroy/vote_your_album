@@ -86,12 +86,9 @@ body > header article footer p {
   text-align: left;
 }
 
-body > header article footer p.force {
+body > header article footer p.voting {
   text-align: center;
-}
-
-body > header article footer p.force a:hover {
-  color: #000;
+  display: none;
 }
 
 body > header article footer p#time {
@@ -332,7 +329,12 @@ article.album .info p {
   overflow: hidden;
 }
 
-article.album .score {
+header article .info {
+  position: relative;
+}
+
+article.album .score,
+header article .info .score {
   position: absolute;
   top: 0;
   width: 100%;
@@ -344,11 +346,11 @@ article.album .score {
   z-index: 1;
 }
 
-article.album.positive-score .score {
+.positive-score .score {
   color: #0a0;
 }
 
-article.album.negative-score .score {
+.negative-score .score {
   color: #c00;
 }
 
