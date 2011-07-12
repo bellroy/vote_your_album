@@ -108,7 +108,6 @@ describe "vote your album:" do
     it "should show the vote buttons if we can vote" do
       get "/upcoming"
       last_response.body.should match(%{a class='up'})
-      last_response.body.should match(%{a class='down'})
     end
 
     it "should not show the vote buttons if we cant vote" do
@@ -116,7 +115,6 @@ describe "vote your album:" do
 
       get "/upcoming"
       last_response.body.should_not match(%{a class='up'})
-      last_response.body.should_not match(%{a class='down'})
     end
   end
 
@@ -185,16 +183,11 @@ describe "vote your album:" do
         last_response.body.should match(/\"nominated_by\":\"blubbi\"/)
       end
 
-      it "should include the number of necessary (remaining) forces" do
-        get "/status"
-        last_response.body.should match(/\"down_votes_necessary\":1/)
-      end
-
-      it "should include whether we can force" do
-        @nomination.stub!(:can_be_forced_by?).and_return false
+      it "should include whether we can vote" do
+        @nomination.stub!(:can_be_voted_for_by?).and_return false
 
         get "/status"
-        last_response.body.should match(/\"forceable\":false/)
+        last_response.body.should match(/\"voteable\":false/)
       end
     end
   end
@@ -336,25 +329,6 @@ describe "vote your album:" do
     it "should return the new list" do
       post "/remove/321"
       last_response.body.should match(%q{aside class='voting})
-    end
-  end
-
-  describe "POST '/force" do
-    before do
-      User.stub! :first => User.new
-
-      Nomination.stub!(:current).and_return @nomination = Nomination.new(:id => 123)
-      @nomination.stub! :force
-    end
-
-    it "should force the next album" do
-      @nomination.should_receive :force
-      post "/force"
-    end
-
-    it "should return the json status response" do
-      post "/force"
-      last_response.body.should match(/\"volume\":/)
     end
   end
 

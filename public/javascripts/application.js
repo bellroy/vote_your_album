@@ -114,9 +114,6 @@ $(function() {
   $(".control").click(function() {
     return executeAndUpdate("/control/" + $(this).attr("ref"));
   });
-  $("#force").click(function() {
-    return executeAndUpdate("/force");
-  });
 
   // Click Events that update the 'upcoming list'
   $.each(["up", "down"], function() {

@@ -178,11 +178,6 @@ post "/remove/:id" do |nomination_id|
   execute_on_nomination(nomination_id) { |nomination| nomination.remove current_user }
 end
 
-post "/force" do
-  Nomination.current.force(current_user) if logged_in?
-  json_status
-end
-
 post "/star/:id" do |album_id|
   current_user.toggle_favourite Album.get(album_id.to_i)
   ""

@@ -41,10 +41,8 @@
         Nom. played:
         %span.value= current_user.played_nominations.count
       %p
-        +1 / -1 / force:
+        +1 / -1:
         %span.value
           = (current_user.votes.count - current_user.nominations.count)
           = "/"
           = current_user.negative_votes.count
-          = "/"
-          = current_user.down_votes.count

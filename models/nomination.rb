@@ -16,7 +16,6 @@ class Nomination
   has n, :songs, :through => Resource
   has n, :votes, :type => "vote", :value.gt => 0
   has n, :negative_votes, "Vote", :type => "vote", :value.lt => 0
-  has n, :down_votes, "Vote", :type => "force"
   has n, :updates
 
   # delegation
@@ -81,25 +80,6 @@ class Nomination
     self.update(:status => "deleted") if owned_by?(current_user)
 
     Update.log "<i>#{current_user.real_name}</i> removed '#{artist} - #{name}'", self, current_user
-  end
-
-  # Force methods
-  # ----------------------------------------------------------------------
-  def down_votes_necessary
-    [score + 2, 1].max - down_votes.inject(0) { |sum, v| sum + v.value }
-  end
-
-  def force(current_user)
-    return unless can_be_forced_by?(current_user)
-
-    vote = self.down_votes.create(:user => current_user, :value => 1, :type => "force")
-    MpdProxy.clear_playlist if down_votes_necessary <= 0
-
-    Update.log "<i>#{current_user.real_name}</i> forced '#{artist} - #{name}'", self, current_user
-  end
-
-  def can_be_forced_by?(current_user)
-    !down_votes.map { |v| v.user }.include?(current_user)
   end
 
   # Class methods
