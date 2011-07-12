@@ -350,10 +350,6 @@ header article .info .score {
   color: #0a0;
 }
 
-.negative-score .score {
-  color: #c00;
-}
-
 article.album .voting {
   float: right;
   width: 1.1em;
@@ -362,7 +358,7 @@ article.album .voting {
 article.album .voting a {
   display: block;
   margin: 0;
-  padding: 0.15em 0;
+  padding-top: 1.1em;
 }
 
 article.album .voting img {

@@ -46,8 +46,6 @@ class Nomination
     case
     when score > 0
       "positive-score"
-    when score < 0
-      "negative-score"
     else
       ""
     end

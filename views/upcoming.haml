@@ -14,8 +14,6 @@
         - if nomination.can_be_voted_for_by?(current_user)
           %a.up{ :href => "/vote/up", :ref => nomination.id, :title => "I like that shit! Play it now..." }
             %img{ :src => "/images/plus.png" }
-          %a.down{ :href => "/vote/down", :ref => nomination.id, :title => "Uuuhhhh, don't know about this one - let's get some beer first." }
-            %img{ :src => "/images/minus.png" }
 
     %aside.tags
       = nomination.tags.map { |tag| "<a href=\"/search?q=tag:#{tag.name}\" class=\"tag\" ref=\"#{tag.name}\">#{tag.name}</a>" }.join(", ")
