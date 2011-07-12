@@ -173,7 +173,9 @@ describe Nomination do
       
       @nomination = Nomination.new
       @nomination.stub! :update => nil
-      @nomination.stub_chain :votes, :create
+
+      @vote = Vote.new
+      @nomination.stub_chain(:votes, :new).and_return @vote
     end
 
     it "should update the status of the nomination to 'played'" do
@@ -182,7 +184,7 @@ describe Nomination do
     end
 
     it "should create an additional vote" do
-      @nomination.votes.should_receive :create
+      @nomination.votes.should_receive(:new).with(:value => 1).and_return @vote
       @nomination.play @mpd
     end
 
