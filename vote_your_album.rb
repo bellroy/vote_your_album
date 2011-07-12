@@ -31,7 +31,7 @@ def json_status
     :total => to_time(MpdProxy.total, false),
     :time => to_time(MpdProxy.time),
     :nominated_by => current.nominated_by,
-    :voteable => true, #current.can_be_voted_for_by?(current_user),
+    :voteable => current.can_be_voted_for_by?(current_user),
     :score => current.score_s,
     :score_class => current.score_class
   ) if MpdProxy.playing?

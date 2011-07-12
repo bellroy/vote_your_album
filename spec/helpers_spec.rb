@@ -11,18 +11,18 @@ describe "vote your album helpers:" do
 
     it "should have a set of classes by default" do
       get "/upcoming"
-      last_response.body.should match(%{article class='album'})
+      last_response.body.should match(%{article class='album '})
     end
 
     it "should have a deleteable class if we have nominated the album" do
       @nomination.stub!(:owned_by?).and_return true
       get "/upcoming"
-      last_response.body.should match(%{article class='album deleteable'})
+      last_response.body.should match(%{article class='album deleteable '})
     end
 
     it "should have not have a '*-score' class if the score is 0" do
       get "/upcoming"
-      last_response.body.should match(%{article class='album'})
+      last_response.body.should match(%{article class='album '})
     end
 
     it "should have a 'positive-score' class if the score is > 0" do

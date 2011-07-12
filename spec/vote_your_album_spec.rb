@@ -153,8 +153,12 @@ describe "vote your album:" do
 
         @album = Album.new(:artist => "c", :name =>  "three")
         Nomination.stub!(:current).and_return @nomination = Nomination.new(:album => @album)
-        @nomination.stub! :nominated_by => "blubbi"
-        @nomination.stub!(:down_votes_necessary).and_return 1
+        @nomination.stub! :nominated_by => "blubbi", :id => 123
+      end
+
+      it "should include the id of the nomination" do
+        get "/status"
+        last_response.body.should match(/\"id\":123/)
       end
 
       it "should include the name of the current album" do
