@@ -93,10 +93,8 @@ describe Nomination do
       @album = Album.create(:artist => "Arctic", :name => "Monkeys")
 
       @nomination = Nomination.create(:album => @album, :user => @user, :status => "active")
-      # @nomination.votes.stub!(:create).and_return @vote
-      # @nomination.negative_votes.stub!(:create).and_return @vote
-      # @nomination.stub! :save
 
+      MpdProxy.stub! :clear_playlist
       Update.stub! :log
     end
 
@@ -120,54 +118,11 @@ describe Nomination do
       @nomination.votes.size.should == 1
     end
 
-    describe "eliminate" do
-      it "should not change the status to 'deleted' when the threshold isnt reached" do
-        @nomination.stub!(:score).and_return -2
-        @nomination.vote -2, @user
-        @nomination.status.should == "active"
-      end
+    it "should clear the playlist if the score dropped to 0" do
+      MpdProxy.should_receive :clear_playlist
 
-      it "should change the status to 'deleted' when we have reached the elimination threshold (3)" do
-        @nomination.stub!(:score).and_return -3
-        @nomination.vote -3, @user
-        @nomination.status.should == "deleted"
-      end
-    end
-
-    describe "expires at" do
-      describe "with a negative score" do
-        before do
-          @nomination.stub!(:score).and_return -1
-        end
-
-        it "should be set if we have a negative score and its nil" do
-          @nomination.vote -2, @user
-          @nomination.ttl.should_not be_nil
-        end
-
-        it "should not be set if we already have set it before" do
-          @nomination.stub!(:ttl).and_return "not nil"
-          @nomination.vote -2, @user
-          @nomination.expires_at.should be_nil
-        end
-      end
-
-      describe "with a positive or neutral score" do
-        before do
-          @nomination.stub!(:score).and_return 1
-        end
-
-        it "should be reset if it is currently set" do
-          @nomination.expires_at = Time.now
-          @nomination.vote 2, @user
-          @nomination.ttl.should be_nil
-        end
-
-        it "should do nothing if its not set" do
-          @nomination.vote 2, @user
-          @nomination.expires_at.should be_nil
-        end
-      end
+      @nomination.score = 1
+      @nomination.vote -1, @user
     end
   end
 

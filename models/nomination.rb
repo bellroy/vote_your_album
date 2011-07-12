@@ -1,8 +1,7 @@
 class Nomination
   include DataMapper::Resource
 
-  DEFAULT_ELIMINATION_SCORE = -2
-  TTL = 1 * 60 * 60 # 3 h
+  TTL = 3 * 60 * 60 # 3 h
 
   property :id, Serial
   property :score, Integer, :default => 0
@@ -59,15 +58,9 @@ class Nomination
 
     scope = (value > 0 ? :votes : :negative_votes)
     vote = send(scope).create(:user => current_user, :value => value, :type => "vote")
-    self.status = "deleted" if score <= DEFAULT_ELIMINATION_SCORE
-
-    if score < 0
-      self.expires_at = (Time.now + TTL) unless ttl
-    elsif ttl
-      self.expires_at = nil
-    end
-
     save
+
+    MpdProxy.clear_playlist if score == 0
 
     Update.log "#{value > 0 ? "+1" : "-1"} for '#{artist} - #{name}' from <i>#{current_user.real_name}</i>", self, current_user
   end
