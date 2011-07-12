@@ -69,8 +69,15 @@ describe Album do
     end
 
     it "should create a nomination for that album" do
-      Time.stub!(:now).and_return time = mock("Now", :tv_sec => 1)
-      @album.nominations.should_receive(:create).with :status => "active", :created_at => time, :user => @user
+      time = Time.now
+      Time.stub!(:now).and_return time
+
+      @album.nominations.should_receive(:create).with(
+        :status     => "active",
+        :created_at => time,
+        :user       => @user,
+        :expires_at => (time + Nomination::TTL)
+      )
       @album.nominate @user, nil
     end
 

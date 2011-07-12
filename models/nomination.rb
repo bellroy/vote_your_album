@@ -91,7 +91,7 @@ class Nomination
     end
 
     def clean
-      all(:status => "active", :score.lt => 0).each { |nom| nom.update(:status => "deleted") if nom.ttl && nom.ttl <= 0 }
+      all(:status => "active").each { |nom| nom.update(:status => "deleted") if nom.ttl && nom.ttl <= 0 }
     end
 
     def played

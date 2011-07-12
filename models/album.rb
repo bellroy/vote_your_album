@@ -32,7 +32,12 @@ class Album
   def nominate(current_user, selected_songs)
     return if currently_nominated?
 
-    nomination = nominations.create(:status => "active", :created_at => Time.now, :user => current_user)
+    nomination = nominations.create(
+      :status     => "active",
+      :created_at => Time.now,
+      :user       => current_user,
+      :expires_at => (Time.now + Nomination::TTL)
+    )
     Update.log "<i>#{current_user.real_name}</i> nominated '#{to_s}'", nomination, current_user
 
     nomination.vote 1, current_user
