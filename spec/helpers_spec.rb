@@ -31,12 +31,6 @@ describe "vote your album helpers:" do
       last_response.body.should match(%{article class='album positive-score'})
     end
 
-    it "should have a 'negative-score' class if the score is < 0" do
-      @nomination.stub! :score => -1
-      get "/upcoming"
-      last_response.body.should match(%{article class='album negative-score'})
-    end
-
     it "should not show a title if we have a positive score" do
       get "/upcoming"
       last_response.body.should_not match(/TTL/)
