@@ -167,6 +167,32 @@ describe Nomination do
     end
   end
 
+  describe "play " do
+    before do
+      @mpd = mock("MPD", :add => nil)
+      
+      @nomination = Nomination.new
+      @nomination.stub! :update => nil
+      @nomination.stub_chain :votes, :create
+    end
+
+    it "should update the status of the nomination to 'played'" do
+      @nomination.should_receive(:update).with hash_including(:status => "played")
+      @nomination.play @mpd
+    end
+
+    it "should create an additional vote" do
+      @nomination.votes.should_receive :create
+      @nomination.play @mpd
+    end
+
+    it "should add all songs associated with the nomination" do
+      @nomination.stub!(:songs).and_return [song = Song.new(:file => "path")]
+      @mpd.should_receive(:add).with "path"
+      @nomination.play @mpd
+    end
+  end
+
   describe "active" do
     before do
       @nomination = Nomination.new

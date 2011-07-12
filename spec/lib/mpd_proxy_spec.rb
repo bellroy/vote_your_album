@@ -164,7 +164,7 @@ describe MpdProxy do
 
       @album = Album.new
       Album.stub!(:nominate_similar).and_return @nomination = Nomination.new(:album => @album)
-      @nomination.stub! :update
+      @nomination.stub! :play => nil
 
       Nomination.stub_chain(:current, :album).and_return @current = Album.new
 
@@ -185,19 +185,13 @@ describe MpdProxy do
     describe "with a nomination" do
       before do
         @next = Nomination.new(:user => User.new)
-        @next.stub! :update
+        @next.stub! :play => nil
 
         Nomination.stub!(:active).and_return [@next]
       end
 
-      it "should update the status of the nomination to 'played'" do
-        @next.should_receive(:update).with hash_including(:status => "played")
-        MpdProxy.play_next
-      end
-
-      it "should add all songs associated with the nomination" do
-        @next.stub!(:songs).and_return [song = Song.new(:file => "path")]
-        @mpd.should_receive(:add).with "path"
+      it "should play the nomination" do
+        @next.should_receive(:play).with @mpd
         MpdProxy.play_next
       end
 

@@ -75,6 +75,12 @@ class Nomination
     Update.log "<i>#{current_user.real_name}</i> removed '#{artist} - #{name}'", self, current_user
   end
 
+  def play(mpd)
+    update :status => "played", :played_at => Time.now
+    votes.create :user => user, :type => "vote", :value => 1
+    songs.each { |song| mpd.add song.file }
+  end
+
   # Class methods
   # ----------------------------------------------------------------------
   class << self

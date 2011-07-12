@@ -68,8 +68,7 @@ class MpdProxy
       end
 
       if nomination
-        nomination.update :status => "played", :played_at => Time.now
-        nomination.songs.each { |song| mpd.add song.file }
+        nomination.play mpd
         mpd.play
       end
     end
