@@ -76,13 +76,12 @@ class Nomination
   end
 
   def play(mpd)
-    update :status => "played", :played_at => Time.now
-    
-    vote = votes.new :value => 1
+    vote = votes.new(:value => 1)
     vote.user              # we have to access the user first in order
     vote.user_id = user_id # to expose the user_id attribute
     vote.save
 
+    update :status => "played", :played_at => Time.now, :score => (score + 1)
     songs.each { |song| mpd.add song.file }
   end
 
